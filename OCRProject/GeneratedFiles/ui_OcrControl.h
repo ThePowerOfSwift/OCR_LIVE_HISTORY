@@ -79,6 +79,7 @@ public:
     QPushButton *delFileBtn_2;
     QLineEdit *videoPosLineEdit;
     QVBoxLayout *verticalLayout_21;
+    QLabel *label_33;
     QProgressBar *videoProgressBar;
     QSpacerItem *verticalSpacer;
     QFrame *frame_2;
@@ -413,13 +414,18 @@ public:
         verticalLayout_21 = new QVBoxLayout();
         verticalLayout_21->setSpacing(6);
         verticalLayout_21->setObjectName(QStringLiteral("verticalLayout_21"));
+        label_33 = new QLabel(groupBox);
+        label_33->setObjectName(QStringLiteral("label_33"));
+
+        verticalLayout_21->addWidget(label_33);
+
         videoProgressBar = new QProgressBar(groupBox);
         videoProgressBar->setObjectName(QStringLiteral("videoProgressBar"));
         videoProgressBar->setValue(24);
 
         verticalLayout_21->addWidget(videoProgressBar);
 
-        verticalLayout_21->setStretch(0, 2);
+        verticalLayout_21->setStretch(1, 2);
 
         verticalLayout_23->addLayout(verticalLayout_21);
 
@@ -1133,7 +1139,8 @@ public:
         loadFileBtn->setText(QApplication::translate("OcrControl", "\350\275\275\345\205\245\345\216\206\345\217\262\350\247\206\351\242\221", 0));
         appendFileBtn->setText(QApplication::translate("OcrControl", "\350\277\275\345\212\240\346\226\207\344\273\266", 0));
         delFileBtn->setText(QApplication::translate("OcrControl", "\345\210\240\351\231\244\345\244\264\346\226\207\344\273\266", 0));
-        delFileBtn_2->setText(QApplication::translate("OcrControl", "\350\247\206\351\242\221\345\270\247\346\225\260", 0));
+        delFileBtn_2->setText(QApplication::translate("OcrControl", "\350\247\206\351\242\221\350\265\267\345\247\213\345\270\247\346\225\260", 0));
+        label_33->setText(QApplication::translate("OcrControl", "\350\247\206\351\242\221\345\244\204\347\220\206\350\277\233\345\272\246", 0));
         label_14->setText(QApplication::translate("OcrControl", "9", 0));
         label_15->setText(QApplication::translate("OcrControl", "10", 0));
         label_16->setText(QApplication::translate("OcrControl", "11", 0));

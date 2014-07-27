@@ -386,7 +386,7 @@ int HK18DataIdentify::identify()
 	setQINQPLRectPos();
 	if (algorithmState == EXIT_THIS_OCR)
 	{
-		return EXIT_THIS_OCR;
+ 		return EXIT_THIS_OCR;
 	}
 	//  设置场次号位置
 
@@ -614,7 +614,7 @@ int HK18DataIdentify::setWINPLARectPos()
 
 		if (winPlaPosStruct.rect[i][1].height <= 10)
 		{
-			winPlaPosStruct.rect[i][1].width = NUMBER_HEIGHT;
+			winPlaPosStruct.rect[i][1].height = NUMBER_HEIGHT;
 		}
 
 
@@ -1077,7 +1077,7 @@ int HK18DataIdentify::getWINPLAIdentify()
 				}
 			}
  
-			if (i ==2 && j == 0 )
+			if (i == 1 && j == 0 )
 			{
 
 				int temp = 0;
