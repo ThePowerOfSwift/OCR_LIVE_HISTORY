@@ -285,7 +285,7 @@ void BllRealTimeTrans::handleSubmitRaceTime(QByteArray result, int descriptor)
 /**
 * @brief 识别端发送提交实时数据指令
 */
-void BllRealTimeTrans::submitRealData(DataOutput outputStruct, int imageWidth, int imageHeight)
+void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array, int imageWidth, int imageHeight)
 {
 	 
 	 
@@ -428,19 +428,9 @@ void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct,QString type)
 				else if (type == "PLA")
 				{
 					WPData.WinValue = ouputStruct.PLA[i - 1];
-					/*
-					if (dataTemp >= 10)
-						WPData.WinValue = (int)dataTemp;
-					else
-					{
-						dataBigger10 = (int)ouputStruct.PLA[i - 1];
-
-						WPData.WinValue = dataBigger10 ;
-					}*/
-
-
+				  
 				} 
-				WPData.RaceID = Global::raceId;
+				WPData.RaceID = 2;// Global::raceId;
 				WPData.AtTime = 1;
 
 				sendBlock.append((char*)&WPData, sizeof(TagWPDataInfo));

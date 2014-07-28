@@ -85,12 +85,12 @@ private:
 	DataOutput priDataOutput;
 
 	//live  香港18台 直播 720*576
-	DataIdentify * myDataIdentify;
+	DataIdentify  myDataIdentify;
 	// 香港18台 历史数据 640*480
-	HK18DataIdentify  *mHK18DataIdentify;
+	HK18DataIdentify  mHK18DataIdentify;
 	// 亚洲台 历史数据 640*480 
-	YZTDataIdentify  *mYZTDataIdentify;
-
+	YZTDataIdentify  mYZTDataIdentify;
+	DataIdentify    dataIdentifyClass;
 	bool stopDataIdentifyTag;//标识符
 
 

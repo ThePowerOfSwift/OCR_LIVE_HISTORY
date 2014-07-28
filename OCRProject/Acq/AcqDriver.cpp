@@ -20,7 +20,7 @@ AcqDriver::AcqDriver(QObject *parent)
 	timerCount = 0;
 #ifdef OFFLINE_DEBUG
 		
-	count = 2800 ;
+	count = 3200 ;
 #endif
 }
 
@@ -36,8 +36,8 @@ void AcqDriver::createFalseData()
 
 
 	fileName = QString(".bmp");
-	//fileName.prepend(QString::number(count, 10));
-	fileName.prepend(QString("0"));
+	fileName.prepend(QString::number(count, 10));
+	//fileName.prepend(QString("3222"));
 	//fileName.prepend(QString("Number_orignal_"));
 	//fileName.prepend(QString("./imageSamples/"));
 	fileName.prepend(QString("E://BaiduYunDownload//20140706//"));

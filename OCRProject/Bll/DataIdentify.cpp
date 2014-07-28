@@ -47,21 +47,21 @@ DataIdentify::DataIdentify()
 	//initLengthHeightComp();
 
 	// initialize the HorseInfo
-	horseInfo.horseNum = HORSENUMBER;
-//	horseInfo.horseID = new int[horseInfo.horseNum];
-//	horseInfo.horseName = new QString[horseInfo.horseNum];
-	for (int i = 0; i < horseInfo.horseNum; i++)
+	dataOutput.horseNum = HORSENUMBER;
+ 
+
+	for (int i = 0; i < dataOutput.horseNum; i++)
 	{
-		horseInfo.horseID[i] = 0;
-//		horseInfo.horseName[i] = "";
-		horseInfo.isSCR[i] = false;
+		dataOutput.mHorseInfo.horseID[i] = 0;
+//		dataOutput.mHorseInfo.horseName[i] = "";
+		dataOutput.mHorseInfo.isSCR[i] = false;
 	}
 
 	// initialize the DataOutput
 	dataOutput.session = 0;
 	dataOutput.raceTime = 0;
 
-	for (int i = 0; i < horseInfo.horseNum; i++)
+	for (int i = 0; i < dataOutput.horseNum; i++)
 	{
 		dataOutput.svmResult[i] = -1;
 		dataOutput.WIN[i] = 0.0;
@@ -74,7 +74,7 @@ DataIdentify::DataIdentify()
 	}
 
 
-	for (int i = 0; i < horseInfo.horseNum; i++)
+	for (int i = 0; i < dataOutput.horseNum  ; i++)
 	{
 		for (int j = 0; j < 3; j++)
 			winPlaPosStruct.rect[i][j] = cvRect(0, 0, 0, 0);
@@ -105,7 +105,10 @@ DataIdentify::DataIdentify()
 	Mat HOG(1, 108, CV_32FC1, Scalar(0));
 	this->descriptorVector = descriptorVector;
 	this->hogMat = HOG;
-
+	/*
+	QString curPath = QDir::currentPath();
+	qDebug("curPath = %s \n", qPrintable(curPath));
+	*/
 	// 加载已经训练好的样本 
 
 	numSVM.load(".\\SVM\\numberSvm.xml");
@@ -115,6 +118,8 @@ DataIdentify::DataIdentify()
 
 	raceTimeSvm.load(".\\SVM\\raceTime.xml");
 	sessionNumSvm.load(".\\SVM\\sessionNum.xml");
+
+
 
 }
 
@@ -172,7 +177,7 @@ bool DataIdentify::read(Mat &srcMat ,uchar* data, int length, int height, int wi
 
 void  DataIdentify::isReady()
 {
-	isProcessed = true;
+	;
 }
 
  
@@ -189,12 +194,8 @@ void DataIdentify::haveData()
 	//waitKey();
 
 	cvtColor(image, image_temp, CV_RGB2BGR);
-	//	cvtColor(image, image_temp, CV_BGR2RGB);
  
-	//	IplImage image_temp = mat_temp;
-	//	cvSaveImage("C:\\Users\\ZhouZY\\Desktop\\b.bmp",&image_temp);
 
-	// ====================================
 	// in region 1
 	Vec3b bgr[5];
 	uchar bluePixel[5];
@@ -342,11 +343,7 @@ void DataIdentify::originPosition()
 		}
 	}
 
-	// 	CvRect rect = cvRect(originX, originY, image.cols - originX, image.rows - originY);
-	// 	Mat roi(image, rect);
-	// 	imshow("a", roi);
-	// 	waitKey();
-
+ 
 //	qDebug("the originPosition Func : x =%d, y=%d",originX,originY);
 	if (colSum != NULL)
 	{
@@ -366,50 +363,77 @@ void DataIdentify::originPosition()
 int DataIdentify::identify()
 {
 
-	
 	haveData();
 	if (haveDataFlag == false || algorithmState == EXIT_THIS_OCR)						// the frame has not any data, return 1
 		return EXIT_THIS_OCR;
-	
-
-
-	originPosition();
 	//设置马名位置
 
 	setHorseNameRectPos();
 
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR;
+	}
 	// 设置 WIN PLA 位置
 
 	setWINPLARectPos();
-
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR;
+	}
 	// 设置 QIN QPL  同时设置QIN QPL标记位置 
 	setQINQPLRectPos();
-
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR;
+	}
 	//  设置场次号位置
 
 	setSessionRectPos();
-
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR;
+	}
 	//设置 倒计时位置 
 	setCountDownRectPos();
-
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR;
+	}
 	//识别马名 
 	getHorseNameIdentify();
-
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR;
+	}
 	// 识别 WIN PLA
 
 	getWINPLAIdentify();
-
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR;
+	}
 	//识别 QIN QPL   同时识别ＱＩＮ　ＱＰＬ
 	getQINQPLIdentify();
-
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR;
+	}
 	//识别场次号
 
 	getSessionIdentify();
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR;
+	}
+	//识别倒计时 
 
-	//识别倒计时 // 获取分钟
-  
 	getCountDownIdentify();
 
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR;
+	}
 	return EXEC_SUCCESS;
 }
 
@@ -428,19 +452,17 @@ int DataIdentify::setHorseNameRectPos()
 	int *y = new int[HORSENUMBER + 1];
 
 	//同时获取马的数目
-	calculateGraySumXForSetHorseNameRect(edge, y, horseNum);
-
-	horseInfo.horseNum = horseNum;
-	dataOutput.horseNum = horseNum;
+	calculateGraySumXForSetHorseNameRect(edge, y, dataOutput.horseNum);
+ 
 
 
-	for (int r = 0; r < horseNum; r++)
+	for (int r = 0; r < dataOutput.horseNum; r++)
 	{
 		horseNamePosStruct.rect[r].x = HORSENAME_REGION_RECT.x;
 		horseNamePosStruct.rect[r].width = HORSENAME_REGION_RECT.width;
 
 		horseNamePosStruct.rect[r].y = HORSENAME_REGION_RECT.y + y[r];
-		if (r == horseNum - 1)
+		if (r == dataOutput.horseNum  - 1)
 		{
 			//防止高度太高
 			horseNamePosStruct.rect[r].height = HORSENAME_REGION_RECT.height - y[r];
@@ -476,9 +498,8 @@ int DataIdentify::setHorseNameRectPos()
 
 int DataIdentify::setWINPLARectPos()
 {
-	isProcessed = false;											// start data process
-	isProcessed = false;											// start data process
-
+	 
+	  
 	// get the relative position of the three vertex in the first row, relative to the origin 
 	CvPoint point[3];
 	point[0].x = LIVE_IMAGEINFO1_DELTAX;
@@ -490,7 +511,9 @@ int DataIdentify::setWINPLARectPos()
 
 	// get each rect in the original image
 	CvRect rect_temp = cvRect(0, 0, 0, 0);
-	for (int i = 0; i < horseNum; i++)
+	originX = 58;
+	originY = 39;
+	for (int i = 0; i < dataOutput.horseNum; i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
@@ -500,7 +523,7 @@ int DataIdentify::setWINPLARectPos()
 
 			if (i >= 4)
 				rect_temp.y = point[j].y + originY + i * (LIVE_IMAGEINFO1_HEIGHT + 3) + 4;
-
+ 
 			if (j == 0)
 				rect_temp.width = LIVE_IMAGEINFO1_WIDTH1;
 			else
@@ -545,7 +568,7 @@ int DataIdentify::setQINQPLRectPos()
 
 	imwrite("imageInfo2RegionSub.bmp", imageInfo2RegionSub1);
 
-	int deltaNum = HORSENUMBER - horseNum;
+	int deltaNum = HORSENUMBER - dataOutput.horseNum;
 	for (int i = 0; i < 19 - deltaNum; i++)
 	{
 		QString fileName;
@@ -561,6 +584,8 @@ int DataIdentify::setQINQPLRectPos()
 #ifdef QDEBUG_OUTPUT
 			qDebug("Error:setQINQPLRectPos function : setQINQPLRectPos return EXIT THIS OCR i = %d\n", i);
 #endif // QDEBUG_OUTPUT
+
+			return EXIT_THIS_OCR;
 
 		}
 
@@ -587,14 +612,14 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 	int x1 = 0;
 	//实际马匹数目与 14 个差 ，因为下面计算 每一个region的数字的个数时候，会用到
 
-	if (horseNum > 14 | horseNum <= 0)
+	if (dataOutput.horseNum > 14 | dataOutput.horseNum <= 0)
 	{
 		algorithmState = EXIT_THIS_OCR;
 
 		return EXIT_THIS_OCR;
 
 	}
-	int delataNum = HORSENUMBER - horseNum;
+	int delataNum = HORSENUMBER - dataOutput.horseNum;
 	if (rectNum < 6 - delataNum) // 6-1
 	{
 		int * y = new int[6 - rectNum + 1]; // 6-1		 
@@ -638,24 +663,13 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			}
 			else
 			{
+			if (y[i - rectNum] - y[i - rectNum - 1] > 18)
+				{
+					y[i - rectNum] = y[i - rectNum - 1] + NUMBER_HEIGHT + 2;
+				}
 				qinQPLPosStruct.rect[i][rectNum].height = y[i - rectNum] - y[i - rectNum - 1] + 1;
 			}
-			/*
-			//检查越界
-			if ((imageInfo2.rect[i][rectNum].x + imageInfo2.rect[i][rectNum].width) >
-			(imageInfo2RoiRegion[rectNum].width + imageInfo2RoiRegion[rectNum].x + 2  ) )
-
-			{
-			algorithmState = EXIT_THIS_OCR;
-			return EXIT_THIS_OCR;
-			}
-			if ((imageInfo2.rect[i][rectNum].y + imageInfo2.rect[i][rectNum].height) >
-			(imageInfo2RoiRegion[rectNum].height + imageInfo2RoiRegion[rectNum].y))
-			{
-			algorithmState = EXIT_THIS_OCR;
-			return EXIT_THIS_OCR;
-			}
-			*/
+			 
 		}
 		 
 
@@ -713,25 +727,13 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			}
 			else
 			{
+				if (y[i + 1] - y[i ] > 18)
+				{
+					y[i +1] = y[i ] + NUMBER_HEIGHT + 2;
+				}
 				qinQPLPosStruct.rect[i][rectNum - 4].height = y[i + 1] - y[i];
 			}
-			/*
-			//检查越界
-			if ((imageInfo2.rect[i][rectNum-4].x + imageInfo2.rect[i][rectNum].width)
-			> (imageInfo2RoiRegion[rectNum].width + imageInfo2RoiRegion[rectNum].x)
-
-			)
-			{
-			algorithmState = EXIT_THIS_OCR;
-			return EXIT_THIS_OCR;
-			}
-			if ((imageInfo2.rect[i][rectNum - 4].y + imageInfo2.rect[i][rectNum].height) >
-			(imageInfo2RoiRegion[rectNum].height + imageInfo2RoiRegion[rectNum].y))
-			{
-			algorithmState = EXIT_THIS_OCR;
-			return EXIT_THIS_OCR;
-			}
-			*/
+			 
 
 		}
 
@@ -791,29 +793,17 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			qinQPLPosStruct.rect[i][rectNum - 4].y = qinQplSubRect[rectNum].y + y[i] - 1;
 			if (i == roiNum - 1)
 			{
-				qinQPLPosStruct.rect[i][rectNum - 4].height = 19;
+				qinQPLPosStruct.rect[i][rectNum - 4].height = NUMBER_HEIGHT ;
 			}
 			else
 			{
+				if (y[i + 1] - y[i] > 18)
+				{
+					y[i + 1] = y[i] + NUMBER_HEIGHT + 2;
+				}
 				qinQPLPosStruct.rect[i][rectNum - 4].height = y[i + 1] - y[i];
 			}
-			/*
-			//检查越界
-			if ((imageInfo2.rect[i][rectNum - 4].x + imageInfo2.rect[i][rectNum].width)
-			> (imageInfo2RoiRegion[rectNum].width + imageInfo2RoiRegion[rectNum].x + 2 )
-
-			)
-			{
-			algorithmState = EXIT_THIS_OCR;
-			return EXIT_THIS_OCR;
-			}
-			if ((imageInfo2.rect[i][rectNum - 4].y + imageInfo2.rect[i][rectNum].height) >
-			(imageInfo2RoiRegion[rectNum ].height + imageInfo2RoiRegion[rectNum].y + 1 ))
-			{
-			algorithmState = EXIT_THIS_OCR;
-			return EXIT_THIS_OCR;
-			}
-			*/
+		 
 
 
 		}
@@ -889,7 +879,7 @@ int DataIdentify::getWINPLAIdentify()
 
 	// svm identify each number
 	Mat edge;
-	for (int i = 0; i < horseInfo.horseNum; i++)
+	for (int i = 0; i < dataOutput.horseNum; i++)
 	{
 		for (int j = 1; j < 3; j++)
 		{
@@ -942,7 +932,17 @@ int DataIdentify::getWINPLAIdentify()
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
 			writeSamples(i, j, 6, roi);
 #endif
+			/*
+			//赛马退赛 标志 ，如果截取的数据区域小于30 说明此地方为 --- ，马匹已经退赛
+			if (roiNew.cols < 20 )
+			{
+				dataOutput.mHorseInfo.isSCR[i] = true;
+				dataOutput.WIN[i] = -1;
+				dataOutput.PLA[i] = -1;
+				continue ; 
 
+			}
+			*/
 
 			float tempSum = 0.0;
 			if (dotFlag)															// contain a dot
@@ -954,7 +954,7 @@ int DataIdentify::getWINPLAIdentify()
 
 					Mat singleNum(roi, rectDot[k]);									// the single number image
 
-					bool emtyFlag = roi.empty();
+			 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
 					writeSamples(i, j, k, singleNum);
 
@@ -982,6 +982,11 @@ int DataIdentify::getWINPLAIdentify()
 						rectNoDot[k].width = roi.cols - rectNoDot[k].x;
 					Mat singleNum(roi, rectNoDot[k]);
 
+#ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
+					
+					writeSamples(i, j, k, singleNum); 
+					
+#endif
 
 
 					resize(singleNum, singleNum, cvSize(10, 20));
@@ -992,7 +997,7 @@ int DataIdentify::getWINPLAIdentify()
 					float result = numSVM.predict(hogMat);
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
 					createClassifySamples(result, singleNum);
-					writeSamples(i, j, k, singleNum);
+				 
 #endif
 					tempSum += result * factor[1][k];
 				}
@@ -1018,7 +1023,7 @@ int DataIdentify::getQINQPLIdentify()
 #ifdef QDEBUG_OUTPUT
 	qDebug("getImageInfo2_live func \n");
 #endif
-
+	judgeQINQPL();
 
 	if (algorithmState == EXIT_THIS_OCR)
 	{
@@ -1036,6 +1041,11 @@ int DataIdentify::getQINQPLIdentify()
 	Mat imageInfo2Mat(image, WHOLE_QINQPL_POS_RECT);
 	Mat imageInfo2RegionSub1(imageInfo2Mat, QINQPL_POS_RECT);
 
+	//
+			rect[0][0].x = 0;	rect[0][1].x = 9;		rect[0][2].x = 23;			// for two number with dot	
+			rect[1][0].x = 0;	rect[1][1].x = 9;		rect[1][2].x = 19;			// for two number without dot
+			//rect[2][0].x = 0;	rect[2][1].x = 11;		rect[2][2].x = 22;			// for three number without dot
+			rect[2][0].x = 0;	rect[2][1].x = 9;		rect[2][2].x = 19;			// for three number without dot
 	for (int i = 0; i < QIN_QPL_ROW; i++)
 	{
 		for (int j = 0; j < QIN_QPL_COL; j++)
@@ -1048,6 +1058,31 @@ int DataIdentify::getQINQPLIdentify()
 			{
 				continue;
 			}
+				//过滤掉退赛的马匹数据 ，设置结果为-1 
+			if (j> i+1)
+			{
+				if ( dataOutput.mHorseInfo.isSCR[i] == true )
+				{
+					dataOutput.QPL_QIN[i][j] = -1;
+					continue; 
+				}
+				if (dataOutput.mHorseInfo.isSCR[j-1] == true)
+				{
+					dataOutput.QPL_QIN[i][j] = -1;
+					continue;
+				}
+			}
+			if (j < i )
+			{
+				
+				if (dataOutput.mHorseInfo.isSCR[j+7] == true)
+				{
+					dataOutput.QPL_QIN[i][j] = -1;
+					continue;
+				}
+			}
+		
+		
 			if (imageInfo2RegionSub1.cols < (qinQPLPosStruct.rect[i][j].x + qinQPLPosStruct.rect[i][j].width))
 			{
 				algorithmState = EXIT_THIS_OCR;
@@ -1124,6 +1159,9 @@ int DataIdentify::getQINQPLIdentify()
 			/*		imwrite("error.bmp", roi);
 			imshow("roi", roi);
 			waitKey(1000);*/
+#ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
+			writeSamples(i, j, 6, roiForDotJudge);
+#endif // WRITE_ROI_SMAPLES_CLASS
 
 			Mat edge;
 			dotFlag = judgeQINQPLDot(roiForDotJudge, edge, x);
@@ -1153,12 +1191,7 @@ int DataIdentify::getQINQPLIdentify()
 				roiNewSize.width = roi.cols - roiNewSize.x;
 			}
 
-			//
-			rect[0][0].x = 0;	rect[0][1].x = 9;		rect[0][2].x = 23;			// for two number with dot	
-			rect[1][0].x = 0;	rect[1][1].x = 9;		rect[1][2].x = 19;			// for two number without dot
-			//rect[2][0].x = 0;	rect[2][1].x = 11;		rect[2][2].x = 22;			// for three number without dot
-			rect[2][0].x = 0;	rect[2][1].x = 9;		rect[2][2].x = 19;			// for three number without dot
-
+		
 			for (int i = 0; i < 3; i++)													// set the rect for single number in number region
 			{
 				for (int j = 0; j < 3; j++)
@@ -1176,11 +1209,7 @@ int DataIdentify::getQINQPLIdentify()
 					rect[i][j].height = qinQPLPosStruct.rect[i][j].height;
 				}
 			}
-			//Mat roiNew(roi, roiNewSize);
-#ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
-			writeSamples(i, j, 6, roiForDotJudge);
-#endif // WRITE_ROI_SMAPLES_CLASS
-
+ 
 
 
 			if (dotFlag == -1)
@@ -1209,6 +1238,9 @@ int DataIdentify::getQINQPLIdentify()
 					rect[0][k].height = roiNew.rows;
 
 					Mat singleNum(roiNew, rect[0][k]);								// the single number image
+#ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
+					writeSamples(i, j, k, singleNum);
+#endif
 
 					resize(singleNum, singleNum, cvSize(10, 20));
 					hog.compute(singleNum, descriptorVector, winStride, padding);
@@ -1217,7 +1249,7 @@ int DataIdentify::getQINQPLIdentify()
 
 					float result = numSVM.predict(hogMat);
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+				 
 					createClassifySamples(result, singleNum);
 #endif // WRITE_ROI_SMAPLES_CLASS
 
@@ -1236,6 +1268,9 @@ int DataIdentify::getQINQPLIdentify()
 
 					rect[1][k].height = roiNew.rows;
 					Mat singleNum(roiNew, rect[1][k]);								// the single number image
+#ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
+					writeSamples(i, j, k, singleNum);
+#endif
 
 					resize(singleNum, singleNum, cvSize(10, 20));
 					hog.compute(singleNum, descriptorVector, winStride, padding);
@@ -1245,7 +1280,7 @@ int DataIdentify::getQINQPLIdentify()
 					float result = numSVM.predict(hogMat);
 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+					 
 					createClassifySamples(result, singleNum);
 #endif	
 
@@ -1949,6 +1984,7 @@ int DataIdentify::judgeQINQPL()
 	// 	imshow("a", roi);
 	// 	waitKey();
 
+	 
 	cvtColor(roi, roi, CV_RGB2GRAY);
 
 	resize(roi, roi, cvSize(10, 20), 0, 0, INTER_CUBIC);
@@ -2502,8 +2538,8 @@ int  DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int roiN
 	{
 
 		//设置为 300 过滤掉 部分数字的底色
-		if ((graySumX[i] < 300 && graySumX[i + 1] > 300
-			&& graySumX[i + 2] > 300))
+		if ((graySumX[i] < THEREHOLD && graySumX[i + 1] > THEREHOLD
+			&& graySumX[i + 2] > THEREHOLD))
 		{
 			y[j] = i;
 #ifdef QDEBUG_OUTPUT

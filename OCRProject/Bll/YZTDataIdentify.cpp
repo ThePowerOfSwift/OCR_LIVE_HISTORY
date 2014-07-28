@@ -121,10 +121,10 @@ YZTDataIdentify::YZTDataIdentify()
 	//initLengthHeightComp();
 
 	// initialize the HorseInfo
-	horseInfo.horseNum = HORSENUMBER;
+	dataOutput.horseNum = HORSENUMBER;
 //	horseInfo.horseID = new int[horseInfo.horseNum];
 //	horseInfo.horseName = new QString[horseInfo.horseNum];
-	for (int i = 0; i < horseInfo.horseNum; i++)
+	for (int i = 0; i < dataOutput.horseNum; i++)
 	{
 		horseInfo.horseID[i] = 0;
 //		horseInfo.horseName[i] = "";
@@ -135,7 +135,7 @@ YZTDataIdentify::YZTDataIdentify()
 	dataOutput.session = 0;
 	dataOutput.raceTime = 0;
 
-	for (int i = 0; i < horseInfo.horseNum; i++)
+	for (int i = 0; i < dataOutput.horseNum; i++)
 	{
 		dataOutput.svmResult[i] = -1;
 		dataOutput.WIN[i] = 0.0;
@@ -148,7 +148,7 @@ YZTDataIdentify::YZTDataIdentify()
 	}
 
  
-	for (int i = 0; i < horseInfo.horseNum; i++)
+	for (int i = 0; i < dataOutput.horseNum; i++)
 	{
 		for (int j = 0; j < 3; j++)
 			winPlaPosStruct.rect[i][j] = cvRect(0, 0, 0, 0);
@@ -473,19 +473,17 @@ int YZTDataIdentify::setHorseNameRectPos()
 	int *y = new int[HORSENUMBER + 1];
  
 	//同时获取马的数目
-	calculateGraySumXForSetHorseNameRect(edge, y, horseNum);
+	calculateGraySumXForSetHorseNameRect(edge, y, dataOutput.horseNum);
 
-	horseInfo.horseNum = horseNum;
-	dataOutput.horseNum = horseNum;
+	 
 
-
-	for (int r = 0; r < horseNum; r++)
+	for (int r = 0; r < dataOutput.horseNum; r++)
 	{
 		horseNamePosStruct.rect[r].x = HORSENAME_REGION_RECT.x;
 		horseNamePosStruct.rect[r].width = HORSENAME_REGION_RECT.width;
 
 		horseNamePosStruct.rect[r].y = HORSENAME_REGION_RECT.y + y[r];
-		if (r == horseNum - 1)
+		if (r == dataOutput.horseNum - 1)
 		{
 			//防止高度太高
 			horseNamePosStruct.rect[r].height = HORSENAME_REGION_RECT.height - y[r];
@@ -1054,7 +1052,7 @@ int YZTDataIdentify::getWINPLAIdentify()
 
 	// svm DataIdentify each number
 	Mat edge;
-	for (int i = 0; i < horseInfo.horseNum; i++)
+	for (int i = 0; i < dataOutput.horseNum; i++)
 	{
 		for (int j = 0; j < 2; j++)
 		{

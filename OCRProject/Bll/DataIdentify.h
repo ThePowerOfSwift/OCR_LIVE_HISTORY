@@ -1,3 +1,10 @@
+#ifndef DataIdentify_H
+
+#define DataIdentify_H
+
+
+//实时直播
+
 #include <QString>
  
 //#include "svm.h"
@@ -10,9 +17,9 @@ using namespace cv;
 
 //#define  WRITE_SESSION_CLASSIFY_SAMPELS 
 //#define  WRITE_MINUTE_CLASSIFY_SAMPELS
-#define  QDEBUG_OUTPUT
+// #define  QDEBUG_OUTPUT
 //#define		WRITE_ROI_SMAPLES_CLASS_INFO1
-#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
+//#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
  
  
 
@@ -23,15 +30,13 @@ public:
 	~DataIdentify();
 
 	// 对外的接口参数
-	HorseInfo horseInfo;
+ 
 	DataOutput dataOutput;
-
-	int isProcessed;																// -1 processed,but no data, 0 processing, 1 processed
+ 
+																// -1 processed,but no data, 0 processing, 1 processed
 	bool isHistoryVideo;															// true: history video, false: live video 
 	bool haveDataFlag;																// DataIdentify the frame has data or not
-	bool isQPL;
-	int horseNum;																	// the horse total number from video
-
+ 	 
 
 	bool read(Mat &srcMat, uchar* data, int length, int height = 480, int width = 640);		// return the error type, if all right, then return 0
 	void haveData();
@@ -158,7 +163,7 @@ private:
 #define  PLA_POS_RECT cvRect(216,65,256-216,363-65)
 
 //QIN QPL标签位置
-#define  QINQPL_LABEL_POS_RECT cvRect(99,378,139-99,400-378)
+#define  QINQPL_LABEL_POS_RECT cvRect(126,381,12,17)
 
 // QIN QPL 位置
 #define		WHOLE_QINQPL_POS_RECT  cvRect(9, 376, 697, 197)
@@ -189,4 +194,10 @@ private:
 // 马名位置 
 #define HORSENAME_REGION_RECT cvRect(69,65,134-69,370-65)
 
- 
+
+
+#define  NUMBER_HEIGHT 18 
+#define  NUMBER_WIDTH 36
+
+
+ #endif

@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_BllRealTimeTrans_t {
-    QByteArrayData data[34];
-    char stringdata[440];
+    QByteArrayData data[35];
+    char stringdata[446];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -52,17 +52,18 @@ QT_MOC_LITERAL(19, 228, 20),
 QT_MOC_LITERAL(20, 249, 14),
 QT_MOC_LITERAL(21, 264, 10),
 QT_MOC_LITERAL(22, 275, 12),
-QT_MOC_LITERAL(23, 288, 10),
-QT_MOC_LITERAL(24, 299, 11),
-QT_MOC_LITERAL(25, 311, 14),
-QT_MOC_LITERAL(26, 326, 11),
-QT_MOC_LITERAL(27, 338, 11),
-QT_MOC_LITERAL(28, 350, 4),
-QT_MOC_LITERAL(29, 355, 14),
-QT_MOC_LITERAL(30, 370, 20),
-QT_MOC_LITERAL(31, 391, 17),
-QT_MOC_LITERAL(32, 409, 13),
-QT_MOC_LITERAL(33, 423, 16)
+QT_MOC_LITERAL(23, 288, 5),
+QT_MOC_LITERAL(24, 294, 10),
+QT_MOC_LITERAL(25, 305, 11),
+QT_MOC_LITERAL(26, 317, 14),
+QT_MOC_LITERAL(27, 332, 11),
+QT_MOC_LITERAL(28, 344, 11),
+QT_MOC_LITERAL(29, 356, 4),
+QT_MOC_LITERAL(30, 361, 14),
+QT_MOC_LITERAL(31, 376, 20),
+QT_MOC_LITERAL(32, 397, 17),
+QT_MOC_LITERAL(33, 415, 13),
+QT_MOC_LITERAL(34, 429, 16)
     },
     "BllRealTimeTrans\0statuChanged\0\0status\0"
     "connectToHost\0serverIp\0serverPort\0"
@@ -72,9 +73,9 @@ QT_MOC_LITERAL(33, 423, 16)
     "raceNO\0handleRequestRaceID\0submitRaceTime\0"
     "raceTime\0handleSubmitRaceTime\0"
     "submitRealData\0DataOutput\0outputStruct\0"
-    "imageWidth\0imageHeight\0submitWINOrPLA\0"
-    "DataOutput&\0ouputStruct\0type\0"
-    "submitQINOrQPL\0handleSubmitRealData\0"
+    "array\0imageWidth\0imageHeight\0"
+    "submitWINOrPLA\0DataOutput&\0ouputStruct\0"
+    "type\0submitQINOrQPL\0handleSubmitRealData\0"
     "handleReceiveData\0handleConnect\0"
     "handleDisConnect"
 };
@@ -107,15 +108,15 @@ static const uint qt_meta_data_BllRealTimeTrans[] = {
       16,    2,  138,    2, 0x0a /* Public */,
       17,    1,  143,    2, 0x0a /* Public */,
       19,    2,  146,    2, 0x0a /* Public */,
-      20,    3,  151,    2, 0x0a /* Public */,
-      25,    2,  158,    2, 0x0a /* Public */,
-      25,    1,  163,    2, 0x2a /* Public | MethodCloned */,
-      29,    2,  166,    2, 0x0a /* Public */,
-      29,    1,  171,    2, 0x2a /* Public | MethodCloned */,
-      30,    2,  174,    2, 0x0a /* Public */,
-      31,    2,  179,    2, 0x0a /* Public */,
-      32,    0,  184,    2, 0x0a /* Public */,
-      33,    0,  185,    2, 0x0a /* Public */,
+      20,    4,  151,    2, 0x0a /* Public */,
+      26,    2,  160,    2, 0x0a /* Public */,
+      26,    1,  165,    2, 0x2a /* Public | MethodCloned */,
+      30,    2,  168,    2, 0x0a /* Public */,
+      30,    1,  173,    2, 0x2a /* Public | MethodCloned */,
+      31,    2,  176,    2, 0x0a /* Public */,
+      32,    2,  181,    2, 0x0a /* Public */,
+      33,    0,  186,    2, 0x0a /* Public */,
+      34,    0,  187,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    3,
@@ -131,11 +132,11 @@ static const uint qt_meta_data_BllRealTimeTrans[] = {
     QMetaType::Void, QMetaType::QByteArray, QMetaType::Int,   10,   11,
     QMetaType::Void, QMetaType::Int,   18,
     QMetaType::Void, QMetaType::QByteArray, QMetaType::Int,   10,   11,
-    QMetaType::Void, 0x80000000 | 21, QMetaType::Int, QMetaType::Int,   22,   23,   24,
-    QMetaType::Void, 0x80000000 | 26, QMetaType::QString,   27,   28,
-    QMetaType::Void, 0x80000000 | 26,   27,
-    QMetaType::Void, 0x80000000 | 26, QMetaType::QString,   27,   28,
-    QMetaType::Void, 0x80000000 | 26,   27,
+    QMetaType::Void, 0x80000000 | 21, QMetaType::QByteArray, QMetaType::Int, QMetaType::Int,   22,   23,   24,   25,
+    QMetaType::Void, 0x80000000 | 27, QMetaType::QString,   28,   29,
+    QMetaType::Void, 0x80000000 | 27,   28,
+    QMetaType::Void, 0x80000000 | 27, QMetaType::QString,   28,   29,
+    QMetaType::Void, 0x80000000 | 27,   28,
     QMetaType::Void, QMetaType::QByteArray, QMetaType::Int,   10,   11,
     QMetaType::Void, QMetaType::QByteArray, QMetaType::Int,   10,   11,
     QMetaType::Void,
@@ -160,7 +161,7 @@ void BllRealTimeTrans::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         case 8: _t->handleRequestRaceID((*reinterpret_cast< QByteArray(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 9: _t->submitRaceTime((*reinterpret_cast< qint32(*)>(_a[1]))); break;
         case 10: _t->handleSubmitRaceTime((*reinterpret_cast< QByteArray(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 11: _t->submitRealData((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3]))); break;
+        case 11: _t->submitRealData((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< int(*)>(_a[4]))); break;
         case 12: _t->submitWINOrPLA((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
         case 13: _t->submitWINOrPLA((*reinterpret_cast< DataOutput(*)>(_a[1]))); break;
         case 14: _t->submitQINOrQPL((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;

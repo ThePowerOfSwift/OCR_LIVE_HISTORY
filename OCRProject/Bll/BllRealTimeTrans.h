@@ -65,7 +65,7 @@ public slots:
 	/**
 	* @brief 识别端发送提交实时数据指令
 	*/
-	void submitRealData(DataOutput outputStruct,int imageWidth,int imageHeight );
+	void submitRealData(DataOutput outputStruct, QByteArray array ,int imageWidth, int imageHeight);
 	/**
 	* @brief 提交win实时数据
 	*/

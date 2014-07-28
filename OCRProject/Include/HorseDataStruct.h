@@ -113,7 +113,7 @@ struct  raceNumTimeStruct
 
 struct HorseInfo
 {
-	int horseNum ;						// the total number of horses in the image
+	 
 	int  horseID[HORSENUMBER];						// the horse ID
 	bool isSCR[HORSENUMBER];							//退赛 标志位
 	

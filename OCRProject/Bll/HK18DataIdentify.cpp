@@ -47,10 +47,10 @@ HK18DataIdentify::HK18DataIdentify()
 	//initLengthHeightComp();
 
 	// initialize the HorseInfo
-	dataOutput.mHorseInfo.horseNum = HORSENUMBER;
-	//horseInfo.horseID = new int[horseInfo.horseNum];
-	//horseInfo.horseName = new QString[horseInfo.horseNum];
-	for (int i = 0; i < dataOutput.mHorseInfo.horseNum; i++)
+	dataOutput.horseNum = HORSENUMBER;
+ 
+
+	for (int i = 0; i < dataOutput.horseNum; i++)
 	{
 		dataOutput.mHorseInfo.horseID[i] = 0;
 	//	dataOutput.mHorseInfo.horseName[i] = "";
@@ -62,7 +62,7 @@ HK18DataIdentify::HK18DataIdentify()
 	dataOutput.raceTime = 0;
 
  
-	for (int i = 0; i < dataOutput.mHorseInfo.horseNum; i++)
+	for (int i = 0; i < dataOutput.horseNum ; i++)
 	{
 		dataOutput.svmResult[i] = -1;
 		dataOutput.WIN[i] = 0.0;
@@ -75,7 +75,7 @@ HK18DataIdentify::HK18DataIdentify()
 	}
 
  
-	for (int i = 0; i < dataOutput.mHorseInfo.horseNum; i++)
+	for (int i = 0; i < dataOutput.horseNum ; i++)
 	{
 		for (int j = 0; j < 3; j++)
 			winPlaPosStruct.rect[i][j] = cvRect(0, 0, 0, 0);
@@ -857,23 +857,7 @@ int  HK18DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 				}
 				qinQPLPosStruct.rect[i][rectNum - 4].height = y[i + 1] - y[i];
 			}
-			/*
-			//¼ì²éÔ½½ç
-			if ((qinQPLPosStruct.rect[i][rectNum-4].x + qinQPLPosStruct.rect[i][rectNum].width)
-			> (QINQPLRoiRegion[rectNum].width + QINQPLRoiRegion[rectNum].x)
-
-			)
-			{
-			algorithmState = EXIT_THIS_OCR;
-			return EXIT_THIS_OCR;
-			}
-			if ((qinQPLPosStruct.rect[i][rectNum - 4].y + qinQPLPosStruct.rect[i][rectNum].height) >
-			(QINQPLRoiRegion[rectNum].height + QINQPLRoiRegion[rectNum].y))
-			{
-			algorithmState = EXIT_THIS_OCR;
-			return EXIT_THIS_OCR;
-			}
-			*/
+		 
 
 		}
 
@@ -1124,7 +1108,7 @@ int HK18DataIdentify::getWINPLAIdentify()
 
 					float result = numSVM.predict(hogMat);
 
-					createClassifySamples(result, singleNum);
+				 
 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
 					createClassifySamples(result, singleNum);

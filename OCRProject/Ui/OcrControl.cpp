@@ -36,7 +36,7 @@ OcrControl::OcrControl(QWidget *parent)
 	bllDataIdentify = new BllDataIdentify();//数据识别
 	threadDataIdentify = new ThreadDataIdentify();//数据识别线程
 	bllDataIdentify->moveToThread(threadDataIdentify);
-	QObject::connect(bllDataIdentify, SIGNAL(readyRead(DataOutput,QByteArray,int,int)), bllRealTimeTrans, SLOT(submitRealData(DataOutput,int,int)));//开始发送
+	QObject::connect(bllDataIdentify, SIGNAL(readyRead(DataOutput, QByteArray, int, int)), bllRealTimeTrans, SLOT(submitRealData(DataOutput, QByteArray,int, int)));//开始发送
 	QObject::connect(bllDataIdentify, SIGNAL(readyRead(DataOutput, QByteArray,int,int)), this, SLOT(updateData(DataOutput, QByteArray,int,int)));//停止计算
 
 	//显示广告	
