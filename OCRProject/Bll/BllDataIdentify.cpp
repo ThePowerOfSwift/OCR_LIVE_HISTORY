@@ -183,6 +183,14 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 				raceSessionCount++;
 				Global::timerCount = 0;
 			}
+			//如果某个时候，场次号被检测出的次数超过一定限值，可以认为，这个时候这个值为正确的
+
+			if (maxContentCount > 8 )
+			{
+				Global::session = maxContent;
+				raceSessionCount++;
+				Global::timerCount = 0;
+			}
 			
 			//挑出来 应该输出的  倒计时时间 
 			maxContentCount = myRaceTimeStruct[0].contentCount;
@@ -470,9 +478,11 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 		}
 	}
 	
-	//数据超出本应有的范围，那么就不会发送此时的数据，
-	if (dataOutOfRange == false )
+	//数据超出本应有的范围，那么就不会发送此时的数据， 此时应该避免掉 比赛刚开始，有数据的时候，此时应该发送数据。
+	//添加 Global::raceHasStarted 来控制 第一次，即 比赛未开始，那么可以发送的。
+	if (dataOutOfRange == false | Global::raceHasStarted == 0 )
 	{
+		Global::raceHasStarted = 1;
 		if (sessionChangedCountDown == 0 )
 		{
 			sessionChanged = false;

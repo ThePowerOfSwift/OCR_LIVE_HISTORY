@@ -59,11 +59,11 @@ qint32 Global::session;//比赛场次号
 qint32 Global::raceTime;//比赛时间
 
 //比赛已经开始标志
-qint32 Global::raceHasStarted;
+qint32 Global::raceHasStarted = 0 ;
 //比赛当前场次计时 
-qint32 Global::countRaceTime;
+qint32 Global::countRaceTime = 0 ;
 
-qint32 Global::timerCount;
+qint32 Global::timerCount = 0 ;
 
  /***********比赛数据***********/
 

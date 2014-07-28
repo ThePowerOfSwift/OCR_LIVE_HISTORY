@@ -111,7 +111,7 @@ DataIdentify::DataIdentify()
 	*/
 	// 加载已经训练好的样本 
 
-	numSVM.load(".\\SVM\\numberSvm.xml");
+	numSVM.load(".\\SVM\\LIVENumber.xml");
 	LNSVM.load(".\\SVM\\LN_SVM_1.xml");
 
 	horseNameSVM.load(".\\SVM\\horseName.xml");
@@ -494,6 +494,154 @@ int DataIdentify::setHorseNameRectPos()
 	return EXEC_SUCCESS;
 }
 
+
+// 设置 WIN PLA 位置
+
+int DataIdentify::setWINPLARectPos()
+{
+	 
+	Mat winRegion(image, WIN_POS_RECT);
+	Mat plaRegion(image, PLA_POS_RECT);
+
+	//转灰度图像
+	cvtColor(winRegion, winRegion, CV_RGB2GRAY);
+	cvtColor(plaRegion, plaRegion, CV_RGB2GRAY);
+
+	Mat edgePla;
+	Mat edgeWin;
+
+	
+	Canny(winRegion, edgeWin, 450, 400, 3, true);
+	Canny(plaRegion, edgePla, 450, 400, 3, true);
+	int *yWin = new int[HORSENUMBER + 1];
+	int *yPla = new int[HORSENUMBER + 1];
+	
+	int x0, x1;
+
+
+	calculateGraySumXForSetWINPLARect(edgeWin, yWin, dataOutput.horseNum);
+	calculateGraySumXForSetWINPLARect(edgePla, yPla, dataOutput.horseNum);
+	// get the relative position of the three vertex in the first row, relative to the origin 
+	//
+	imwrite("WIN_Region.bmp", edgeWin);
+	imwrite("PLA_Region.bmp", edgePla);
+
+
+	//计算 识别区域的两侧X值
+	if (calculateGraySumYForTrim(edgeWin, x0, x1, dataOutput.horseNum) == EXIT_THIS_OCR)
+	{
+		algorithmState = EXIT_THIS_OCR;
+		return EXIT_THIS_OCR;
+	}
+	if (x1 <= x0)
+	{
+#ifdef QDEBUG_OUTPUT
+		qDebug("ERROR:getqinQPLPosStructRect function : x1 < x0 ERROR");
+#endif
+		return EXIT_THIS_OCR;
+	}
+	for (int i = 0; i < dataOutput.horseNum; i++)
+	{
+		// 3个像素 空白	 		
+		winPlaPosStruct.rect[i][0].x = WIN_POS_RECT.x + x0 - 1;
+		winPlaPosStruct.rect[i][0].width = x1 - x0 + 1;
+
+		
+		winPlaPosStruct.rect[i][0].y = WIN_POS_RECT.y + yWin[i];
+
+		if (i == dataOutput.horseNum - 1)
+		{
+			
+			winPlaPosStruct.rect[i][0].height = winPlaPosStruct.rect[i - 1][0].height;
+		}
+		else
+		{
+			//如果高度过高，那么说明出现了 退赛的马匹，那么强制设置高度为固定值。
+			if (yWin[i + 1] - yWin[i] > 23 )
+			{
+				yWin[i + 1] = yWin[i] + NUMBER_HEIGHT + 2;
+			}
+
+			winPlaPosStruct.rect[i][0].height = yWin[i + 1] - yWin[i];
+		}
+
+		if (winPlaPosStruct.rect[i][0].width <= 20 )
+		{
+			winPlaPosStruct.rect[i][0].width = NUMBER_WIDTH;
+		}
+
+		if (winPlaPosStruct.rect[i][0].height <= 10)
+		{
+			winPlaPosStruct.rect[i][0].height = NUMBER_HEIGHT;
+		}
+
+	}
+
+	x0 = 0;
+	x1 = 0;
+	// PLA part 
+	//计算 识别区域的两侧X值
+	if (calculateGraySumYForTrim(edgePla, x0, x1, dataOutput.horseNum) == EXIT_THIS_OCR)
+	{
+		algorithmState = EXIT_THIS_OCR;
+		return EXIT_THIS_OCR;
+	}
+	if (x1 <= x0)
+	{
+#ifdef QDEBUG_OUTPUT
+		qDebug("ERROR:setWINPLARect_live function : x1 < x0 ERROR");
+#endif
+		return EXIT_THIS_OCR;
+	}
+
+	for (int i = 0; i < dataOutput.horseNum; i++)
+	{
+		// 3个像素 空白	 		
+		winPlaPosStruct.rect[i][1].x = PLA_POS_RECT.x + x0 - 1;
+		winPlaPosStruct.rect[i][1].width = x1 - x0 + 1 ;
+
+		winPlaPosStruct.rect[i][1].y = PLA_POS_RECT.y + yWin[i];
+
+
+		if (i == dataOutput.horseNum - 1)
+		{
+			winPlaPosStruct.rect[i][1].height = winPlaPosStruct.rect[i - 1][1].height;
+		}
+		else
+		{
+
+			winPlaPosStruct.rect[i][1].height = yWin[i + 1] - yWin[i];
+		}
+
+		if (winPlaPosStruct.rect[i][1].width <= 20)
+		{
+			winPlaPosStruct.rect[i][1].width = NUMBER_WIDTH;
+		}
+
+		if (winPlaPosStruct.rect[i][1].height <= 10)
+		{
+			winPlaPosStruct.rect[i][1].height = NUMBER_HEIGHT;
+		}
+
+
+	}
+
+	if (yPla != NULL)
+	{
+		delete[] yPla;
+		yPla = NULL;
+	}
+	if (yWin != NULL)
+	{
+		delete[] yWin;
+		yWin = NULL;
+	}
+
+	return EXEC_SUCCESS;
+
+}
+
+/*
 // 设置 WIN PLA 位置
 
 int DataIdentify::setWINPLARectPos()
@@ -537,7 +685,7 @@ int DataIdentify::setWINPLARectPos()
 
 }
 
-
+*/
 // 设置 QIN QPL  同时设置QIN QPL标记位置 
 
 int DataIdentify::setQINQPLRectPos()
@@ -851,6 +999,207 @@ int DataIdentify::getHorseNameIdentify()
 	int temp = 0;
 	return EXIT_SUCCESS;
 }
+
+// 识别 WIN PLA
+
+int DataIdentify::getWINPLAIdentify()
+{
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR ;
+	}
+
+
+	CvRect rectDot[3];
+	CvRect rectNoDot[3];
+
+	rectDot[0].x = 0;	rectDot[1].x = 10;		rectDot[2].x = 25 ;
+	rectNoDot[0].x = 0; rectNoDot[1].x = 10;	rectNoDot[2].x = 19;
+	
+	float factor[2][3] = { { 10, 1, 0.1 }, { 100, 10, 1 } };							// the first line for dot, the second line for no dat
+
+	// svm DataIdentify each number
+	Mat edge;
+	for (int i = 0; i < dataOutput.horseNum; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			Mat roi(image, winPlaPosStruct.rect[i][j]);
+
+			CvSize roiSize;
+			roiSize.height = winPlaPosStruct.rect[i][j].height;
+			roiSize.width = winPlaPosStruct.rect[i][j].width;
+
+			for (int i = 0; i < 3; i++)													// set the rect for single number in number region
+			{
+				if (i ==2 )
+				{
+					rectNoDot[i].width = roi.cols - rectNoDot[i].x;
+					rectDot[i].width = roi.cols - rectDot[i].x;
+				}
+
+				rectNoDot[i].width = 9;
+				rectDot[i].width = 9;
+
+				rectDot[i].y = 0;
+				
+				rectDot[i].height = roiSize.height ;
+
+				rectNoDot[i].y = 0;
+				
+				rectNoDot[i].height = roiSize.height ;
+			}
+
+
+			Mat roiThreshold(roiSize, CV_8UC3);
+			bool emtyFlag = roi.empty();
+
+			colorThreshold(roi, roiThreshold, 200);
+			 
+			Mat roiThresholdEdge;
+			cvtColor(roi, roi, CV_RGB2GRAY);
+			//Canny(roi, edge, 150, 100, 3, true);
+
+			//专门用于 小数点检测
+			cvtColor(roiThreshold, roiThreshold, CV_RGB2GRAY);
+
+			CvRect roiNewSize;
+			//	dotFlag = DataIdentifyImageInfor2_Dot_live(&edge);
+			Mat roiNew;
+			Mat roiForDotJudge;
+
+			trimRoiBlankPart(roiThreshold, roiForDotJudge, roiNewSize);
+			roiNew = Mat(roi, roiNewSize);
+			 
+
+			// 将阈值后的图像增强 roiThreshold 进行小数点判断
+			for (int c = 0; c < roiThreshold.cols; c++)
+			{
+				for (int r = 0; r < roiThreshold.rows; r++)
+				{
+					if (roiThreshold.at<uchar>(r, c) > 10)
+					{
+						roiThreshold.at<uchar>(r, c) = 250;
+					}
+				}
+			}
+ 
+			if (i == 1 && j == 0 )
+			{
+
+				int temp = 0;
+#ifdef QDEBUG_OUTPUT
+				qDebug("getwinPlaPosStruct_live:Mark");
+#endif // QDEBUG_OUTPUT
+
+			}
+
+#ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
+			writeSamples(i, j, 6, roiNew);
+#endif
+			bool dotFlag = false ;
+			// 通过判断 宽度来判断数据 是否包含小数点
+			if (roiNew.cols >= 33 )
+			{
+				dotFlag = true;
+			}
+			else
+				dotFlag = false;
+		//	dotFlag = judgeWINPLADot(1, roiThreshold, roiThresholdEdge);
+
+ 
+			//赛马退赛 标志 ，如果截取的数据区域小于30 说明此地方为 --- ，马匹已经退赛
+			if (roiNew.cols < 20 )
+			{
+				dataOutput.mHorseInfo.isSCR[i] = true;
+				dataOutput.WIN[i] = -1;
+				dataOutput.PLA[i] = -1;
+				continue ; 
+
+			}
+
+			float tempSum = 0.0;
+			if (dotFlag)															// contain a dot
+			{
+				for (int k = 0; k < 3; k++)					// segment each single number and svm
+				{
+					if (k == 2 && rectDot[k].x + rectDot[k].width >= roiNew.cols)	// cross the boarder
+						rectDot[k].width = roiNew.cols - rectDot[k].x;
+
+					Mat singleNum(roiNew, rectDot[k]);									// the single number image
+
+			 
+#ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
+					writeSamples(i, j, k, singleNum);
+
+#endif
+
+					resize(singleNum, singleNum, cvSize(10, 20));
+					hog.compute(singleNum, descriptorVector, winStride, padding);
+					for (int m = 0; m < HOGFEATURENUMBER; m++)
+						hogMat.at<float>(0, m) = descriptorVector[m];
+
+					float result = numSVM.predict(hogMat);
+
+				 
+
+#ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
+					createClassifySamples(result, singleNum);
+
+#endif
+
+
+					tempSum += result * factor[0][k];
+				}
+			}
+			else                                                                 // have no dot
+			{
+				for (int k = 0; k < 3; k++)
+				{
+					if (k == 2 && rectNoDot[k].x + rectNoDot[k].width >= roiNew.cols)
+						rectNoDot[k].width = roiNew.cols - rectNoDot[k].x;
+					 
+					Mat singleNum(roiNew, rectNoDot[k]);
+
+#ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
+					
+					writeSamples(i, j, k, singleNum); 
+					
+#endif
+
+					resize(singleNum, singleNum, cvSize(10, 20));
+
+					hog.compute(singleNum, descriptorVector, winStride, padding);
+					for (int m = 0; m < HOGFEATURENUMBER; m++)
+						hogMat.at<float>(0, m) = descriptorVector[m];
+
+					float result = numSVM.predict(hogMat);
+
+					createClassifySamples(result, singleNum);
+
+#ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
+					createClassifySamples(result, singleNum);
+					
+#endif
+					tempSum += result * factor[1][k];
+				}
+			}
+
+			if (j == 0)
+				dataOutput.WIN[i] = tempSum;
+			if (j == 1)
+				dataOutput.PLA[i] = tempSum;
+
+
+		}			// end j
+
+	}				// end i
+
+	return EXEC_SUCCESS;
+}
+
+
+/*
 // 识别 WIN PLA
 
 int DataIdentify::getWINPLAIdentify()
@@ -932,18 +1281,7 @@ int DataIdentify::getWINPLAIdentify()
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
 			writeSamples(i, j, 6, roi);
 #endif
-			/*
-			//赛马退赛 标志 ，如果截取的数据区域小于30 说明此地方为 --- ，马匹已经退赛
-			if (roiNew.cols < 20 )
-			{
-				dataOutput.mHorseInfo.isSCR[i] = true;
-				dataOutput.WIN[i] = -1;
-				dataOutput.PLA[i] = -1;
-				continue ; 
-
-			}
-			*/
-
+		 
 			float tempSum = 0.0;
 			if (dotFlag)															// contain a dot
 			{
@@ -1015,6 +1353,8 @@ int DataIdentify::getWINPLAIdentify()
 	return EXEC_SUCCESS;
 
 }
+*/
+
 
 //识别 QIN QPL   同时识别ＱＩＮ　ＱＰＬ
 int DataIdentify::getQINQPLIdentify()
@@ -2091,8 +2431,22 @@ int DataIdentify::colorThreshold(Mat &src, Mat &dst, int thereshold)
 		{
 			pixel = src.at<Vec3b>(r, c);		// row,col index (NOT x,y)
 			for (int p = 0; p < 3; p++)
-			if (pixel[p] <= thereshold) // adaptiveThreshold[p])
-				pixel[p] = 0;
+			{
+				if (p == 1 )
+				{
+					if (pixel[p] <= thereshold + 50 ) // adaptiveThreshold[p])
+						pixel[p] = 0;
+				}
+				else
+				{
+					if (pixel[p] <= thereshold) // adaptiveThreshold[p])
+						pixel[p] = 0;
+				}
+				
+
+			}
+			
+			
 			dst.at<Vec3b>(r, c) = pixel;
 
 		}
@@ -2440,14 +2794,14 @@ int  DataIdentify::calculateGraySumYForTrim(Mat &mat, int &x0, int &x1, int roiN
 		qDebug("calculateGraySumYForTrim %d = %d \n", pixelX, graySumY[pixelX]);
 #endif
 	}
-
+	int thereshold = 100 ;
 	//提取 两边y坐标
 	for (int x = 0; x <= mat.cols; x++)
 	{
 		//排除掉 单条条纹 连续3个像素 》200 可认为发现了数字
 		// 修改 由于连续三个像素 有时候会将 1 过滤掉了，所以只用1个，通过其他方法，改进 
 
-		if (graySumY[x] > 500)
+		if (graySumY[x] > thereshold )
 		{
 			x0 = x;
 			break;
@@ -2455,12 +2809,9 @@ int  DataIdentify::calculateGraySumYForTrim(Mat &mat, int &x0, int &x1, int roiN
 	}
 	for (int x = mat.cols - 1; x >= 0; x--)
 	{//排除掉 单条条纹 连续3个像素 》 600 为了 去除 底色线条导致的小点 被误识别 300为了对1进行识别。
-		if (graySumY[x] > 500 & graySumY[x - 2] > 150)
+		if (graySumY[x] > thereshold & graySumY[x - 2] > thereshold )
 		{
-			if (x + 2 >= mat.cols)
-				x1 = mat.cols - 1;
-			else
-				x1 = x + 2; // add one pixel
+			 x1 = x ;  
 			break;
 		}
 
