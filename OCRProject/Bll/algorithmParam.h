@@ -8,7 +8,7 @@
 
 #define HAVEDATA_PIXELNUMBER         5				// the total number of pixels for identify the frame having the data or not
 #define HAVEDATA_XINDEX              30				// the x-position of the pixel for identify the frame having the data or not
-#define HAVEDATA_YINDEX			     40				// the y(40*i)-position of the pixel for identify the frame having the data or not
+#define HAVEDATA_YINDEX			     60				// the y(40*i)-position of the pixel for identify the frame having the data or not
 #define HAVEDATA_BLUETHRESHOLD	     56				// the threshold of blue channel, if >HAVEDATA_BLUETHRESHOLD and <HAVEDATA_GREENTHRESHOLD then identify this pixel is blue
 #define HAVEDATA_GREENTHRESHOLD      10
 

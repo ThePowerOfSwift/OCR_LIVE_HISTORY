@@ -1691,6 +1691,11 @@ p, li { white-space: pre-wrap; }
                  <widget class="QComboBox" name="videoTypeComboBox">
                   <item>
                    <property name="text">
+                    <string>香港18台D14</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
                     <string>香港18台</string>
                    </property>
                   </item>

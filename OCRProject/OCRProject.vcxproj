@@ -98,6 +98,7 @@
     <ClCompile Include="Bll\BllRealTimeTrans.cpp" />
     <ClCompile Include="Acq\ThreadAcq.cpp" />
     <ClCompile Include="Bll\DataIdentify.cpp" />
+    <ClCompile Include="Bll\HK18D14DataIdentify.cpp" />
     <ClCompile Include="Bll\HK18DataIdentify.cpp" />
     <ClCompile Include="Bll\ReadHistoryVideo.cpp" />
     <ClCompile Include="Bll\SystemLog\SystemLog.cpp" />
@@ -265,6 +266,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DQT_NETWORK_LIB "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtNetwork"</Command>
     </CustomBuild>
     <ClInclude Include="Bll\DataIdentify.h" />
+    <ClInclude Include="Bll\HK18D14DataIdentify.h" />
     <ClInclude Include="Bll\HK18DataIdentify.h" />
     <ClInclude Include="Bll\ReadHistoryVideo.h" />
     <CustomBuild Include="Bll\ThreadDataIdentify.h">

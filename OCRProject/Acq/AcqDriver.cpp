@@ -40,7 +40,12 @@ void AcqDriver::createFalseData()
 	//fileName.prepend(QString("3222"));
 	//fileName.prepend(QString("Number_orignal_"));
 	//fileName.prepend(QString("./imageSamples/"));
+	
+	//fileName = (QString("F://1197.bmp") );
+
 	fileName.prepend(QString("E://BaiduYunDownload//20140706//"));
+	
+	
 	//fileName.prepend(QString("E://RDBS_Yp//OCRProject0627//OCRProject//OCRProject//acqImages//"));
 	//fileName.prepend(QString("D://20140701-2//")) ;
 	//fileName.prepend(QString("E://RDBS_yp//Wrong0706//"));

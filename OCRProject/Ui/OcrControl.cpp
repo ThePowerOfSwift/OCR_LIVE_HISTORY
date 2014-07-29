@@ -621,6 +621,11 @@ void OcrControl::on_startAcqBtn_clicked()
 	{
 		videoType = 2;
 	}
+	else if (text == "香港18台D14")
+	{
+		videoType = 3;
+	}
+
 	else if (text == "直播")
 	{
 		videoType = 0;
@@ -978,7 +983,7 @@ void OcrControl::on_loadFileBtn_clicked()
 */
 void OcrControl::on_appendFileBtn_clicked()
 {
-	QString fileName = "F:/hk18_4.bmp";
+	QString fileName = "F:/hk18d14_1.bmp";
 	appendFile(fileName);
 }
 /**

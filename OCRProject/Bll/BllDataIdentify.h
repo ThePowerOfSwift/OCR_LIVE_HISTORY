@@ -12,6 +12,8 @@
 #include "Bll/HK18DataIdentify.h"
 #include "Bll/YZTDataIdentify.h"
 
+#include "Bll/HK18D14DataIdentify.h"
+
 //#define  CALLBACK_MODE
 #define WRITE_IMAGES_BEFORE_DataIdentify
 
@@ -91,6 +93,9 @@ private:
 	// 亚洲台 历史数据 640*480 
 	YZTDataIdentify  mYZTDataIdentify;
 	DataIdentify    dataIdentifyClass;
+
+	HK18D14DataIdentify mHK18D14DataIdentify;
+
 	bool stopDataIdentifyTag;//标识符
 
 

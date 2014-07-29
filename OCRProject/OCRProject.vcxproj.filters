@@ -224,6 +224,9 @@
     <ClCompile Include="Bll\HK18DataIdentify.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Bll\HK18D14DataIdentify.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Net\NetServerThread.h">
@@ -322,6 +325,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Bll\HK18DataIdentify.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bll\HK18D14DataIdentify.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

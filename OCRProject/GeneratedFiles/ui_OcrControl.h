@@ -1207,6 +1207,7 @@ public:
         requestRaceIdBtn->setText(QApplication::translate("OcrControl", "\350\257\267\346\261\202RaceId", 0));
         videoTypeComboBox->clear();
         videoTypeComboBox->insertItems(0, QStringList()
+         << QApplication::translate("OcrControl", "\351\246\231\346\270\25718\345\217\260D14", 0)
          << QApplication::translate("OcrControl", "\351\246\231\346\270\25718\345\217\260", 0)
          << QApplication::translate("OcrControl", "\344\272\232\346\264\262\345\217\260", 0)
          << QApplication::translate("OcrControl", "\347\233\264\346\222\255", 0)

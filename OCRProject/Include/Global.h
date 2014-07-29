@@ -61,7 +61,8 @@ enum videoKinds
 {
 	LIVE = 0 ,
 	YAZHOUTAI = 1 ,
-	HK18TAI = 2 
+	HK18TAI = 2 ,
+	HK18D14 = 3 
 
 };
 

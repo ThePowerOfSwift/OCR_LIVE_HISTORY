@@ -778,7 +778,79 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 
 
 	}
+	else if (videoType == HK18D14)
+	{
 
+		//	mHK18DataIdentify = new HK18DataIdentify;
+
+
+		bool emptyData = (mHK18D14DataIdentify).read(imageTemp, imageBuf, (IMAGE_BUFF_LENGTH - BMP_HEADER),
+			IMAGE_HEIGHT, IMAGE_WIDTH);
+
+		if (emptyData == true)
+		{
+			qDebug() << "empty image data" << endl;
+
+		}
+
+		int imageWidth;
+		int imageHeight;
+
+		QByteArray byteArray;
+
+		bool isHistoryVideo;
+
+		//	imshow("q",srcMat);
+		//	waitKey();
+		int nChannel = srcMat.channels();
+		//	buf = new uchar[srcMat.cols*srcMat.rows*nChannel];
+		QImage img;
+		if (nChannel == 3)
+		{
+
+			cv::cvtColor(srcMat, srcMat, CV_BGR2RGB);
+			img = QImage((const unsigned char*)srcMat.data, srcMat.cols, srcMat.rows, QImage::Format_RGB888);
+
+		}
+
+		imageWidth = srcMat.cols;
+		imageHeight = srcMat.rows;
+		byteArray.append((char *)img.bits(), srcMat.cols * srcMat.rows*nChannel);
+
+		isHistoryVideo = true;
+
+
+		int rtValue = (mHK18D14DataIdentify).identify();
+
+		(mHK18D14DataIdentify).dataOutput.videoProgressPercent = progressPercent;
+
+
+		if ((mHK18D14DataIdentify).haveDataFlag == false) //广告
+		{
+			//显示图片，但是不输出结果
+			emit readyReadBmp((mHK18D14DataIdentify).dataOutput, byteArray, imageWidth, imageHeight);
+
+		}
+		else if ((mHK18D14DataIdentify).haveDataFlag == true)
+		{
+			//获取算法数据
+			DataOutput outputStruct = (mHK18D14DataIdentify).dataOutput;
+			//数据处理，屏蔽无效数据为-1
+
+			isDataOutputNew(outputStruct);
+
+			//数据有改变才会发送信号
+			if (outputStruct.changeStatus >= 0)
+			{
+
+				emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
+			}
+
+			qDebug() << "【BllDataIdentify】一帧图像识别时间：" << endl;
+		}
+
+
+	}
 	
 	
 	 
