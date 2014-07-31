@@ -16,33 +16,8 @@ HK18DataIdentify::HK18DataIdentify()
 	memset(sampleCount, 0, sizeof(sampleCount));
 
 	algorithmState = EXEC_SUCCESS;
-	qinQplSubRect = new CvRect[19];
-	{
-		qinQplSubRect[0] = LB_REGION1_RECT;
-		qinQplSubRect[1] = LB_REGION2_RECT;
-		qinQplSubRect[2] = LB_REGION3_RECT;
-		qinQplSubRect[3] = LB_REGION4_RECT;
-		qinQplSubRect[4] = LB_REGION5_RECT;
-		qinQplSubRect[5] = LB_REGION6_RECT;
-
-		qinQplSubRect[6] = RU_REGION1_RECT;
-		qinQplSubRect[7] = RU_REGION2_RECT;
-		qinQplSubRect[8] = RU_REGION3_RECT;
-		qinQplSubRect[9] = RU_REGION4_RECT;
-		qinQplSubRect[10] = RU_REGION5_RECT;
-		qinQplSubRect[11] = RU_REGION6_RECT;
-
-
-		qinQplSubRect[12] = R_REGION1_RECT;
-		qinQplSubRect[13] = R_REGION2_RECT;
-		qinQplSubRect[14] = R_REGION3_RECT;
-		qinQplSubRect[15] = R_REGION4_RECT;
-		qinQplSubRect[16] = R_REGION5_RECT;
-		qinQplSubRect[17] = R_REGION6_RECT;
-		qinQplSubRect[18] = R_REGION7_RECT;
-
-
-	}
+	
+	
 
 	//initLengthHeightComp();
 
@@ -343,7 +318,7 @@ void HK18DataIdentify::originPosition()
 	}
  
 
-//	qDebug("the originPosition Func : x =%d, y=%d",originX,originY);
+	qDebug("the originPosition Func : x =%d, y=%d",originX,originY);
 	if (colSum != NULL)
 	{
 		delete[] colSum;
@@ -364,9 +339,14 @@ void HK18DataIdentify::originPosition()
 int HK18DataIdentify::identify()
 {
 
+	originPosition();
+
 	haveData();
 	if (haveDataFlag == false || algorithmState == EXIT_THIS_OCR)						// the frame has not any data, return 1
 		return EXIT_THIS_OCR;
+	
+
+
 	//设置马名位置
 
 	setHorseNameRectPos();
@@ -649,6 +629,35 @@ int HK18DataIdentify::setQINQPLRectPos()
 		return EXIT_THIS_OCR;
 	}
 	
+	//获取一列QIN QPL 位置
+	qinQplSubRect = new CvRect[19];
+	{
+		qinQplSubRect[0] = LB_REGION1_RECT;
+		qinQplSubRect[1] = LB_REGION2_RECT;
+		qinQplSubRect[2] = LB_REGION3_RECT;
+		qinQplSubRect[3] = LB_REGION4_RECT;
+		qinQplSubRect[4] = LB_REGION5_RECT;
+		qinQplSubRect[5] = LB_REGION6_RECT;
+
+		qinQplSubRect[6] = RU_REGION1_RECT;
+		qinQplSubRect[7] = RU_REGION2_RECT;
+		qinQplSubRect[8] = RU_REGION3_RECT;
+		qinQplSubRect[9] = RU_REGION4_RECT;
+		qinQplSubRect[10] = RU_REGION5_RECT;
+		qinQplSubRect[11] = RU_REGION6_RECT;
+
+
+		qinQplSubRect[12] = R_REGION1_RECT;
+		qinQplSubRect[13] = R_REGION2_RECT;
+		qinQplSubRect[14] = R_REGION3_RECT;
+		qinQplSubRect[15] = R_REGION4_RECT;
+		qinQplSubRect[16] = R_REGION5_RECT;
+		qinQplSubRect[17] = R_REGION6_RECT;
+		qinQplSubRect[18] = R_REGION7_RECT;
+
+
+	}
+
 
 	Mat image_temp;
 	image.copyTo(image_temp);

@@ -343,7 +343,7 @@ void HK18D14DataIdentify::originPosition()
 	}
  
 
-//	qDebug("the originPosition Func : x =%d, y=%d",originX,originY);
+	qDebug("the originPosition Func : x =%d, y=%d",originX,originY);
 	if (colSum != NULL)
 	{
 		delete[] colSum;
@@ -367,8 +367,10 @@ int HK18D14DataIdentify::identify()
 	haveData();
 	if (haveDataFlag == false || algorithmState == EXIT_THIS_OCR)						// the frame has not any data, return 1
 		return EXIT_THIS_OCR;
-	//设置马名位置
 
+	originPosition();
+
+	//设置马名位置
 	setHorseNameRectPos();
 
 	if (algorithmState == EXIT_THIS_OCR )
