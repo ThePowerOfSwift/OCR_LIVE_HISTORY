@@ -58,6 +58,8 @@ public slots:
 signals:
 	void readyRead(DataOutput output, QByteArray byteArray,int imageWidth ,int imageHeight);
 	void readyReadBmp(DataOutput output, QByteArray byteArray,int imageWidth, int imageHeight);
+
+	void readNextFile();
 private:
 	//DataIdentify DataIdentify;//识别算法
 	/**

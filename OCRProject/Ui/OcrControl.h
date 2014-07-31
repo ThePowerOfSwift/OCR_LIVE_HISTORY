@@ -95,6 +95,13 @@ public slots:
 	* @brief 校正场次号 倒计时 按钮按下 
 	*/
 	void on_caliSessionCountDownBtn_clicked();
+
+
+	/* 
+	* @brief 开始处理历史视频
+	*/
+	void startProcessHistoryVideo();
+
 signals:
 	void connect(QString,qint32);
 	void disconnect();
@@ -131,6 +138,10 @@ private:
 	// 马名样本采集训练
 
 	HorseNameTrain  * mHorseNameTrain ;
+
+	//文件列表数量
+
+	int historyVideoFileNum;
 
 
 };

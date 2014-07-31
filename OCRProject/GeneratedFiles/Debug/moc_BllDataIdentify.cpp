@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_BllDataIdentify_t {
-    QByteArrayData data[16];
-    char stringdata[176];
+    QByteArrayData data[17];
+    char stringdata[189];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -38,18 +38,19 @@ QT_MOC_LITERAL(5, 45, 9),
 QT_MOC_LITERAL(6, 55, 10),
 QT_MOC_LITERAL(7, 66, 11),
 QT_MOC_LITERAL(8, 78, 12),
-QT_MOC_LITERAL(9, 91, 4),
-QT_MOC_LITERAL(10, 96, 5),
-QT_MOC_LITERAL(11, 102, 8),
-QT_MOC_LITERAL(12, 111, 9),
-QT_MOC_LITERAL(13, 121, 4),
-QT_MOC_LITERAL(14, 126, 21),
-QT_MOC_LITERAL(15, 148, 27)
+QT_MOC_LITERAL(9, 91, 12),
+QT_MOC_LITERAL(10, 104, 4),
+QT_MOC_LITERAL(11, 109, 5),
+QT_MOC_LITERAL(12, 115, 8),
+QT_MOC_LITERAL(13, 124, 9),
+QT_MOC_LITERAL(14, 134, 4),
+QT_MOC_LITERAL(15, 139, 21),
+QT_MOC_LITERAL(16, 161, 27)
     },
     "BllDataIdentify\0readyRead\0\0DataOutput\0"
     "output\0byteArray\0imageWidth\0imageHeight\0"
-    "readyReadBmp\0init\0start\0fileName\0"
-    "videoType\0stop\0sessionNumTextChanged\0"
+    "readyReadBmp\0readNextFile\0init\0start\0"
+    "fileName\0videoType\0stop\0sessionNumTextChanged\0"
     "sessionCountDownTextChanged"
 };
 #undef QT_MOC_LITERAL
@@ -60,31 +61,33 @@ static const uint qt_meta_data_BllDataIdentify[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+       8,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       2,       // signalCount
+       3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    4,   49,    2, 0x06 /* Public */,
-       8,    4,   58,    2, 0x06 /* Public */,
+       1,    4,   54,    2, 0x06 /* Public */,
+       8,    4,   63,    2, 0x06 /* Public */,
+       9,    0,   72,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       9,    0,   67,    2, 0x0a /* Public */,
-      10,    2,   68,    2, 0x0a /* Public */,
-      13,    0,   73,    2, 0x0a /* Public */,
-      14,    0,   74,    2, 0x0a /* Public */,
-      15,    0,   75,    2, 0x0a /* Public */,
+      10,    0,   73,    2, 0x0a /* Public */,
+      11,    2,   74,    2, 0x0a /* Public */,
+      14,    0,   79,    2, 0x0a /* Public */,
+      15,    0,   80,    2, 0x0a /* Public */,
+      16,    0,   81,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3, QMetaType::QByteArray, QMetaType::Int, QMetaType::Int,    4,    5,    6,    7,
     QMetaType::Void, 0x80000000 | 3, QMetaType::QByteArray, QMetaType::Int, QMetaType::Int,    4,    5,    6,    7,
+    QMetaType::Void,
 
  // slots: parameters
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString, QMetaType::Int,   11,   12,
+    QMetaType::Void, QMetaType::QString, QMetaType::Int,   12,   13,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -99,11 +102,12 @@ void BllDataIdentify::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         switch (_id) {
         case 0: _t->readyRead((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< int(*)>(_a[4]))); break;
         case 1: _t->readyReadBmp((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< int(*)>(_a[4]))); break;
-        case 2: _t->init(); break;
-        case 3: _t->start((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 4: _t->stop(); break;
-        case 5: _t->sessionNumTextChanged(); break;
-        case 6: _t->sessionCountDownTextChanged(); break;
+        case 2: _t->readNextFile(); break;
+        case 3: _t->init(); break;
+        case 4: _t->start((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 5: _t->stop(); break;
+        case 6: _t->sessionNumTextChanged(); break;
+        case 7: _t->sessionCountDownTextChanged(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -119,6 +123,12 @@ void BllDataIdentify::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
             typedef void (BllDataIdentify::*_t)(DataOutput , QByteArray , int , int );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&BllDataIdentify::readyReadBmp)) {
                 *result = 1;
+            }
+        }
+        {
+            typedef void (BllDataIdentify::*_t)();
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&BllDataIdentify::readNextFile)) {
+                *result = 2;
             }
         }
     }
@@ -149,13 +159,13 @@ int BllDataIdentify::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 8)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 8;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 8)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 7;
+        _id -= 8;
     }
     return _id;
 }
@@ -172,5 +182,11 @@ void BllDataIdentify::readyReadBmp(DataOutput _t1, QByteArray _t2, int _t3, int 
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)), const_cast<void*>(reinterpret_cast<const void*>(&_t4)) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
+}
+
+// SIGNAL 2
+void BllDataIdentify::readNextFile()
+{
+    QMetaObject::activate(this, &staticMetaObject, 2, 0);
 }
 QT_END_MOC_NAMESPACE

@@ -620,7 +620,9 @@ int BllDataIdentify::startHistoryDataIdentify(QString fileName, int videoType)
 
 	}
 	
-  
+	//处理完本文件 激发一个信号，读取文件列表下一个文件
+
+	emit readNextFile();
 	return 1;
 
 }

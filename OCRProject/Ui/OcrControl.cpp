@@ -40,7 +40,7 @@ OcrControl::OcrControl(QWidget *parent)
 	QObject::connect(bllDataIdentify, SIGNAL(readyRead(DataOutput, QByteArray,int,int)), this, SLOT(updateData(DataOutput, QByteArray,int,int)));//停止计算
 
 	//显示广告	
-	QObject::connect(bllDataIdentify, SIGNAL(readyReadBmp(DataOutput, QByteArray,int,int)), this, SLOT(updateADData(DataOutput, QByteArray,int,int)));//停止计算
+	QObject::connect(bllDataIdentify, SIGNAL(readyReadBmp(DataOutput, QByteArray, int, int)), this, SLOT(updateADData(DataOutput, QByteArray, int, int)));//停止计算
 
 	QObject::connect(this, SIGNAL(startIdentify(QString, int)), bllDataIdentify, SLOT(start(QString, int)));//开始计算
 	QObject::connect(this, SIGNAL(stopIdentify()), bllDataIdentify, SLOT(stop()));//停止计算
@@ -505,6 +505,15 @@ OcrControl::OcrControl(QWidget *parent)
 
 	ui.videoPosLineEdit->setText(0);
 
+
+	// 文件数目为 0
+	historyVideoFileNum = 0;
+
+
+	//显示广告	
+	QObject::connect(bllDataIdentify, SIGNAL(readNextFile()), this, SLOT(startProcessHistoryVideo ()));//停止计算
+
+
 }
 
 OcrControl::~OcrControl()
@@ -602,13 +611,21 @@ void OcrControl::appendStatus(QString status)
 void OcrControl::on_startAcqBtn_clicked()
 {
 
+	Global::acqStop = false;//开始模拟标示符
+	//Global::threadAcq->start();//采集启动
+	//emit startAcq();//开始采集
+	
+//	threadDataIdentify->start();//开始识别
+//	fileName = "E:\\BaiduYunDownload\\20130109184858_clip1.wmv";
+//	emit startIdentify(fileName, videoType);//开始识别
+	 
 	// 历史视频获取起始帧位置，方便测试
 
 	QString posText = ui.videoPosLineEdit->text();
-	
+
 	Global::videoStartPos = posText.toInt();
 	//	视频种类选择  
-	
+
 	int videoType;
 	int curIndex = ui.videoTypeComboBox->currentIndex();
 	QString text = ui.videoTypeComboBox->currentText();
@@ -630,18 +647,8 @@ void OcrControl::on_startAcqBtn_clicked()
 	{
 		videoType = 0;
 	}
- 
-	Global::videoType = videoType;
 
-	Global::acqStop = false;//开始模拟标示符
-	//Global::threadAcq->start();//采集启动
-	//emit startAcq();//开始采集
-	QString fileName;
-	
-	threadDataIdentify->start();//开始识别
-//	fileName = "E:\\BaiduYunDownload\\20130109184858_clip1.wmv";
-//	emit startIdentify(fileName, videoType);//开始识别
-	 
+	Global::videoType = videoType;
 
 
 	//是历史视频 的话，那么应该读取视频文件 
@@ -649,27 +656,45 @@ void OcrControl::on_startAcqBtn_clicked()
 	{
 		threadDataIdentify->start();//开始识别
 
-		//fileName = "E:\\BaiduYunDownload\\20130109184858_clip1.wmv";
-		//emit startIdentify( fileName, videoType );//开始识别
-
-
-		for (int row = 0; row < ui.fileTableWidget->rowCount(); row++)
-		{
-			fileName = takeTopFile(row);			
-			//fileName = "E:\\BaiduYunDownload\\20130109184858_clip1.wmv";
-			emit startIdentify( fileName, videoType );//开始识别
-		}
+		startProcessHistoryVideo();
 
 		
 	}
 	else //实时直播
 	{
 		threadDataIdentify->start();//开始识别
-		emit startIdentify(fileName, false );//开始识别
+		emit startIdentify(NULL, false );//开始识别
 		Global::myIAcq->read();
 	}
 	 
 
+}
+
+void OcrControl::startProcessHistoryVideo()
+{
+	QString fileName;
+
+	//fileName = "E:\\BaiduYunDownload\\20130109184858_clip1.wmv";
+	//emit startIdentify( fileName, videoType );//开始识别
+
+	historyVideoFileNum--;
+	 
+	//如果处理掉的文件
+	if (historyVideoFileNum >= 0)
+	{
+		fileName = takeTopFile(historyVideoFileNum );
+		//fileName = "E:\\BaiduYunDownload\\20130109184858_clip1.wmv";
+		emit startIdentify(fileName, Global::videoType);//开始识别
+	}
+
+	 ;
+
+	
+	/*
+	for (int row = 0; row < ui.fileTableWidget->rowCount(); row++)
+	{
+		
+	}*/
 }
 /**
 * @brief 停止采集
@@ -977,6 +1002,7 @@ void OcrControl::on_loadFileBtn_clicked()
 		ui.fileTableWidget->setItem(m, 0, new QTableWidgetItem(fileNamesList.at(i)));//插入指定项
 	}
 
+	historyVideoFileNum = fileNamesList.size();
 }
 /**
 * @brief 追加历史文件
