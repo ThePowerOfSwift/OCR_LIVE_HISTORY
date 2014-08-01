@@ -58,6 +58,10 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 	//	priDataOutput.mHorseInfo.horseName[i] = QString(" ");
 		priDataOutput.mHorseInfo.isSCR[i] = false;
 	}
+
+	isRaceSessionDetected = false;
+
+	isRightRaceTimeCountDownDetected = false;
 }
 
 BllDataIdentify::~BllDataIdentify()
@@ -100,8 +104,26 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 	{
 		//return -1;
 	}
-	
+	//利用马的名字灰度变化检测 场次号变化，从而计算场次号。 
+	// 第一次检测到的场次号必须是正确的，否则所有场次号都是错误的。
+	// 如果每次都从1开始，那么可以保证 所有场次号正确。
 
+	if (isRaceSessionDetected & (firstRaceSessionDetected + outputStruct.horseNameChangedNum - 1 
+								- Global::session == 1))
+	{
+		Global::session = firstRaceSessionDetected + outputStruct.horseNameChangedNum - 1;
+
+		//定时器清零 。新的场次号。
+		Global::timerCount = 0;  
+		Global::raceTime = 0;
+
+		isRightRaceTimeCountDownDetected = false;
+		raceSessionCount++;
+
+		raceTimeCountDownNear9 = false;
+	}
+	 
+	/* 
 	//判定场次号 以及倒计时  场次号发生变化 
 	if (sessionChanged == true & sessionChangedDly1 != true )
 	{
@@ -126,6 +148,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 		
 	}// 场次号未发生变化 
 	else
+		*/
 	{
 		// 利用15次用于快速更新   替换原有的30
 		if (dataNewCount <= 15 )
@@ -175,19 +198,27 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 
 
 			}
-
+			/*
 			//Global::session = maxContent;
 			if (maxContent - Global::session == 1)
 			{
 				Global::session = maxContent;
 				raceSessionCount++;
 				Global::timerCount = 0;
+				isRaceSessionDetected = true;
 			}
+			*/
 			//如果某个时候，场次号被检测出的次数超过一定限值，可以认为，这个时候这个值为正确的
 
-			if (maxContentCount > 8 )
+			if (maxContentCount > 8 & isRaceSessionDetected == false )
 			{
 				Global::session = maxContent;
+
+				//获取第一次检测到了场次号。
+				firstRaceSessionDetected = maxContent;
+				//当前场次正确的倒计时没有被检测到。
+				isRightRaceTimeCountDownDetected = false;
+				isRaceSessionDetected = true;
 				raceSessionCount++;
 				Global::timerCount = 0;
 			}
@@ -208,27 +239,38 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 			}
 			dataNewCount = 0;
 
+			/*
 			//第一次
 			if (Global::raceTime == 0)
 			{
 				Global::raceTime = outputStruct.raceTime;
 			} 
 			else //非第一次
+			*/
 			{
-				//取个位数
-				if (raceTimeCountDownNear9 == true)
+				if (maxContent >= 10 & isRightRaceTimeCountDownDetected == false )
 				{
-					if (Global::raceTime - maxContent % 10 <= 3 & Global::raceTime - maxContent % 10 >= 0)
-					{
-						Global::raceTime = maxContent % 10;
-					}
-
+					isRightRaceTimeCountDownDetected = true;
+					Global::raceTime = maxContent;
 				}
-				else
+
+				if (isRightRaceTimeCountDownDetected == true)
 				{
-					if (Global::raceTime - maxContent   <= 3 & Global::raceTime - maxContent  >= 0)
+					//取个位数
+					if (raceTimeCountDownNear9 == true)
 					{
-						Global::raceTime = maxContent ;
+						if (Global::raceTime - maxContent % 10 <= 3 & Global::raceTime - maxContent % 10 >= 0)
+						{
+							Global::raceTime = maxContent % 10;
+						}
+
+					}
+					else
+					{
+						if (Global::raceTime - maxContent <= 3 & Global::raceTime - maxContent >= 0)
+						{
+							Global::raceTime = maxContent;
+						}
 					}
 				}
 			}
@@ -256,7 +298,10 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 		Global::session = 1;
 		Global::timerCount = 0;
 	}
-
+	if (Global::session == -1)
+	{
+		Global::session = 0 ;
+	}
 	//此时没有检测到倒计时 输出 0 
 	if (Global::raceTime == -1 )
 	{

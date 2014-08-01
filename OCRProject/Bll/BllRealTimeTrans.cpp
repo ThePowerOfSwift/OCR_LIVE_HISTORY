@@ -356,8 +356,9 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 		}
 
 	}
-	if (outputStruct.changeStatus != 0 )
-		qDebug("outputStruct.changeStatus: %d",outputStruct.changeStatus ) ;
+	
+//	if (outputStruct.changeStatus != 0 )
+//		qDebug("outputStruct.changeStatus: %d",outputStruct.changeStatus ) ;
 
 }
 /**

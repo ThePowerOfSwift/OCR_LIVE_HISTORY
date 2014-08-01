@@ -114,8 +114,10 @@ struct  raceNumTimeStruct
 struct HorseInfo
 {
 	 
-	int  horseID[HORSENUMBER];						// the horse ID
-	bool isSCR[HORSENUMBER];							//退赛 标志位
+	int  horseID[HORSENUMBER];				// the horse ID
+	bool isSCR[HORSENUMBER];				//退赛 标志位
+
+	int  graySum[HORSENUMBER];				//灰度值和
 	
  //	QString horseName[HORSENUMBER];
 };
@@ -173,7 +175,8 @@ struct DataOutput
 	int svmResult[HORSENUMBER];						// the index of the house name in the current sample
 	int nameType[HORSENUMBER];						// 2: the horse name contains 2 char, 3: the name contains 3 char, 4: 4char
 
-
+	//通过检测马名字灰度值变化来决定是否发生了场次变化
+	int horseNameChangedNum;
 
 	float WIN[HORSENUMBER];
 	float PLA[HORSENUMBER];

@@ -79,7 +79,7 @@ private:
 	// true:QPL, false:QIN
 	int algorithmState;
 
-
+	
 
 
 	//设置马名位置，获得所有马名的rect 
@@ -98,6 +98,12 @@ private:
 
 	//获取马名
 	int getHorseNameIdentify();
+	//检测是否马名发生变化，用于判断场次号变化
+	int isHorseNameChanged();
+
+	//计算灰度和
+
+	int calculateGraySum(Mat srcMa);
 	// 获取 WIN PLA 识别
 
 	int getWINPLAIdentify();

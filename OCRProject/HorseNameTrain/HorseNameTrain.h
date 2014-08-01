@@ -2,8 +2,7 @@
 #include <QDir>
 #include "Include/Global.h"
 #include <QStringList>
-
-#define  QDEBUG_OUTPUT 
+ 
 // 处理马名 训练 识别 
 class HorseNameTrain
 {

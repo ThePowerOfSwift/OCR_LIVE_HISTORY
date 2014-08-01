@@ -120,6 +120,8 @@ DataIdentify::DataIdentify()
 	sessionNumSvm.load(".\\SVM\\sessionNum.xml");
 
 
+	// 
+	dataOutput.horseNameChangedNum = 0;
 
 }
 
@@ -992,14 +994,70 @@ int DataIdentify::setCountDownRectPos()
 
 
 }
+
 //识别马名 
 int DataIdentify::getHorseNameIdentify()
 {
+	//通过计算灰度值和，来确定是否发生了马名字的变化，马名字发生了变化，说明
+	// 场次号发生了变化。
+
+	isHorseNameChanged();
 	//暂时不识别
 	int temp = 0;
 	return EXIT_SUCCESS;
 }
 
+//通过计算灰度值和，来确定是否发生了马名字的变化，马名字发生了变化，说明
+int DataIdentify::isHorseNameChanged()
+{
+	//存储马名的灰度和
+	int *graySum ;
+	graySum = new int  [dataOutput.horseNum + 1];
+	int  ChangedNum = 0;
+	int graySumThreshold = 2000 ;
+ 	for (int h = 0; h < dataOutput.horseNum;h ++)
+	{
+		Mat horseNameRegion(image, horseNamePosStruct.rect[h]);
+		cvtColor(horseNameRegion, horseNameRegion, CV_RGB2GRAY);
+		
+		graySum[h] = calculateGraySum(horseNameRegion);
+
+		
+		if ( abs(graySum[h] - dataOutput.mHorseInfo.graySum[h]) > graySumThreshold )
+		{
+			ChangedNum++;
+		}
+	
+		dataOutput.mHorseInfo.graySum[h] = graySum[h];
+	}
+	 
+	if (ChangedNum > 5)
+	{
+		qDebug("  horseNameChangedNum = %d \n",
+			dataOutput.horseNameChangedNum);
+		dataOutput.horseNameChangedNum++;
+	}
+	delete[] graySum;
+
+
+	return EXEC_SUCCESS;
+
+}
+//计算灰度值和，返回值即为灰度值和
+int DataIdentify::calculateGraySum(Mat srcMat)
+{
+	int graySum;
+
+	for (int c = 0; c < srcMat.cols;c++)
+	{
+		for (int r = 0; r < srcMat.rows;r++)
+		{
+			graySum += srcMat.at<uchar>(r, c);
+		}
+	}
+	return graySum;
+
+}
 // 识别 WIN PLA
 
 int DataIdentify::getWINPLAIdentify()

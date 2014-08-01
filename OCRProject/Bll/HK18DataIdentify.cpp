@@ -204,10 +204,11 @@ void HK18DataIdentify::haveData()
 	// QPl QIN 区域检测 
 	CvPoint point[6];
 	Vec3b region2_bgr[6];
-	int x1 = QINQPL_POS_RECT.x - 30;
-	int	x2 = QINQPL_POS_RECT.x + QINQPL_POS_RECT.width + 30;
+	int x1 = 25;
+	int	x2 = 604;
 
-	int y = QINQPL_POS_RECT.y, delta_y = 40; // 335 480 
+	int y = 320;
+	int delta_y = 40; // 335 480 
 
 	uchar region2_bluePixel[6];
 	uchar region2_greenPixel[6];
@@ -451,7 +452,8 @@ int HK18DataIdentify::setHorseNameRectPos()
 		}
 		else
 			horseNamePosStruct.rect[r].height = y[r + 1] - y[r];
-
+		/* 
+		//写样本图片
 		QString fileName;
 		fileName.prepend(QString(".bmp"));
 		fileName.prepend(QString::number(r));
@@ -462,6 +464,8 @@ int HK18DataIdentify::setHorseNameRectPos()
 		//imshow("1", horseNameRect);
 		imwrite(fileName.toStdString(), horseNameRect);
 		//waitKey();
+
+		*/
 	}
 
 
@@ -1590,7 +1594,7 @@ int HK18DataIdentify::getCountDownIdentify()
 		{
 
 			dataOutput.raceTime = -1;
-			return EXEC_WARNING ;							 // 未检测到分钟时间
+			return EXEC_WARNING ;		 	 // 未检测到分钟时间
 		}
 		else
 		{

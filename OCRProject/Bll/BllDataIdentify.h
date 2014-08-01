@@ -127,10 +127,23 @@ private:
 
 	//比赛已经开始了 true 为开始了，即比赛已经开始
 	bool raceHasBegan;
+	//所有场次号计数
 	int raceSessionCount;
 	//比赛倒计时接近9 了，当前为10 
 	bool raceTimeCountDownNear9;
-	//
+	//是否第一次检测到了 场次号 标志
+
+	bool isRaceSessionDetected;
+
+	//第一次检测到的场次号
+
+	int firstRaceSessionDetected;
+
+
+	//每一场次号，都需要检测一下 ，第一次检测到的倒计时是否大于10分钟，
+	//如果小于10min，则是错误的。因为每次都是大于10 min的。
+
+	bool isRightRaceTimeCountDownDetected;
 	
 #ifdef WRITE_IMAGES_BEFORE_DataIdentify
 	int  bmpCount;
