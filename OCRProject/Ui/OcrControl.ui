@@ -40,6 +40,12 @@
            <layout class="QHBoxLayout" name="titleHBoxLayout" stretch="1,2,1,1">
             <item>
              <widget class="QLabel" name="label_4">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>20</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <pointsize>14</pointsize>
@@ -54,6 +60,12 @@
             </item>
             <item>
              <widget class="QLabel" name="label_5">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>20</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <pointsize>14</pointsize>
@@ -68,6 +80,12 @@
             </item>
             <item>
              <widget class="QLabel" name="label_3">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>20</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <pointsize>14</pointsize>
@@ -82,6 +100,12 @@
             </item>
             <item>
              <widget class="QLabel" name="label_6">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>20</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <pointsize>14</pointsize>
@@ -375,11 +399,12 @@ p, li { white-space: pre-wrap; }
           <property name="styleSheet">
            <string notr="true">QFrame{
     border: 1px solid #9D9D9D;
-	background-color: #FFFFFF;
+	background-color:#9182FF;
 	border-radius:0px;
     padding:0 0px;
-	margin-right: 10px;
-}</string>
+	margin-right: 0px;
+}
+</string>
           </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
@@ -391,7 +416,13 @@ p, li { white-space: pre-wrap; }
            <property name="spacing">
             <number>0</number>
            </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
            <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
             <number>0</number>
            </property>
            <property name="bottomMargin">

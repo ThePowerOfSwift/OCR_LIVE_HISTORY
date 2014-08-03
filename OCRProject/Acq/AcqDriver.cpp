@@ -20,7 +20,7 @@ AcqDriver::AcqDriver(QObject *parent)
 	timerCount = 0;
 #ifdef OFFLINE_DEBUG
 		
-	count = 16000 ;
+	count = 2400 ;
 #endif
 }
 
@@ -30,14 +30,14 @@ AcqDriver::AcqDriver(QObject *parent)
 void AcqDriver::createFalseData()
 {
 	if (count < 16000 )
-		count += 1 ;
+		count += 3 ;
 	else
 		count = 0 ;
 
 
 	fileName = QString(".bmp");
-	//fileName.prepend(QString::number(count, 10));
-	fileName.prepend(QString("16000"));
+	fileName.prepend(QString::number(count, 10));
+	//fileName.prepend(QString("16000"));
 	//fileName.prepend(QString("Number_orignal_"));
 	//fileName.prepend(QString("./imageSamples/"));
 	
@@ -66,7 +66,7 @@ void AcqDriver::createFalseData()
 	{
 		logDataStr =  QString( " AcqDriver::createFalseData() :pbData is NULL err!");
 		//Global::AppendLogString(logDataStr, true);
-		 count += 50 ;
+		 count += 10 ;
 		return ;
 
 	}

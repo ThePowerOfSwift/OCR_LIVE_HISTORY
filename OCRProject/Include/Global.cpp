@@ -58,12 +58,19 @@ qint32 Global::session;//比赛场次号
 
 qint32 Global::raceTime;//比赛时间
 
+// 请求到的全局场次号id
+qint32 Global::requestRaceId = 0;
+
+//本场场次号的全局id 已经请求 标志位
+
+bool Global::isSessionRaceIdRequested = false;
 //比赛已经开始标志
 qint32 Global::raceHasStarted = 0 ;
 //比赛当前场次计时 
 qint32 Global::countRaceTime = 0 ;
 
 qint32 Global::timerCount = 0 ;
+
 
  /***********比赛数据***********/
 

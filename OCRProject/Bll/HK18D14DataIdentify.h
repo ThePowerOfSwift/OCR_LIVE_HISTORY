@@ -14,8 +14,8 @@ using namespace cv;
 
 //#define  WRITE_SESSION_CLASSIFY_SAMPELS 
 //#define  WRITE_MINUTE_CLASSIFY_SAMPELS
-//#define  QDEBUG_OUTPUT
-//#define		WRITE_ROI_SMAPLES_CLASS_INFO1
+#define  QDEBUG_OUTPUT
+#define		WRITE_ROI_SMAPLES_CLASS_INFO1
 //#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
 
 
@@ -93,6 +93,14 @@ private:
 
 	 //获取马名
 	int getHorseNameIdentify();
+
+
+	//检测是否马名发生变化，用于判断场次号变化
+	int isHorseNameChanged();
+
+	//计算灰度和
+
+	int calculateGraySum(Mat srcMa);
 	// 获取 WIN PLA 识别
 
 	int getWINPLAIdentify();
@@ -163,7 +171,7 @@ private:
 // PLA 
 #define  PLA_POS_RECT cvRect(200,55,31,364-58)
 // 马名
-#define HORSENAME_REGION_RECT cvRect(51,58,124-51,364-58)
+#define HORSENAME_REGION_RECT cvRect(51,56,74,364-58)
 //QIN QPL标签位置
 #define  QINQPL_LABEL_POS_RECT cvRect(87,314,126-87,332-314)
 
@@ -173,28 +181,28 @@ private:
 #define		QINQPL_POS_RECT cvRect(66, 397, 664-66, 530-397)
  
 #define  LB_REGION1_RECT cvRect(70, 410,  36 , 115)
-#define  LB_REGION2_RECT cvRect(109, 430, 35, 95)
-#define  LB_REGION3_RECT cvRect(146, 449, 35, 76)
-#define  LB_REGION4_RECT cvRect(181, 467, 35, 58)
+#define  LB_REGION2_RECT cvRect(109, 430, 32, 95)
+#define  LB_REGION3_RECT cvRect(146, 449, 32, 76)
+#define  LB_REGION4_RECT cvRect(181, 467, 32, 58)
 
-#define  LB_REGION5_RECT cvRect(216, 487, 34  , 38)
-#define  LB_REGION6_RECT cvRect(253, 506, 38 , 19 )
+#define  LB_REGION5_RECT cvRect(216, 487, 32  , 38)
+#define  LB_REGION6_RECT cvRect(253, 506, 32 , 19 )
 
 #define RU_REGION1_RECT  cvRect(146, 397, 32, 17)
 #define RU_REGION2_RECT  cvRect(182, 397, 31, 34)
 #define RU_REGION3_RECT  cvRect(220, 397, 29, 54)
 #define RU_REGION4_RECT  cvRect(256, 397, 29, 73)
-#define RU_REGION5_RECT  cvRect(293, 397, 28, 92)
-#define RU_REGION6_RECT  cvRect(328, 397, 30, 128)
+#define RU_REGION5_RECT  cvRect(289, 397, 32, 92)
+#define RU_REGION6_RECT  cvRect(324, 397, 32, 112)
 
 
-#define R_REGION1_RECT cvRect(338, 397, 29, 128)
-#define R_REGION2_RECT cvRect(370, 397, 29, 128)
-#define R_REGION3_RECT cvRect(401, 397, 29, 128)
-#define R_REGION4_RECT cvRect(438, 397, 29, 128)
-#define R_REGION5_RECT cvRect(475, 397, 29 , 128)
-#define R_REGION6_RECT cvRect(509, 397, 28 , 128)
-#define R_REGION7_RECT cvRect(549, 397, 28 , 128)
+#define R_REGION1_RECT cvRect(361, 397, 31, 128)
+#define R_REGION2_RECT cvRect(398, 397, 32, 128)
+#define R_REGION3_RECT cvRect(438, 397, 32, 128)
+#define R_REGION4_RECT cvRect(472, 397, 31, 128)
+#define R_REGION5_RECT cvRect(511, 397, 30 , 128)
+#define R_REGION6_RECT cvRect(548, 397, 30 , 128)
+#define R_REGION7_RECT cvRect(586, 397, 28 , 128)
 
 #define  NUMBER_HEIGHT 19
 #define  NUMBER_WIDTH 31 

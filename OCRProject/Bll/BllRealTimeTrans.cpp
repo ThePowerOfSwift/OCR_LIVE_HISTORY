@@ -173,11 +173,11 @@ void BllRealTimeTrans::handleRequestHorse(QByteArray result, int descriptor)
 /**
 * @brief 识别端根据RaceNO(场次号)请求RaceID指令
 */
-void BllRealTimeTrans::requestRaceID(qint32 raceNO)
+void BllRealTimeTrans::requestRaceID( )
 {
 	TagProtocolMsg msg;
 	msg.MsgID = 6;
-	msg.nDataSize = 1;// RaceNO
+	msg.nDataSize = Global::session;
 	strcpy(msg.Param, "");
 	strcpy(msg.Check, "RDBS");
 
@@ -189,7 +189,7 @@ void BllRealTimeTrans::requestRaceID(qint32 raceNO)
 	memcpy(&msg1, byteArray.data(), sizeof(TagProtocolMsg));
 
 	Global::client_cmd_status = ClientCmdStatus::request_race_id_status;
-	Global::mcsNetClient->sendData(byteArray, false);//发送数据，且不需要关闭socket
+	Global::mcsNetClient->sendData(byteArray, false);		//发送数据，且不需要关闭socket
 
 
 	bool success = Global::mcsNetClient->waitForReadyRead(3000);//阻塞等待
@@ -202,6 +202,9 @@ void BllRealTimeTrans::requestRaceID(qint32 raceNO)
 	}
 	else
 		emit statuChanged("识别端：错误，请求RaceID指令失败。");
+
+	//将 场次号请求raceid 标志位 清空
+	Global::isSessionRaceIdRequested = true ;
 }
 
 /**
@@ -222,7 +225,7 @@ void BllRealTimeTrans::handleRequestRaceID(QByteArray result, int descriptor)
 	//raceId
 	qint32 raceId;
 	memcpy(&raceId, result.data(), sizeof(qint32));
-	Global::raceId = raceId;
+	Global::requestRaceId = raceId;
 	emit statuChanged(QString("服务端：回复，raceId，%1").arg(raceId));
 }
 /**
@@ -288,74 +291,77 @@ void BllRealTimeTrans::handleSubmitRaceTime(QByteArray result, int descriptor)
 void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array, int imageWidth, int imageHeight)
 {
 	 
-	 
-	//提交实时WIN数据
-	if (outputStruct.changeStatus == WIN_CHANGED)
-	{
-		submitWINOrPLA(outputStruct, "WIN");
-	}
-	else if (outputStruct.changeStatus == PLA_CHANGED)
-	{
-		submitWINOrPLA(outputStruct, "PLA");
-	}
-	else if (outputStruct.changeStatus == WIN_PLA_CHANGED)
-	{
-		submitWINOrPLA(outputStruct, "WIN");
-		submitWINOrPLA(outputStruct, "PLA");
-	}
-	else if (outputStruct.changeStatus == QIN_QPL_CHANGED)
-	{
-		if (outputStruct.isQPL)
-		{
-			submitQINOrQPL(outputStruct, "QPL");
-		}
-		else
-		{
-			submitQINOrQPL(outputStruct, "QIN");
+	 if (Global::isSessionRaceIdRequested == true )
+	 {
+		 //提交实时WIN数据
+		 if (outputStruct.changeStatus == WIN_CHANGED)
+		 {
+			 submitWINOrPLA(outputStruct, "WIN");
+		 }
+		 else if (outputStruct.changeStatus == PLA_CHANGED)
+		 {
+			 submitWINOrPLA(outputStruct, "PLA");
+		 }
+		 else if (outputStruct.changeStatus == WIN_PLA_CHANGED)
+		 {
+			 submitWINOrPLA(outputStruct, "WIN");
+			 submitWINOrPLA(outputStruct, "PLA");
+		 }
+		 else if (outputStruct.changeStatus == QIN_QPL_CHANGED)
+		 {
+			 if (outputStruct.isQPL)
+			 {
+				 submitQINOrQPL(outputStruct, "QPL");
+			 }
+			 else
+			 {
+				 submitQINOrQPL(outputStruct, "QIN");
 
-		}
-	}
-	else if (outputStruct.changeStatus == WIN_QIN_QPL_CHANGED)
-	{
-		submitWINOrPLA(outputStruct, "WIN");
-		if (outputStruct.isQPL)
-		{
-			submitQINOrQPL(outputStruct, "QPL");
-		}
-		else
-		{
-			submitQINOrQPL(outputStruct, "QIN");
+			 }
+		 }
+		 else if (outputStruct.changeStatus == WIN_QIN_QPL_CHANGED)
+		 {
+			 submitWINOrPLA(outputStruct, "WIN");
+			 if (outputStruct.isQPL)
+			 {
+				 submitQINOrQPL(outputStruct, "QPL");
+			 }
+			 else
+			 {
+				 submitQINOrQPL(outputStruct, "QIN");
 
-		}
-	}
-	else if (outputStruct.changeStatus == PLA_QIN_QPL_CHANGED)
-	{
-		submitWINOrPLA(outputStruct, "PLA");
-		if (outputStruct.isQPL)
-		{
-			submitQINOrQPL(outputStruct, "QPL");
-		}
-		else
-		{
-			submitQINOrQPL(outputStruct, "QIN");
+			 }
+		 }
+		 else if (outputStruct.changeStatus == PLA_QIN_QPL_CHANGED)
+		 {
+			 submitWINOrPLA(outputStruct, "PLA");
+			 if (outputStruct.isQPL)
+			 {
+				 submitQINOrQPL(outputStruct, "QPL");
+			 }
+			 else
+			 {
+				 submitQINOrQPL(outputStruct, "QIN");
 
-		}
-	}
-	else if (outputStruct.changeStatus == WIN_PLA_QIN_QPL_CHANGED)
-	{
-		submitWINOrPLA(outputStruct, "WIN");
-		submitWINOrPLA(outputStruct, "PLA");
-		if (outputStruct.isQPL)
-		{
-			submitQINOrQPL(outputStruct, "QPL");
-		}
-		else
-		{
-			submitQINOrQPL(outputStruct, "QIN");
+			 }
+		 }
+		 else if (outputStruct.changeStatus == WIN_PLA_QIN_QPL_CHANGED)
+		 {
+			 submitWINOrPLA(outputStruct, "WIN");
+			 submitWINOrPLA(outputStruct, "PLA");
+			 if (outputStruct.isQPL)
+			 {
+				 submitQINOrQPL(outputStruct, "QPL");
+			 }
+			 else
+			 {
+				 submitQINOrQPL(outputStruct, "QIN");
 
-		}
+			 }
 
-	}
+		 }
+
+	 }
 	
 //	if (outputStruct.changeStatus != 0 )
 //		qDebug("outputStruct.changeStatus: %d",outputStruct.changeStatus ) ;
@@ -431,7 +437,7 @@ void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct,QString type)
 					WPData.WinValue = ouputStruct.PLA[i - 1];
 				  
 				} 
-				WPData.RaceID = 2;// Global::raceId;
+				WPData.RaceID =  Global::requestRaceId ;
 				WPData.AtTime = 1;
 
 				sendBlock.append((char*)&WPData, sizeof(TagWPDataInfo));
@@ -510,7 +516,7 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput& ouputStruct, QString type)
 					
 					//封装一个WIN
 					TagQDataInfo QDataInfo;
-					QDataInfo.RaceID = Global::raceId;//所属赛事ID
+					QDataInfo.RaceID = Global::requestRaceId;//所属赛事ID
 					QDataInfo.HorseID = i;//马的唯一编号可关联马信息表
 					QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
 					QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
@@ -545,7 +551,7 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput& ouputStruct, QString type)
 
 					//封装一个WIN
 					TagQDataInfo QDataInfo;
-					QDataInfo.RaceID = Global::raceId;//所属赛事ID
+					QDataInfo.RaceID = Global::requestRaceId;//所属赛事ID
 					QDataInfo.HorseID = i;//马的唯一编号可关联马信息表
 					QDataInfo.HorseNO = j;//本场比赛中马的序号，比如第3号，1-13
 					QDataInfo.YNO = i;//在Y轴上的第几号，跟它组合得出的数据 2-14

@@ -113,6 +113,12 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 	{
 		Global::session = firstRaceSessionDetected + outputStruct.horseNameChangedNum - 1;
 
+		//场次号发生了变化，请求新的场次号
+		emit requestRaceIdSig();
+		
+		//将 场次号请求raceid 标志位 清空
+	//	Global::isSessionRaceIdRequested = false;
+
 		//定时器清零 。新的场次号。
 		Global::timerCount = 0;  
 		Global::raceTime = 0;
@@ -213,6 +219,9 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 			if (maxContentCount > 8 & isRaceSessionDetected == false )
 			{
 				Global::session = maxContent;
+				// 场次号发生了变化，请求新的场次号
+				emit requestRaceIdSig();
+			//	Global::isSessionRaceIdRequested = false;
 
 				//获取第一次检测到了场次号。
 				firstRaceSessionDetected = maxContent;

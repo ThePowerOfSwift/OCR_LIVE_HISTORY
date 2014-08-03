@@ -47,7 +47,7 @@ public slots:
 	* @brief 识别端根据RaceNO(场次号)请求RaceID指令
 	* @param qint32 raceNo 场次号
 	*/
-	void requestRaceID(qint32 raceNO);
+	void requestRaceID(  );
 	/**
 	* @brief 识别端处理服务端-请求RaceID指令
 	*/

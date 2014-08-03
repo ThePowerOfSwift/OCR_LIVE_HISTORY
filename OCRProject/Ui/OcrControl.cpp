@@ -76,11 +76,11 @@ OcrControl::OcrControl(QWidget *parent)
 		frame->setFrameShape(QFrame::StyledPanel);
 		frame->setFrameShadow(QFrame::Plain);
 		QHBoxLayout* horizontalLayout_2 = new QHBoxLayout(frame);
-		horizontalLayout_2->setSpacing(6);
+		horizontalLayout_2->setSpacing(0);
 		horizontalLayout_2->setContentsMargins(11, 11, 11, 11);
 		horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
 		horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
-		QLabel* indexLbel_3 = new QLabel(frame);
+		QLineEdit* indexLbel_3 = new QLineEdit(frame);
 		indexLbel_3->setObjectName(QStringLiteral("indexLbel_3"));
 		QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 		sizePolicy.setHorizontalStretch(0);
@@ -94,7 +94,7 @@ OcrControl::OcrControl(QWidget *parent)
 		indexLabelList.append(indexLbel_3);
 		horizontalLayout_2->addWidget(indexLbel_3);
 
-		QTextEdit* horseNameEdit_3 = new QTextEdit(frame);
+		QLineEdit* horseNameEdit_3 = new QLineEdit(frame);
 		horseNameEdit_3->setObjectName(QStringLiteral("horseNameEdit_3"));
 		QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Maximum);
 		sizePolicy1.setHorizontalStretch(0);
@@ -106,7 +106,7 @@ OcrControl::OcrControl(QWidget *parent)
 		horseNameEditList.append(horseNameEdit_3);
 		horizontalLayout_2->addWidget(horseNameEdit_3);
 
-		QLabel* winLbl_3 = new QLabel(frame);
+		QLineEdit* winLbl_3 = new QLineEdit(frame);
 		winLbl_3->setObjectName(QStringLiteral("winLbl_3"));
 		sizePolicy.setHeightForWidth(winLbl_3->sizePolicy().hasHeightForWidth());
 		winLbl_3->setSizePolicy(sizePolicy);
@@ -119,7 +119,7 @@ OcrControl::OcrControl(QWidget *parent)
 		winLableList.append(winLbl_3);
 		horizontalLayout_2->addWidget(winLbl_3);
 
-		QLabel* PLALbl_3 = new QLabel(frame);
+		QLineEdit* PLALbl_3 = new QLineEdit(frame);
 		PLALbl_3->setObjectName(QStringLiteral("PLALbl_3"));
 		sizePolicy.setHeightForWidth(PLALbl_3->sizePolicy().hasHeightForWidth());
 		PLALbl_3->setSizePolicy(sizePolicy);
@@ -147,17 +147,16 @@ OcrControl::OcrControl(QWidget *parent)
 	ui.verticalLayout_4->addItem(verticalSpacer);
 
 
-
 	//初始化Qin信息
 	/*for (int i = 0; i < 7; i++)
 	{*/
 		for (int j = 0; j < 7; j++)
 		{
-			QList<QLabel*> list;
+			QList<QLineEdit*> list;
 			QHBoxLayout* horizontalLayout_3 = new QHBoxLayout();
-			horizontalLayout_3->setSpacing(6);
+			horizontalLayout_3->setSpacing(0);
 			horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
-			QLabel* qinLbl_1 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_1 = new QLineEdit(ui.qinFrame);
 			qinLbl_1->setObjectName(QStringLiteral("qinLbl_1"));
 			QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
 			sizePolicy2.setHorizontalStretch(0);
@@ -173,7 +172,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_1);
 			horizontalLayout_3->addWidget(qinLbl_1);
 
-			QLabel* qinLbl_2 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_2 = new QLineEdit(ui.qinFrame);
 			qinLbl_2->setObjectName(QStringLiteral("qinLbl_2"));
 			sizePolicy2.setHeightForWidth(qinLbl_2->sizePolicy().hasHeightForWidth());
 			qinLbl_2->setSizePolicy(sizePolicy2);
@@ -183,7 +182,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_2);
 			horizontalLayout_3->addWidget(qinLbl_2);
 
-			QLabel* qinLbl_3 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_3 = new QLineEdit(ui.qinFrame);
 			qinLbl_3->setObjectName(QStringLiteral("qinLbl_3"));
 			sizePolicy2.setHeightForWidth(qinLbl_3->sizePolicy().hasHeightForWidth());
 			qinLbl_3->setSizePolicy(sizePolicy2);
@@ -194,7 +193,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_3);
 			horizontalLayout_3->addWidget(qinLbl_3);
 
-			QLabel* qinLbl_4 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_4 = new QLineEdit(ui.qinFrame);
 			qinLbl_4->setObjectName(QStringLiteral("qinLbl_4"));
 			sizePolicy2.setHeightForWidth(qinLbl_4->sizePolicy().hasHeightForWidth());
 			qinLbl_4->setSizePolicy(sizePolicy2);
@@ -204,7 +203,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_4);
 			horizontalLayout_3->addWidget(qinLbl_4);
 
-			QLabel* qinLbl_5 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_5 = new QLineEdit(ui.qinFrame);
 			qinLbl_5->setObjectName(QStringLiteral("qinLbl_5"));
 			sizePolicy2.setHeightForWidth(qinLbl_5->sizePolicy().hasHeightForWidth());
 			qinLbl_5->setSizePolicy(sizePolicy2);
@@ -214,7 +213,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_5);
 			horizontalLayout_3->addWidget(qinLbl_5);
 
-			QLabel* qinLbl_6 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_6 = new QLineEdit(ui.qinFrame);
 			qinLbl_6->setObjectName(QStringLiteral("qinLbl_6"));
 			sizePolicy2.setHeightForWidth(qinLbl_6->sizePolicy().hasHeightForWidth());
 			qinLbl_6->setSizePolicy(sizePolicy2);
@@ -224,7 +223,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_6);
 			horizontalLayout_3->addWidget(qinLbl_6);
 
-			QLabel* qinLbl_7 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_7 = new QLineEdit(ui.qinFrame);
 			qinLbl_7->setObjectName(QStringLiteral("qinLbl_7"));
 			sizePolicy2.setHeightForWidth(qinLbl_7->sizePolicy().hasHeightForWidth());
 			qinLbl_7->setSizePolicy(sizePolicy2);
@@ -234,7 +233,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_7);
 			horizontalLayout_3->addWidget(qinLbl_7);
 
-			QLabel* qinLbl_8 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_8 = new QLineEdit(ui.qinFrame);
 			qinLbl_8->setObjectName(QStringLiteral("qinLbl_8"));
 			sizePolicy2.setHeightForWidth(qinLbl_8->sizePolicy().hasHeightForWidth());
 			qinLbl_8->setSizePolicy(sizePolicy2);
@@ -244,7 +243,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_8);
 			horizontalLayout_3->addWidget(qinLbl_8);
 
-			QLabel* qinLbl_9 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_9 = new QLineEdit(ui.qinFrame);
 			qinLbl_9->setObjectName(QStringLiteral("qinLbl_9"));
 			sizePolicy2.setHeightForWidth(qinLbl_9->sizePolicy().hasHeightForWidth());
 			qinLbl_9->setSizePolicy(sizePolicy2);
@@ -254,7 +253,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_9);
 			horizontalLayout_3->addWidget(qinLbl_9);
 
-			QLabel* qinLbl_10 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_10 = new QLineEdit(ui.qinFrame);
 			qinLbl_10->setObjectName(QStringLiteral("qinLbl_10"));
 			sizePolicy2.setHeightForWidth(qinLbl_10->sizePolicy().hasHeightForWidth());
 			qinLbl_10->setSizePolicy(sizePolicy2);
@@ -264,7 +263,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_10);
 			horizontalLayout_3->addWidget(qinLbl_10);
 
-			QLabel* qinLbl_11 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_11 = new QLineEdit(ui.qinFrame);
 			qinLbl_11->setObjectName(QStringLiteral("qinLbl_11"));
 			sizePolicy2.setHeightForWidth(qinLbl_11->sizePolicy().hasHeightForWidth());
 			qinLbl_11->setSizePolicy(sizePolicy2);
@@ -274,7 +273,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_11);
 			horizontalLayout_3->addWidget(qinLbl_11);
 
-			QLabel* qinLbl_12 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_12 = new QLineEdit(ui.qinFrame);
 			qinLbl_12->setObjectName(QStringLiteral("qinLbl_12"));
 			sizePolicy2.setHeightForWidth(qinLbl_12->sizePolicy().hasHeightForWidth());
 			qinLbl_12->setSizePolicy(sizePolicy2);
@@ -284,7 +283,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_12);
 			horizontalLayout_3->addWidget(qinLbl_12);
 
-			QLabel* qinLbl_13 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_13 = new QLineEdit(ui.qinFrame);
 			qinLbl_13->setObjectName(QStringLiteral("qinLbl_13"));
 			sizePolicy2.setHeightForWidth(qinLbl_13->sizePolicy().hasHeightForWidth());
 			qinLbl_13->setSizePolicy(sizePolicy2);
@@ -294,7 +293,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_13);
 			horizontalLayout_3->addWidget(qinLbl_13);
 
-			QLabel* qinLbl_14 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_14 = new QLineEdit(ui.qinFrame);
 			qinLbl_14->setObjectName(QStringLiteral("qinLbl_14"));
 			sizePolicy2.setHeightForWidth(qinLbl_14->sizePolicy().hasHeightForWidth());
 			qinLbl_14->setSizePolicy(sizePolicy2);
@@ -304,7 +303,7 @@ OcrControl::OcrControl(QWidget *parent)
 			list.append(qinLbl_14);
 			horizontalLayout_3->addWidget(qinLbl_14);
 
-			QLabel* qinLbl_15 = new QLabel(ui.qinFrame);
+			QLineEdit* qinLbl_15 = new QLineEdit(ui.qinFrame);
 			qinLbl_15->setObjectName(QStringLiteral("qinLbl_15"));
 			sizePolicy2.setHeightForWidth(qinLbl_15->sizePolicy().hasHeightForWidth());
 			qinLbl_15->setSizePolicy(sizePolicy2);
@@ -324,11 +323,11 @@ OcrControl::OcrControl(QWidget *parent)
 	//初始化QPL
 	for (int j = 0; j < 7; j++)
 	{
-		QList<QLabel*> list;
+		QList<QLineEdit*> list;
 		QHBoxLayout* horizontalLayout_3 = new QHBoxLayout();
-		horizontalLayout_3->setSpacing(6);
+		horizontalLayout_3->setSpacing(0);
 		horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
-		QLabel* qinLbl_1 = new QLabel(ui.qplFrame);
+		QLineEdit* qinLbl_1 = new QLineEdit(ui.qplFrame);
 		qinLbl_1->setObjectName(QStringLiteral("qinLbl_1"));
 		QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
 		sizePolicy2.setHorizontalStretch(0);
@@ -344,7 +343,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_1);
 		horizontalLayout_3->addWidget(qinLbl_1);
 
-		QLabel* qinLbl_2 = new QLabel(ui.qplFrame);
+		QLineEdit* qinLbl_2 = new QLineEdit(ui.qplFrame);
 		qinLbl_2->setObjectName(QStringLiteral("qinLbl_2"));
 		sizePolicy2.setHeightForWidth(qinLbl_2->sizePolicy().hasHeightForWidth());
 		qinLbl_2->setSizePolicy(sizePolicy2);
@@ -354,7 +353,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_2);
 		horizontalLayout_3->addWidget(qinLbl_2);
 
-		QLabel* qinLbl_3 = new QLabel(ui.qplFrame);
+		QLineEdit* qinLbl_3 = new QLineEdit(ui.qplFrame);
 		qinLbl_3->setObjectName(QStringLiteral("qinLbl_3"));
 		sizePolicy2.setHeightForWidth(qinLbl_3->sizePolicy().hasHeightForWidth());
 		qinLbl_3->setSizePolicy(sizePolicy2);
@@ -365,7 +364,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_3);
 		horizontalLayout_3->addWidget(qinLbl_3);
 
-		QLabel* qinLbl_4 = new QLabel(ui.qplFrame);
+		QLineEdit* qinLbl_4 = new QLineEdit(ui.qplFrame);
 		qinLbl_4->setObjectName(QStringLiteral("qinLbl_4"));
 		sizePolicy2.setHeightForWidth(qinLbl_4->sizePolicy().hasHeightForWidth());
 		qinLbl_4->setSizePolicy(sizePolicy2);
@@ -375,7 +374,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_4);
 		horizontalLayout_3->addWidget(qinLbl_4);
 
-		QLabel* qinLbl_5 = new QLabel(ui.qplFrame);
+		QLineEdit* qinLbl_5 = new QLineEdit(ui.qplFrame);
 		qinLbl_5->setObjectName(QStringLiteral("qinLbl_5"));
 		sizePolicy2.setHeightForWidth(qinLbl_5->sizePolicy().hasHeightForWidth());
 		qinLbl_5->setSizePolicy(sizePolicy2);
@@ -385,7 +384,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_5);
 		horizontalLayout_3->addWidget(qinLbl_5);
 
-		QLabel* qinLbl_6 = new QLabel(ui.qplFrame);
+		QLineEdit* qinLbl_6 = new QLineEdit(ui.qplFrame);
 		qinLbl_6->setObjectName(QStringLiteral("qinLbl_6"));
 		sizePolicy2.setHeightForWidth(qinLbl_6->sizePolicy().hasHeightForWidth());
 		qinLbl_6->setSizePolicy(sizePolicy2);
@@ -395,7 +394,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_6);
 		horizontalLayout_3->addWidget(qinLbl_6);
 
-		QLabel* qinLbl_7 = new QLabel(ui.qinFrame);
+		QLineEdit* qinLbl_7 = new QLineEdit(ui.qinFrame);
 		qinLbl_7->setObjectName(QStringLiteral("qinLbl_7"));
 		sizePolicy2.setHeightForWidth(qinLbl_7->sizePolicy().hasHeightForWidth());
 		qinLbl_7->setSizePolicy(sizePolicy2);
@@ -405,7 +404,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_7);
 		horizontalLayout_3->addWidget(qinLbl_7);
 
-		QLabel* qinLbl_8 = new QLabel(ui.qplFrame);
+		QLineEdit* qinLbl_8 = new QLineEdit(ui.qplFrame);
 		qinLbl_8->setObjectName(QStringLiteral("qinLbl_8"));
 		sizePolicy2.setHeightForWidth(qinLbl_8->sizePolicy().hasHeightForWidth());
 		qinLbl_8->setSizePolicy(sizePolicy2);
@@ -415,7 +414,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_8);
 		horizontalLayout_3->addWidget(qinLbl_8);
 
-		QLabel* qinLbl_9 = new QLabel(ui.qplFrame);
+		QLineEdit* qinLbl_9 = new QLineEdit(ui.qplFrame);
 		qinLbl_9->setObjectName(QStringLiteral("qinLbl_9"));
 		sizePolicy2.setHeightForWidth(qinLbl_9->sizePolicy().hasHeightForWidth());
 		qinLbl_9->setSizePolicy(sizePolicy2);
@@ -425,7 +424,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_9);
 		horizontalLayout_3->addWidget(qinLbl_9);
 
-		QLabel* qinLbl_10 = new QLabel(ui.qplFrame);
+		QLineEdit* qinLbl_10 = new QLineEdit(ui.qplFrame);
 		qinLbl_10->setObjectName(QStringLiteral("qinLbl_10"));
 		sizePolicy2.setHeightForWidth(qinLbl_10->sizePolicy().hasHeightForWidth());
 		qinLbl_10->setSizePolicy(sizePolicy2);
@@ -435,7 +434,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_10);
 		horizontalLayout_3->addWidget(qinLbl_10);
 
-		QLabel* qinLbl_11 = new QLabel(ui.qplFrame);
+		QLineEdit* qinLbl_11 = new QLineEdit(ui.qplFrame);
 		qinLbl_11->setObjectName(QStringLiteral("qinLbl_11"));
 		sizePolicy2.setHeightForWidth(qinLbl_11->sizePolicy().hasHeightForWidth());
 		qinLbl_11->setSizePolicy(sizePolicy2);
@@ -445,7 +444,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_11);
 		horizontalLayout_3->addWidget(qinLbl_11);
 
-		QLabel* qinLbl_12 = new QLabel(ui.qinFrame);
+		QLineEdit* qinLbl_12 = new QLineEdit(ui.qinFrame);
 		qinLbl_12->setObjectName(QStringLiteral("qinLbl_12"));
 		sizePolicy2.setHeightForWidth(qinLbl_12->sizePolicy().hasHeightForWidth());
 		qinLbl_12->setSizePolicy(sizePolicy2);
@@ -455,7 +454,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_12);
 		horizontalLayout_3->addWidget(qinLbl_12);
 
-		QLabel* qinLbl_13 = new QLabel(ui.qinFrame);
+		QLineEdit* qinLbl_13 = new QLineEdit(ui.qinFrame);
 		qinLbl_13->setObjectName(QStringLiteral("qinLbl_13"));
 		sizePolicy2.setHeightForWidth(qinLbl_13->sizePolicy().hasHeightForWidth());
 		qinLbl_13->setSizePolicy(sizePolicy2);
@@ -465,7 +464,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_13);
 		horizontalLayout_3->addWidget(qinLbl_13);
 
-		QLabel* qinLbl_14 = new QLabel(ui.qinFrame);
+		QLineEdit* qinLbl_14 = new QLineEdit(ui.qinFrame);
 		qinLbl_14->setObjectName(QStringLiteral("qinLbl_14"));
 		sizePolicy2.setHeightForWidth(qinLbl_14->sizePolicy().hasHeightForWidth());
 		qinLbl_14->setSizePolicy(sizePolicy2);
@@ -475,7 +474,7 @@ OcrControl::OcrControl(QWidget *parent)
 		list.append(qinLbl_14);
 		horizontalLayout_3->addWidget(qinLbl_14);
 
-		QLabel* qinLbl_15 = new QLabel(ui.qinFrame);
+		QLineEdit* qinLbl_15 = new QLineEdit(ui.qinFrame);
 		qinLbl_15->setObjectName(QStringLiteral("qinLbl_15"));
 		sizePolicy2.setHeightForWidth(qinLbl_15->sizePolicy().hasHeightForWidth());
 		qinLbl_15->setSizePolicy(sizePolicy2);
@@ -513,6 +512,8 @@ OcrControl::OcrControl(QWidget *parent)
 	//显示广告	
 	QObject::connect(bllDataIdentify, SIGNAL(readNextFile()), this, SLOT(startProcessHistoryVideo ()));//停止计算
 
+	// 有了新的场次号，请求raceID
+	QObject::connect(bllDataIdentify, SIGNAL(requestRaceIdSig()), bllRealTimeTrans, SLOT(requestRaceID()));//停止计算
 
 }
 
@@ -757,10 +758,10 @@ void OcrControl::updateADData(DataOutput  output, QByteArray  array,int imageWid
 			//更新进度条
 			ui.videoProgressBar->setValue(output.videoProgressPercent);
 
-			myImage = myImage.scaled(imageWidth *0.9, imageHeight *0.9);
+			myImage = myImage.scaled(518, 432);
 		}
 		else 
-			myImage = myImage.scaled(imageWidth *0.8, imageHeight *0.8);
+			myImage = myImage.scaled(518, 432);
 		
 		pixmap = pixmap.fromImage(myImage);
 		ui.imageLbl->setPixmap(pixmap);
@@ -819,10 +820,10 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 			//更新进度条
 			ui.videoProgressBar->setValue(output.videoProgressPercent);
 
-			myImage = myImage.scaled(imageWidth *0.9, imageHeight *0.9);
+			myImage = myImage.scaled(518, 432);
 		}
 		else
-			myImage = myImage.scaled(imageWidth *0.8, imageHeight *0.8);
+			myImage = myImage.scaled(518, 432);
 
 		pixmap = pixmap.fromImage(myImage);
 		ui.imageLbl->setPixmap(pixmap);
@@ -878,7 +879,7 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 	//更新马信息
 	for (int i = 0; i < indexLabelList.size(); i++)
 	{
-		indexLabelList[i]->setText(QString::number(i));
+		indexLabelList[i]->setText(QString::number(i+1));
 	}
 	for (int i = 0; i < horseNameEditList.size(); i++)
 	{
@@ -918,10 +919,10 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 	
 	for (int i = 0; i < qinList.size(); i++)
 	{
-		QList<QLabel*> list = qinList.at(i);
+		QList<QLineEdit*> list = qinList.at(i);
 		for (int j = 0; j <  list.size(); j++)
 		{
-			QLabel * label = list.at(j);
+			QLineEdit * label = list.at(j);
 			label->setText(QString::number(output.QPL_QIN[i][j]));
 		}
 	}
@@ -931,8 +932,8 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 	  
 	for (int i = 0; i < qinList.size(); i++)
 	{
-		QList<QLabel*> list = qinList.at(i);
-		QLabel * label = list.at(i);
+		QList<QLineEdit*> list = qinList.at(i);
+		QLineEdit * label = list.at(i);
 		label->setText(QString::number(i+8));
 		label->setPalette(pe);
 	}
@@ -940,8 +941,8 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 	// 设置无数据区域 i 0-6 j 0-14 （0,1）（1,2）~（6,7）
 	for (int i = 0; i < qinList.size(); i++)
 	{
-		QList<QLabel*> list = qinList.at(i);
-		QLabel * label = list.at(i+1);
+		QList<QLineEdit*> list = qinList.at(i);
+		QLineEdit * label = list.at(i + 1);
 		label->setText(QString::number(i+1));
 		label->setPalette(pe);
 	}

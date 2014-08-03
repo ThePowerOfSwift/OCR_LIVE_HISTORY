@@ -125,15 +125,16 @@ private:
 	ThreadDataIdentify* threadDataIdentify;//数据识别线程
 
 	//***马信息**//
-	QList<QLabel*> indexLabelList;
-	QList<QTextEdit*> horseNameEditList;
-	QList<QLabel*> winLableList;
-	QList<QLabel*> plaLableList;
+	QList<QLineEdit*> indexLabelList;
+	QList<QLineEdit*> horseNameEditList;
+	QList<QLineEdit*> winLableList;
+	QList<QLineEdit*> plaLableList;
 
 	//QIN信息
-	QList<QList<QLabel*>> qinList;
+	QList<QList<QLineEdit*>> qinList;
 	//QPL信息
-	QList<QList<QLabel*>> qplList;
+	QList<QList<QLineEdit*>> qplList;
+
 
 	// 马名样本采集训练
 

@@ -234,6 +234,7 @@ void DataIdentify::haveData()
 	// region 2
 	CvPoint point[6];
 	Vec3b region2_bgr[6];
+	
 	int x1 = 40, x2 = 680;
 	int y = 400, delta_y = 50;
 
@@ -368,6 +369,7 @@ int DataIdentify::identify()
 	haveData();
 	if (haveDataFlag == false || algorithmState == EXIT_THIS_OCR)						// the frame has not any data, return 1
 		return EXIT_THIS_OCR;
+	originPosition();
 	//设置马名位置
 
 	setHorseNameRectPos();
@@ -642,52 +644,8 @@ int DataIdentify::setWINPLARectPos()
 	return EXEC_SUCCESS;
 
 }
-
-/*
-// 设置 WIN PLA 位置
-
-int DataIdentify::setWINPLARectPos()
-{
-	 
-	  
-	// get the relative position of the three vertex in the first row, relative to the origin 
-	CvPoint point[3];
-	point[0].x = LIVE_IMAGEINFO1_DELTAX;
-	point[0].y = LIVE_IMAGEINFO1_DELTAY;
-	point[1].x = LIVE_IMAGEINFO1_DELTAX + LIVE_IMAGEINFO1_WIDTH1;
-	point[1].y = LIVE_IMAGEINFO1_DELTAY;
-	point[2].x = LIVE_IMAGEINFO1_DELTAX + LIVE_IMAGEINFO1_WIDTH1 + LIVE_IMAGEINFO1_WIDTH2 * 2 - 4;
-	point[2].y = LIVE_IMAGEINFO1_DELTAY;
-
-	// get each rect in the original image
-	CvRect rect_temp = cvRect(0, 0, 0, 0);
-	originX = 58;
-	originY = 39;
-	for (int i = 0; i < dataOutput.horseNum; i++)
-	{
-		for (int j = 0; j < 3; j++)
-		{
-			rect_temp.x = point[j].x + originX;
-			if (i < 4)
-				rect_temp.y = point[j].y + originY + i * (LIVE_IMAGEINFO1_HEIGHT + 4);
-
-			if (i >= 4)
-				rect_temp.y = point[j].y + originY + i * (LIVE_IMAGEINFO1_HEIGHT + 3) + 4;
  
-			if (j == 0)
-				rect_temp.width = LIVE_IMAGEINFO1_WIDTH1;
-			else
-				rect_temp.width = LIVE_IMAGEINFO1_WIDTH2;
 
-			rect_temp.height = LIVE_IMAGEINFO1_HEIGHT;
-			winPlaPosStruct.rect[i][j] = rect_temp;
-		}
-	}
-	return EXEC_SUCCESS;
-
-}
-
-*/
 // 设置 QIN QPL  同时设置QIN QPL标记位置 
 
 int DataIdentify::setQINQPLRectPos()
@@ -1014,24 +972,29 @@ int DataIdentify::isHorseNameChanged()
 	int *graySum ;
 	graySum = new int  [dataOutput.horseNum + 1];
 	int  ChangedNum = 0;
-	int graySumThreshold = 2000 ;
+	int graySumThreshold = 3000 ;
  	for (int h = 0; h < dataOutput.horseNum;h ++)
 	{
 		Mat horseNameRegion(image, horseNamePosStruct.rect[h]);
 		cvtColor(horseNameRegion, horseNameRegion, CV_RGB2GRAY);
-		
+		Mat horseNameRegionEdge;
+		//Canny(horseNameRegion, horseNameRegionEdge, 450, 400, 3, true);
 		graySum[h] = calculateGraySum(horseNameRegion);
 
 		
 		if ( abs(graySum[h] - dataOutput.mHorseInfo.graySum[h]) > graySumThreshold )
 		{
 			ChangedNum++;
+			qDebug("  graySum[%d] = %d ,pri = %d \n",h,
+				graySum[h], dataOutput.mHorseInfo.graySum[h]);
+			dataOutput.horseNameChangedNum++;
+
 		}
 	
 		dataOutput.mHorseInfo.graySum[h] = graySum[h];
 	}
 	 
-	if (ChangedNum > 5)
+	if (ChangedNum > 4 )
 	{
 		qDebug("  horseNameChangedNum = %d \n",
 			dataOutput.horseNameChangedNum);
@@ -1256,163 +1219,7 @@ int DataIdentify::getWINPLAIdentify()
 	return EXEC_SUCCESS;
 }
 
-
-/*
-// 识别 WIN PLA
-
-int DataIdentify::getWINPLAIdentify()
-{
-	if (algorithmState == EXIT_THIS_OCR)
-	{
-		return EXIT_THIS_OCR;
-	}
-
-	CvRect rectDot[3];
-	CvRect rectNoDot[3];
-
-	rectDot[0].x = 3;	rectDot[1].x = 13;		rectDot[2].x = 27;
-	rectNoDot[0].x = 3; rectNoDot[1].x = 16;	rectNoDot[2].x = 26;
-	for (int i = 0; i < 3; i++)													// set the rect for single number in number region
-	{
-		rectDot[i].y = 0;
-		rectDot[i].width = HISTORY_IMAGEINFO1_SINGLE_WIDTH;
-		rectDot[i].height = HISTORY_IMAGEINFO1_HEIGHT;
-
-		rectNoDot[i].y = 0;
-		rectNoDot[i].width = HISTORY_IMAGEINFO1_SINGLE_WIDTH;
-		rectNoDot[i].height = HISTORY_IMAGEINFO1_HEIGHT;
-	}
-	float factor[2][3] = { { 10, 1, 0.1 }, { 100, 10, 1 } };							// the first line for dot, the second line for no dat
-
-	// svm identify each number
-	Mat edge;
-	for (int i = 0; i < dataOutput.horseNum; i++)
-	{
-		for (int j = 1; j < 3; j++)
-		{
-			Mat roi(image, winPlaPosStruct.rect[i][j]);
-
-			CvSize roiSize;
-			roiSize.height = winPlaPosStruct.rect[i][j].height;
-			roiSize.width = winPlaPosStruct.rect[i][j].width;
-			Mat roiThreshold(roiSize, CV_8UC3);
-			bool emtyFlag = roi.empty();
-
-			colorThreshold(roi, roiThreshold, 200);
-
-
-			Mat roiThresholdEdge;
-			cvtColor(roi, roi, CV_RGB2GRAY);
-			//Canny(roi, edge, 150, 100, 3, true);
-
-			//专门用于 小数点检测
-			cvtColor(roiThreshold, roiThreshold, CV_RGB2GRAY);
-			//更改canny 阈值 降低阈值 原值 400 450 
-			//Canny(roiThreshold, roiThresholdEdge, 150, 100, 3, true);
-			//使用 阈值后的图像作为 输入
-			//roi = roiThreshold;
-
-			// 将阈值后的图像增强 roiThreshold 进行小数点判断
-			for (int c = 0; c < roiThreshold.cols; c++)
-			{
-				for (int r = 0; r < roiThreshold.rows; r++)
-				{
-					if (roiThreshold.at<uchar>(r, c) > 10)
-					{
-						roiThreshold.at<uchar>(r, c) = 250;
-					}
-				}
-			}
-
-  
-
-			if (i == 1 && j == 1)
-			{
-
-				int temp = 0;
-#ifdef QDEBUG_OUTPUT
-				qDebug("getImageInfo1_live:Mark");
-#endif // QDEBUG_OUTPUT
-
-			}
-			bool dotFlag = judgeWINPLADot(1, roiThreshold, roiThresholdEdge);
-#ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
-			writeSamples(i, j, 6, roi);
-#endif
-		 
-			float tempSum = 0.0;
-			if (dotFlag)															// contain a dot
-			{
-				for (int k = 0; k < 3; k++)					// segment each single number and svm
-				{
-					if (k == 2 && rectDot[k].x + rectDot[k].width >= roi.cols)	// cross the boarder
-						rectDot[k].width = roi.cols - rectDot[k].x;
-
-					Mat singleNum(roi, rectDot[k]);									// the single number image
-
-			 
-#ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
-					writeSamples(i, j, k, singleNum);
-
-#endif
-
-					resize(singleNum, singleNum, cvSize(10, 20));
-					hog.compute(singleNum, descriptorVector, winStride, padding);
-					for (int m = 0; m < HOGFEATURENUMBER; m++)
-						hogMat.at<float>(0, m) = descriptorVector[m];
-
-					float result = numSVM.predict(hogMat);
-#ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
-					createClassifySamples(result, singleNum);
-
-#endif
  
-					tempSum += result * factor[0][k];
-				}
-			}
-			else                                                                 // have no dot
-			{
-				for (int k = 0; k < 3; k++)
-				{
-					if (k == 2 && rectNoDot[k].x + rectNoDot[k].width >= roi.cols)
-						rectNoDot[k].width = roi.cols - rectNoDot[k].x;
-					Mat singleNum(roi, rectNoDot[k]);
-
-#ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
-					
-					writeSamples(i, j, k, singleNum); 
-					
-#endif
-
-
-					resize(singleNum, singleNum, cvSize(10, 20));
-					hog.compute(singleNum, descriptorVector, winStride, padding);
-					for (int m = 0; m < HOGFEATURENUMBER; m++)
-						hogMat.at<float>(0, m) = descriptorVector[m];
-
-					float result = numSVM.predict(hogMat);
-#ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
-					createClassifySamples(result, singleNum);
-				 
-#endif
-					tempSum += result * factor[1][k];
-				}
-			}
-
-			if (j == 1)
-				dataOutput.WIN[i] = tempSum;
-			if (j == 2)
-				dataOutput.PLA[i] = tempSum;
-		 
-		}		 
-	 
-	}			 
-	 
-	return EXEC_SUCCESS;
-
-}
-*/
-
 
 //识别 QIN QPL   同时识别ＱＩＮ　ＱＰＬ
 int DataIdentify::getQINQPLIdentify()
@@ -2021,23 +1828,7 @@ bool DataIdentify::judgeWINPLADot(int i, Mat &edge, Mat &roiThresholdEdge)
 {
 
 
-	int len = 0;
-	if (i == 1)									// processing the region 1
-		len = LIVE_IMAGEINFO1_DOT_LEN;
-
-	// 	if (i == 2)									// processing the region 2(QPL)		
-	// 		len = LIVE_IMAGEINFO2_DOT_LEN;
-	/*
-	int* graySum = new int[edge->cols];
-	for (int c = 0; c < edge->cols; c++)
-	{
-	graySum[c] = 0;
-	for (int r = 0; r < edge->rows; r++)
-	graySum[c] += edge->at<uchar>(r, c);
-	graySum[c] = graySum[c] / edge->cols;
-	}
-	*/
-
+ 
 
 
 	Mat halfEdge;
@@ -2463,25 +2254,7 @@ int DataIdentify::colorThreshold(Mat &src, Mat &dst, int thereshold)
 		}
 	}
 
-	int adaptiveThreshold[3] = { 0 };
-
-	for (int i = 0; i < 3; i++)
-	{
-		if (i != 2)
-		{
-			adaptiveThreshold[i] = rgbSum[i] * 4 / (2 * src.cols*src.rows);
-
-		}
-		else
-		{
-			adaptiveThreshold[i] = rgbSum[i] * 5 / (2 * src.cols*src.rows);
-		}
-		if (adaptiveThreshold[i] > 255)
-		{
-			adaptiveThreshold[i] = 210;
-		}
-		//	qDebug("adaptiveThreshold %d %d rgbSum %d\n",i,adaptiveThreshold[i],rgbSum[i]) ;
-	}
+ 
 
 	for (int c = 0; c < src.cols; c++)
 	{

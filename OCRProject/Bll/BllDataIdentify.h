@@ -58,8 +58,11 @@ public slots:
 signals:
 	void readyRead(DataOutput output, QByteArray byteArray,int imageWidth ,int imageHeight);
 	void readyReadBmp(DataOutput output, QByteArray byteArray,int imageWidth, int imageHeight);
-
+	//本次读取的历史文件已经处理完毕，读取下一个文件
 	void readNextFile();
+	// 场次号发生了变化，请求服务器 本场次号对应的raceID
+	void requestRaceIdSig();
+
 private:
 	//DataIdentify DataIdentify;//识别算法
 	/**

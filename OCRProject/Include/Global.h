@@ -123,8 +123,16 @@ public:
 	static qint32 timerCount; //计时
 	static qint32 countRaceTime; //从当前场开始的时候计时 
 
-	// 
-	static qint32 raceHasStarted; //比赛已经开始了
+	//通过识别场次号，请求 服务器 全局场次号
+
+	static qint32 requestRaceId; 
+	// //比赛已经开始了 标志位
+	static qint32 raceHasStarted; 
+	
+	//每次场次号发生反转的时候，必须等待 根据本场场次号 请求到全局场次号后才可以发送 比赛数据
+
+	static bool isSessionRaceIdRequested;
+	
 	/***********比赛数据***********/
 
 	//历史视频 起始帧位置

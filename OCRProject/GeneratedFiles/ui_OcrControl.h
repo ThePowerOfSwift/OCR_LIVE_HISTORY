@@ -217,6 +217,7 @@ public:
         titleHBoxLayout->setObjectName(QStringLiteral("titleHBoxLayout"));
         label_4 = new QLabel(horseFrame);
         label_4->setObjectName(QStringLiteral("label_4"));
+        label_4->setMaximumSize(QSize(16777215, 20));
         QFont font;
         font.setPointSize(14);
         font.setBold(true);
@@ -227,18 +228,21 @@ public:
 
         label_5 = new QLabel(horseFrame);
         label_5->setObjectName(QStringLiteral("label_5"));
+        label_5->setMaximumSize(QSize(16777215, 20));
         label_5->setFont(font);
 
         titleHBoxLayout->addWidget(label_5);
 
         label_3 = new QLabel(horseFrame);
         label_3->setObjectName(QStringLiteral("label_3"));
+        label_3->setMaximumSize(QSize(16777215, 20));
         label_3->setFont(font);
 
         titleHBoxLayout->addWidget(label_3);
 
         label_6 = new QLabel(horseFrame);
         label_6->setObjectName(QStringLiteral("label_6"));
+        label_6->setMaximumSize(QSize(16777215, 20));
         label_6->setFont(font);
 
         titleHBoxLayout->addWidget(label_6);
@@ -482,18 +486,19 @@ public:
         qinFrame->setGeometry(QRect(40, 20, 656, 141));
         qinFrame->setStyleSheet(QLatin1String("QFrame{\n"
 "    border: 1px solid #9D9D9D;\n"
-"	background-color: #FFFFFF;\n"
+"	background-color:#9182FF;\n"
 "	border-radius:0px;\n"
 "    padding:0 0px;\n"
-"	margin-right: 10px;\n"
-"}"));
+"	margin-right: 0px;\n"
+"}\n"
+""));
         qinFrame->setFrameShape(QFrame::StyledPanel);
         qinFrame->setFrameShadow(QFrame::Raised);
         verticalLayout_5 = new QVBoxLayout(qinFrame);
         verticalLayout_5->setSpacing(0);
         verticalLayout_5->setContentsMargins(11, 11, 11, 11);
         verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
-        verticalLayout_5->setContentsMargins(-1, 0, -1, 0);
+        verticalLayout_5->setContentsMargins(0, 0, 0, 0);
         layoutWidget_2 = new QWidget(page);
         layoutWidget_2->setObjectName(QStringLiteral("layoutWidget_2"));
         layoutWidget_2->setGeometry(QRect(20, 30, 16, 116));
