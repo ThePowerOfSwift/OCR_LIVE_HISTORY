@@ -15,8 +15,8 @@ using namespace cv;
 //#define  WRITE_SESSION_CLASSIFY_SAMPELS 
 //#define  WRITE_MINUTE_CLASSIFY_SAMPELS
 #define  QDEBUG_OUTPUT
-#define		WRITE_ROI_SMAPLES_CLASS_INFO1
-//#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
+//#define		WRITE_ROI_SMAPLES_CLASS_INFO1
+#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
 
 
 
@@ -167,7 +167,7 @@ private:
 #define  COUNTDOWNMINUTE_POS_RECT2 cvRect(504,32,10,15)
 
 // WIN PLA
-#define  WIN_POS_RECT cvRect(125,55,32,364-58)
+#define  WIN_POS_RECT cvRect(125,55,31,364-58)
 // PLA 
 #define  PLA_POS_RECT cvRect(200,55,31,364-58)
 // ÂíÃû
