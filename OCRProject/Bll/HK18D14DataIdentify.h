@@ -105,6 +105,10 @@ private:
 
 	int getWINPLAIdentify();
 
+	// 判断是否有底色 绿色底色 flag =1 为win pla ，flag = 2 为qpl qin
+
+	bool  haveGroundColor(Mat srcMat,int flag );
+
 	// 获取 QIN QPL 同时获得 QIN QPL 标记
 	int getQINQPLIdentify();
 

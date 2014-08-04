@@ -11,6 +11,9 @@
 #include "AVSDK/AVerCapAPI.h"
 #include "Include/CCycleBuffer.h"
 #include <QTimerEvent>
+
+#include "bll/ReadHistoryVideo.h"
+
 #define	OFFLINE_DEBUG 
 //#define CALLBACK_MODE 
 
@@ -79,7 +82,6 @@ protected:
 	int m_timerId;
 	virtual void timerEvent(QTimerEvent *event);
 
-		
 
 
 

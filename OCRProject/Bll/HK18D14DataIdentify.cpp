@@ -828,7 +828,7 @@ int  HK18D14DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 				 
 
 				//最后一个数字区域的高度可以使用第一行，第0列的高度
-				qinQPLPosStruct.rect[i][rectNum].height = qinQPLPosStruct.rect[1][0].height;
+				qinQPLPosStruct.rect[i][rectNum].height =  qinQPLPosStruct.rect[1][0].height;
 			}
 			else
 			{
@@ -895,7 +895,7 @@ int  HK18D14DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			if (i == roiNum - 1)
 			{
 				//如果此时 无法通过计算y 来得到高度，那么采用前面已经计算过的高度，因为高度值基本保持一致
-				qinQPLPosStruct.rect[i][rectNum - 4].height = qinQPLPosStruct.rect[1][0].height;
+				qinQPLPosStruct.rect[i][rectNum - 4].height =qinQPLPosStruct.rect[1][0].height;
 			}
 			else
 			{
@@ -965,7 +965,7 @@ int  HK18D14DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			qinQPLPosStruct.rect[i][rectNum - 4].y = qinQplSubRect[rectNum].y + y[i] - 1;
 			if (i == roiNum - 1)
 			{
-				qinQPLPosStruct.rect[i][rectNum - 4].height = NUMBER_HEIGHT ;
+				qinQPLPosStruct.rect[i][rectNum - 4].height = 17 ;
 			}
 			else
 			{
@@ -1109,27 +1109,34 @@ int HK18D14DataIdentify::getWINPLAIdentify()
 	image.copyTo(imageGray);
 	cvtColor(imageGray, imageGray, CV_RGB2GRAY);
 
-	for (int c = 0; c < imageGray.cols;c++)
+	Mat imageGrayThreshold;
+	imageGray.copyTo(imageGrayThreshold);
+	for (int c = 0; c < imageGrayThreshold.cols; c++)
 	{
-		for (int r = 0; r < imageGray.rows;r++)
+		for (int r = 0; r < imageGrayThreshold.rows; r++)
 		{
-			if (imageGray.at<uchar>(r,c) < 85 )
+			if (imageGrayThreshold.at<uchar>(r,c) < 85 )
 			{
-				imageGray.at<uchar>(r, c) = 0;
+				imageGrayThreshold.at<uchar>(r, c) = 0;
 			}
 		}
 	}
 
-	imwrite("WINPLA_ROI.bmp", imageGray);
+	imwrite("WINPLA_ROI.bmp", imageGrayThreshold);
 
 
 	// svm DataIdentify each number
-	Mat edge;
+ 
 	for (int i = 0; i < dataOutput.horseNum; i++)
 	{
 		for (int j = 0; j < 2; j++)
 		{
 			Mat roi(imageGray, winPlaPosStruct.rect[i][j]);
+
+
+			Mat roiColor(image, winPlaPosStruct.rect[i][j]);
+
+			dataOutput.isWinPlaHasGroundColor[i][j] = haveGroundColor(roiColor,2 );
 
 			CvSize roiSize;
 			roiSize.height = winPlaPosStruct.rect[i][j].height;
@@ -1139,13 +1146,13 @@ int HK18D14DataIdentify::getWINPLAIdentify()
 			CvRect roiNewSize;
 			//	dotFlag = DataIdentifyImageInfor2_Dot_live(&edge);
 			Mat roiNew;
-			Mat roiForDotJudge;
+			Mat roiForDotJudge(imageGrayThreshold, winPlaPosStruct.rect[i][j]);;
 
-			trimRoiBlankPart(roi, roiTrim, roiNewSize);
+			trimRoiBlankPart(roiForDotJudge, roiTrim, roiNewSize);
 
-			roiNew = Mat(roi, roiNewSize);
+			roiNew = Mat(roiForDotJudge, roiNewSize);
 
-			for (int i = 0; i < 3; i++)													// set the rect for single number in number region
+			for (int i = 0; i < 3; i++)			// set the rect for single number in number region
 			{
 				if (i ==2 )
 				{
@@ -1283,6 +1290,42 @@ int HK18D14DataIdentify::getWINPLAIdentify()
 	return EXEC_SUCCESS;
 }
 
+//检测数字底下是否有 绿色底色
+// srcMat彩色原图
+bool HK18D14DataIdentify::haveGroundColor(Mat srcMat ,int flag )
+{
+	//转为灰度图像
+	cvtColor(srcMat, srcMat, CV_RGB2GRAY);
+
+	//灰度阈值
+	int graySum = 0;
+	for (int c = 0; c < srcMat.cols;c++)
+	{
+		for (int r = 0; r < srcMat.rows;r++)
+		{
+			if (srcMat.at<uchar>(r,c) < 85 )
+			{
+				srcMat.at<uchar>(r, c) = 0;
+			}
+			graySum += srcMat.at<uchar>(r, c);
+		}
+
+		
+	}
+
+
+	qDebug("graySum = %d " ,graySum );
+
+	int threshold = 50000 ;
+	if (graySum >= threshold)
+	{
+		return true;
+	}
+	else
+		return false;
+	 
+
+}
 //识别 QIN QPL   同时识别ＱＩＮ　ＱＰＬ
 int HK18D14DataIdentify::getQINQPLIdentify()
 {
@@ -1363,13 +1406,11 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 
 	//imwrite("image.bmp", image);
 	//
-	rect[0][0].x = 0;	rect[0][1].x = 9;		rect[0][2].x = 23;			// for two number with dot	
-	rect[1][0].x = 0;	rect[1][1].x = 9;		rect[1][2].x = 19;			// for two number without dot
-	//rect[2][0].x = 0;	rect[2][1].x = 11;		rect[2][2].x = 22;			// for three number without dot
+	rect[0][0].x = 0;	rect[0][1].x = 9;		rect[0][2].x = 11;			// for two number with dot	
+	rect[1][0].x = 0;	rect[1][1].x = 9;		rect[1][2].x = 0;			// for two number without dot	 
 	rect[2][0].x = 0;	rect[2][1].x = 9;		rect[2][2].x = 19;			// for three number without dot
-
-
-
+ 
+	
 
 	for (int i = 0; i < QIN_QPL_ROW; i++)
 	{
@@ -1409,21 +1450,24 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 				}
 			}
 		
-
-			qinQPLPosStruct.rect[i][j].width = qinQPLPosStruct.rect[i][j].width; //减掉2个像素。
-	
+ 
 			// imageGray 为灰度图像
 			Mat roi(imageGray, qinQPLPosStruct.rect[i][j]);
 
 			Mat roiForDotJudge(imageTemp, qinQPLPosStruct.rect[i][j]);
 
-			CvSize roiSize;
-			roiSize.height = qinQPLPosStruct.rect[i][j].height;
-			roiSize.width = qinQPLPosStruct.rect[i][j].width;
-			 
+
+			Mat roiColor(image, qinQPLPosStruct.rect[i][j]);
+
+			dataOutput.isQplQinHasGroundColor[i][j] = haveGroundColor(roiColor, 1);
 
 
-			if (i == 0 & j == 10 )
+			//CvSize roiSize;
+			//roiSize.height = qinQPLPosStruct.rect[i][j].height;
+			//roiSize.width = qinQPLPosStruct.rect[i][j].width;
+		 
+
+			if (i == 6 & j == 8 )
 			{
 				qDebug("Mark \n");
 #ifdef  QDEBUG_OUTPUT
@@ -1433,8 +1477,7 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 
 			}
 
-	 
- 
+	  
 			CvRect roiNewSize;
 			//	dotFlag = DataIdentifyImageInfor2_Dot_live(&edge);
 			Mat roiNew;
@@ -1460,7 +1503,7 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 
 			Mat edge;
 			dotFlag = judgeQINQPLDot(roiForDotJudge, edge, x);
-			if (i == 0 & j == 5)
+			if (i == 0 & j == 9)
 			{
 
 				QString fileNameTemp;
@@ -1480,54 +1523,44 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 
 			}
 			roiNewSize.y = 0;
-			roiNewSize.height = roi.rows;
+			//roiNewSize.height = roi.rows;
 			if (roiNewSize.x + roiNewSize.width >= roi.cols)
 			{
 				roiNewSize.width = roi.cols - roiNewSize.x;
 			}
 
 		
-			for (int i = 0; i < 3; i++)													// set the rect for single number in number region
-			{
-				for (int j = 0; j < 3; j++)
-				{
-					rect[i][j].y = 0;
-					if (j < 2)
-					{
-						rect[i][j].width = rect[i][j + 1].x - rect[i][j].x;
-					}
-					else
-					{
-						rect[i][j].width = roiNewSize.width - rect[i][j].x;
 
-					}
-					rect[i][j].height = qinQPLPosStruct.rect[i][j].height;
-				}
-			}
+
+		
+		
  
 			if (dotFlag == -1)
 				qDebug("DataIdentifyImageInfor2_Dot_live_yp is wrong ! \n");
 			 
 
 			float tempSum = 0.0;
-			if (dotFlag == 0)				 		// two number with dot
+			if (dotFlag == 0)				 	 // 2位数带有小数点
 			{
-				for (int k = 0; k < 2; k++)										// segment each single number and svm
+				int r = 0;
+				for (int c = 0; c < 2; c++)
 				{
-					// x[k]此时为 两个数字中间
-					if (k == 1)
+					rect[r][c].y = 0;
+					if (c < 1)
 					{
-
-						rect[0][k].width = roiNew.cols - x[k];
-						rect[0][k].x = x[k];
+						rect[r][c].width = rect[r][c + 1].x - rect[r][c].x;
 					}
-
 					else
 					{
-						rect[0][k].x = 0;
-						rect[0][k].width = x[k] + 1;
+						rect[r][c].width = roiNewSize.width - rect[r][c + 1].x;
+
 					}
-					rect[0][k].height = roiNew.rows;
+					rect[r][c].height = roiNewSize.height;
+					rect[r][c].y = 0;
+				}
+			 
+				for (int k = 0; k < 2; k++)										// segment each single number and svm
+				{ 
 
 					Mat singleNum(roiNew, rect[0][k]);								// the single number image
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
@@ -1549,29 +1582,31 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 				}
 			}
 
-			if (dotFlag == 1)										// two number without dot
+			if (dotFlag == 1)	 //两位数
 			{
+
+				int r = 1;
+				for (int c = 0; c < 2; c++)
+				{
+					rect[r][c].y = 0;
+					if (c < 1)
+					{
+						rect[r][c].width = rect[r][c + 1].x - rect[r][c].x;
+					}
+					else
+					{
+						rect[r][c].width = roiNewSize.width - rect[r][c].x;
+
+					}
+					rect[r][c].height = roiNewSize.height;
+					rect[r][c].y = 0;
+				}
+ 
+
 				for (int k = 0; k < 2; k++)										// segment each single number and svm
 				{
 
-				//	if (k == 1 && rect[1][k].x + rect[1][k].width >= roiNew.cols)	// cross the boarder
-				//		rect[1][k].width = roiNew.cols - rect[1][k].x;
-
-					// x[k]此时为 两个数字中间
-					if (k == 1)
-					{
-
-						rect[1][k].width = roiNew.cols - x[k];
-						rect[1][k].x = x[k];
-					}
-
-					else
-					{
-						rect[1][k].x = 0;
-						rect[1][k].width = x[k] + 1;
-					}
-					rect[1][k].y = 0;
-					rect[1][k].height = roiNew.rows;
+			 
 					Mat singleNum(roiNew, rect[1][k]);								// the single number image
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
 					writeSamples(i, j, k, singleNum);
@@ -1592,24 +1627,27 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 				}
 			}
 
-			if (dotFlag == 2)										// three number without dot
+			if (dotFlag == 2)			//3位数
 			{
-				for (int k = 0; k < 3; k++)										// segment each single number and svm
+				int r = 2 ;
+				for (int c = 0; c < 3 ; c++)
 				{
-					if (k == 2)
+					rect[r][c].y = 0;
+					if (c < 2 )
 					{
-
-						rect[2][k].width = roiNew.cols - x[k];
-						rect[2][k].x = x[k];
+						rect[r][c].width = rect[r][c + 1].x - rect[r][c].x;
 					}
-
 					else
 					{
-						rect[2][k].x = x[k];
-						rect[2][k].width = x[k + 1] - x[k];
-					}
+						rect[r][c].width = roiNewSize.width - rect[r][c].x;
 
-					rect[2][k].height = roiNew.rows;
+					}
+					rect[r][c].height = roiNewSize.height;
+					rect[r][c].y = 0;
+				}
+				for (int k = 0; k < 3; k++)			// segment each single number and svm
+				{
+				 
 					Mat singleNum(roiNew, rect[2][k]);								// the single number image
 
 #ifdef  WRITE_ROI_SMAPLES_CLASS_INFO2
@@ -2045,8 +2083,9 @@ int  HK18D14DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 
 
 	}
-	int delta = backIndex - frontIndex;
+	//int delta = backIndex - frontIndex;
 	
+	int delta = edge.cols ;
 
 	//int delta = roiNewSize.width;
 	if (delta < 0)
@@ -2062,13 +2101,13 @@ int  HK18D14DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 		}
 		return EXIT_THIS_OCR  ;
 	}
-	else if (delta > 24 ) // three number . 20
+	else if (delta >= 25 ) // three number . 27
 	{
 		//获取3个数字的 坐标值 x
-		if (calculateGraySumYForQINDotJudge(edge, x, 3) != EXEC_SUCCESS)
+		 
 		{
 			x[0] = 0 ;
-			x[1] = 8 ;
+			x[1] = 9 ;
 			x[2] = 18 ;
 			algorithmState = EXEC_SUCCESS;
 
@@ -2080,107 +2119,27 @@ int  HK18D14DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 		}
 		return 2;
 	}
-	else if (delta <= 24 & delta >= 20  ) // tow number with dot .
+	else if (delta <= 24 & delta > 20  ) // tow number with dot .
 	{
-		Mat halfEdge = Mat(edge, cvRect(0, 0, edge.cols, edge.rows / 2));
-		memset(graySum, 0, edge.cols*sizeof(int));
-		sum = 0;
-		for (int c = 0; c < halfEdge.cols; c++)
-		{
-			sum = 0;
-			for (int r = 0; r < halfEdge.rows; r++)
-			{
-				sum += halfEdge.at<uchar>(r, c);
-				//	qDebug("roi.at[%d][%d] = %d \n",r,c,roi.at<uchar>(r,c));
-			}
-			graySum[c] = sum;
-#ifdef QDEBUG_OUTPUT
-			qDebug("sizeof(int) = %d,graySum[%d] = %d", sizeof(int), c, graySum[c]);
-#endif // QDEBUG_OUTPUT
+		x[0] = 9;
+		x[1] = 11;
+		x[2] = 0;
 
-			
-		}
-		int position;
-		for (position = halfEdge.cols - 1; position > 0; position--)
-		{
-			if (graySum[position] != 0)
-				break;
-		}
-
-		if (graySum[position / 2] >= 200 || graySum[position / 2 + 1] >= 200
-			|| graySum[position / 2 - 1] >= 200)
-		{
-			//计算Y向投影通过reverseY设置为 true
-			//calculateGraySumX(halfEdge, y, 3,true);
-			if (calculateGraySumYForQINDotJudge(edge, x, 3) != EXEC_SUCCESS)
-			{
-				x[0] = 0;
-				x[1] = 8;
-				x[2] = 18;
-				algorithmState = EXEC_SUCCESS;
-
-			}
-			if (graySum != NULL)
-			{
-				delete[] graySum;
-				graySum = NULL;
-			}
-
-			return 2; //三位数		 
-		}			
-		else
-		{
-			 //两位小数
-			if (calculateXBewttenNumber(halfEdge, x) != EXEC_SUCCESS)
-			{
-				x[0] = 6;
-				x[1] = 10 ;
-
-			}
-			
-			if (graySum != NULL)
-			{
-				delete[] graySum;
-				graySum = NULL;
-			}
-			return 0;
-		}
-			
-		//checkIfIsThreeNumber(edge,);
+		return 0;
  
 	}
-	else if (delta < 20 & delta >= 5) // two number 
+	else if (delta <= 20 ) // two number 
 	{
-		//两位数，防止 两位小数 进入 进行检测， 通过宽度已经无法检测出 两位小数与两位数 如1.1 ，99
-		Mat halfEdge = Mat(edge, cvRect(0, 0, edge.cols, edge.rows / 2));
-		if (calculateXBewttenNumber(halfEdge, x) != EXEC_SUCCESS)
+		  
+		x[0] = 9;
+		x[1] = 10;
+		if (graySum != NULL)
 		{
-			x[0] = 5;
-			x[1] = 6;
-			if (graySum != NULL)
-			{
-				delete[] graySum;
-				graySum = NULL;
-			}
-			return 1;
-
+			delete[] graySum;
+			graySum = NULL;
 		}
-		else
-		{
-			if (graySum != NULL)
-			{
-				delete[] graySum;
-				graySum = NULL;
-			}
+		return 1;
 
-			//间隙过大，数据为 小数。
-			if ((x[1] - x[0]) > 4 )
-				return 0;
-			else
-				return 1;
-
-		}
-		
 
 	}
 	else
@@ -2291,6 +2250,7 @@ int  HK18D14DataIdentify::trimRoiBlankPart(Mat &oriMat, Mat &newRoiMat, CvRect &
 		roiNewSize.width = x1 - x0 + 1;
 
 	roiNewSize.y = y0;
+	 
 	roiNewSize.height = y1-y0+1;
 
 	newRoiMat = Mat(oriMat, roiNewSize);
@@ -2795,21 +2755,21 @@ int  HK18D14DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, i
 #endif
 	}
 	int j = 0;
-	int THEREHOLD =  300;
+	int THEREHOLD =  200 ;
 	for (int i = 0; i < dimension; i++)
 	{
-		if (i==0 &graySumX[0] > 300)
+		if (i == 0 & graySumX[0] > THEREHOLD)
 		{
 			y[j] = i;
 			j++ ;
 
-			i += 10;
+			i += 13 ;
 		}
 		else
 		{
-			//设置为 300 过滤掉 部分数字的底色
-			if ((graySumX[i] < 300 && graySumX[i + 1] > 300
-				&& graySumX[i + 2] > 300))
+			//设置为 300 过滤掉 部分数字的底色 像素边缘 有两个小于300 ，2个大于300 
+			if ((graySumX[i - 1] <THEREHOLD & graySumX[i] < THEREHOLD && graySumX[i + 1] >= THEREHOLD
+				&& graySumX[i + 2] >= THEREHOLD))
 			{
 				y[j] = i;
 #ifdef QDEBUG_OUTPUT
@@ -2817,7 +2777,7 @@ int  HK18D14DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, i
 #endif
 				j++;
 
-				i += 10;
+				i += 13 ;
 
 				if (j > roiNum)
 				{
@@ -2853,7 +2813,7 @@ int  HK18D14DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, i
 	{
 		//Global::AppendLogString(QString("Error:calculateGraySumX :Func error  j != roiNum"), true);
 #ifdef QDEBUG_OUTPUT
-		qDebug("calculateGraySumXForSetRect2 :Func error  j != roiNum \n ");
+		qDebug("calculateGraySumXForSetRect2 :Func error  j %d != roiNum  %d \n ",j,roiNum);
 #endif
 		//delete[] graySumX;
 		//graySumX = NULL;

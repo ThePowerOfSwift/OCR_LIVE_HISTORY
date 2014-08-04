@@ -330,6 +330,12 @@
     <ClInclude Include="Bll\HK18D14DataIdentify.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Bll\JPPlayApi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bll\JPPlayError.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Bll\number_SVM.xlm" />

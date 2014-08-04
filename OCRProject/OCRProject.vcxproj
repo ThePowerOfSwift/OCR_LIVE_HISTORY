@@ -61,7 +61,7 @@
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;.\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5Networkd.lib;AVerCapAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5Networkd.lib;AVerCapAPI.lib;JPPlayApi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <HeapReserveSize>
       </HeapReserveSize>
       <HeapCommitSize>
@@ -268,6 +268,8 @@
     <ClInclude Include="Bll\DataIdentify.h" />
     <ClInclude Include="Bll\HK18D14DataIdentify.h" />
     <ClInclude Include="Bll\HK18DataIdentify.h" />
+    <ClInclude Include="Bll\JPPlayApi.h" />
+    <ClInclude Include="Bll\JPPlayError.h" />
     <ClInclude Include="Bll\ReadHistoryVideo.h" />
     <CustomBuild Include="Bll\ThreadDataIdentify.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

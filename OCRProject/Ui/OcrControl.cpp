@@ -8,6 +8,14 @@ OcrControl::OcrControl(QWidget *parent)
 {
 	ui.setupUi(this);
 
+	/*double tt;
+	double t1;
+	myReadHistoryVideo.open("D:\\1.d14",tt,t1);
+
+	Mat frame;
+	myReadHistoryVideo.read(10,frame);*/
+
+
 	//网络
 	bllRealTimeTrans = new BllRealTimeTrans();
 	threadRealTime = new ThreadRealTime();
@@ -723,11 +731,23 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 	{
 
 		winLableList[i]->setText(QString::number(output.WIN[i]));
+
+
+		if (output.isWinPlaHasGroundColor[i][0] == true)
+		{
+			winLableList[i]->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
+		}
+
 	}
 	for (int i = 0; i < plaLableList.size(); i++)
 	{
 
 		plaLableList[i]->setText(QString::number(output.PLA[i]));
+		if (output.isWinPlaHasGroundColor[i][1] == true)
+		{
+			plaLableList[i]->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
+		}
+
 	}
 }
 
@@ -738,7 +758,7 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 {
 	// 设置无数据区域 i 0-6 j 0-14 （0,0）（1,1）~（6,6）
 	QPalette pe;
-	pe.setColor(QPalette::WindowText, Qt::red);
+	pe.setColor(QPalette::WindowText, Qt::white);
 
 	ui.QINLabel->setPalette(pe);
 	if (output.isQPL)
@@ -757,18 +777,29 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 		{
 			QLineEdit * label = list.at(j);
 			label->setText(QString::number(output.QPL_QIN[i][j]));
+
+			if (output.isQplQinHasGroundColor[i][j] == true )
+			{
+				label->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
+			}
+			
+
 		}
 	}
 	// 设置无数据区域 i 0-6 j 0-14 （0,0）（1,1）~（6,6）
-	 
-	pe.setColor(QPalette::WindowText, Qt::white);
+	QPalette pe1;
+	 pe1.setColor(QPalette::WindowText, Qt::white);
 	  
 	for (int i = 0; i < qinList.size(); i++)
 	{
 		QList<QLineEdit*> list = qinList.at(i);
-		QLineEdit * label = list.at(i);
-		label->setText(QString::number(i+8));
-		label->setPalette(pe);
+		QLineEdit * label = list.at(i);		
+		 
+		label->setText(QString::number(i + 8));
+
+		label->setStyleSheet("QLineEdit{background: gray;color: #FFFFFF}");
+		 
+
 	}
 
 	// 设置无数据区域 i 0-6 j 0-14 （0,1）（1,2）~（6,7）
@@ -776,8 +807,10 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 	{
 		QList<QLineEdit*> list = qinList.at(i);
 		QLineEdit * label = list.at(i + 1);
-		label->setText(QString::number(i+1));
-		label->setPalette(pe);
+		
+		//label->setPalette(pe1);
+		label->setStyleSheet("QLineEdit{background: gray;color: #FFFFFF}");
+		label->setText(QString::number(i + 1));
 	}
 
 

@@ -145,6 +145,8 @@ private:
 	int historyVideoFileNum;
 
 
+//	ReadHistoryVideo myReadHistoryVideo;
+
 };
 
 #endif // OCRCONTROL_H

@@ -281,7 +281,7 @@ p, li { white-space: pre-wrap; }
                       </widget>
                      </item>
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_23" stretch="20,1,20">
+                      <layout class="QVBoxLayout" name="verticalLayout_23" stretch="20,1,0,0,0,0,0,20">
                        <item>
                         <layout class="QVBoxLayout" name="verticalLayout_3">
                          <item>
@@ -338,6 +338,41 @@ p, li { white-space: pre-wrap; }
                           </widget>
                          </item>
                         </layout>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="stopCaliBtn">
+                         <property name="text">
+                          <string>暂停</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="acquireUserInputDataBtn">
+                         <property name="text">
+                          <string>输入</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="advance1MinBtn">
+                         <property name="text">
+                          <string>快进1分钟</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="advance30SecBtn">
+                         <property name="text">
+                          <string>快进30秒</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="advance10SecBtn">
+                         <property name="text">
+                          <string>快进10秒</string>
+                         </property>
+                        </widget>
                        </item>
                        <item>
                         <spacer name="verticalSpacer">

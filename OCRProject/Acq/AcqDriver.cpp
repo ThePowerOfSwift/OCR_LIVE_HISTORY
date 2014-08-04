@@ -22,8 +22,14 @@ AcqDriver::AcqDriver(QObject *parent)
 		
 	count = 2400 ;
 #endif
+
+
+ 
+
+
 }
 
+ 
 #ifdef OFFLINE_DEBUG
 
 
