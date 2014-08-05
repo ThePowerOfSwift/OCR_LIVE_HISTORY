@@ -102,6 +102,40 @@ public slots:
 	*/
 	void startProcessHistoryVideo();
 
+
+	/*
+	历史视频快进3min
+	*/
+	void on_advance3MinBtn_clicked();
+
+	/*
+	   历史视频快进1min
+	*/
+	void on_advance1MinBtn_clicked();
+	/*
+	历史视频快进 30s 
+	*/
+	void on_advance30SecBtn_clicked();
+	/*
+	历史视频快进 10s
+	*/
+	void on_advance10SecBtn_clicked();
+
+	/*
+	 暂停采集
+	*/
+	void on_pauseCaliBtn_clicked();
+
+
+	/*
+		继续采集
+	*/
+
+	void on_continueBtn_clicked();
+
+
+
+
 signals:
 	void connect(QString,qint32);
 	void disconnect();
@@ -116,6 +150,8 @@ signals:
 	//实时直播
 	void startIdentify (QString fileName,int videoType );//开始识别
 	void stopIdentify();//停止识别
+
+ 
 
 private:
 	Ui::OcrControl ui;

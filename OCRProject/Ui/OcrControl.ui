@@ -281,7 +281,7 @@ p, li { white-space: pre-wrap; }
                       </widget>
                      </item>
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_23" stretch="20,1,0,0,0,0,0,20">
+                      <layout class="QVBoxLayout" name="verticalLayout_23" stretch="20,1,0,0,0,0,0,0,0,20">
                        <item>
                         <layout class="QVBoxLayout" name="verticalLayout_3">
                          <item>
@@ -340,9 +340,16 @@ p, li { white-space: pre-wrap; }
                         </layout>
                        </item>
                        <item>
-                        <widget class="QPushButton" name="stopCaliBtn">
+                        <widget class="QPushButton" name="pauseCaliBtn">
                          <property name="text">
                           <string>暂停</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="continueBtn">
+                         <property name="text">
+                          <string>继续识别</string>
                          </property>
                         </widget>
                        </item>
@@ -350,6 +357,13 @@ p, li { white-space: pre-wrap; }
                         <widget class="QPushButton" name="acquireUserInputDataBtn">
                          <property name="text">
                           <string>输入</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="advance3MinBtn">
+                         <property name="text">
+                          <string>快进3分钟</string>
                          </property>
                         </widget>
                        </item>

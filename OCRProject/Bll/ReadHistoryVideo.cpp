@@ -43,7 +43,7 @@ int ReadHistoryVideo::open(QString fileName,double &totalFrames,double &fps )
 
 	if (fileType == "d14" | fileType == "h64" | fileType == "D14" | fileType == "H64")
 	{
-		
+		fps = 25;
 		bool rtValue = Player_OpenFile(1, fileNameCharPtr);
 		HWND hwnd = NULL;
 		UINT nMsg = 0;
@@ -111,3 +111,4 @@ int ReadHistoryVideo::read(int framePos,Mat &frame )
 	return 1;
  
 }
+ 

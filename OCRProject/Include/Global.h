@@ -109,10 +109,10 @@ public:
 
 	static IAcq* myIAcq;//采集类
 	static ThreadAcq* threadAcq;//采集线程
-	static bool acqStop;//模拟采集标志符
+	static bool stopDataIdentifyTag;//模拟采集标志符
 
 
-	static bool stopDataIdentifyTag;//识别标识符
+	static bool pauseDataIdentifyTag;//识别标识符
 
 
 	/***********比赛数据***********/
@@ -132,6 +132,8 @@ public:
 	//每次场次号发生反转的时候，必须等待 根据本场场次号 请求到全局场次号后才可以发送 比赛数据
 
 	static bool isSessionRaceIdRequested;
+
+
 	
 	/***********比赛数据***********/
 
@@ -141,6 +143,11 @@ public:
 	//识别视频类型
 
 	static qint32 videoType;
+
+	// 历史视频文件 记录 快进
+
+	static qint32 frameAccValue;
+
 	///系统日志线程
 	static SystemLogThread * systemLogThread;
 	///系统日志接口类

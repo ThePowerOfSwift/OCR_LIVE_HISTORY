@@ -39,10 +39,10 @@ CCycleBuffer* Global::S_CCycleBuffer = 0;
 //初始化采集
 IAcq* Global::myIAcq = 0;
 ThreadAcq* Global::threadAcq = 0;
-bool Global::acqStop = false;//模拟采集标志符,开始模拟:false,停止模拟true
+bool Global::stopDataIdentifyTag = false;//模拟采集标志符,开始模拟:false,停止模拟true
 
 
-bool Global::stopDataIdentifyTag = false;//识别标识符
+bool Global::pauseDataIdentifyTag = false;//识别标识符
 
 
 //历史视频起始帧位置
@@ -50,6 +50,9 @@ qint32 Global::videoStartPos = 0;
 //识别视频类型
 
 qint32 Global::videoType = 0;
+
+//历史视频文件，快进累加
+qint32 Global::frameAccValue = 0;
 
  /***********比赛数据***********/
 qint32 Global::raceId;//比赛唯一识别ID，服务端获得

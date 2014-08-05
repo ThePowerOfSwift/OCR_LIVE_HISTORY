@@ -17,6 +17,7 @@ public:
 	int close();
 	int read(int framePos, Mat &frame);
 
+ 
 private:
 	QString fileType;
 	void initD14SDK();

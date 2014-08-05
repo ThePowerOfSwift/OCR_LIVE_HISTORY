@@ -81,8 +81,10 @@ public:
     QVBoxLayout *verticalLayout_21;
     QLabel *label_33;
     QProgressBar *videoProgressBar;
-    QPushButton *stopCaliBtn;
+    QPushButton *pauseCaliBtn;
+    QPushButton *continueBtn;
     QPushButton *acquireUserInputDataBtn;
+    QPushButton *advance3MinBtn;
     QPushButton *advance1MinBtn;
     QPushButton *advance30SecBtn;
     QPushButton *advance10SecBtn;
@@ -414,15 +416,25 @@ public:
 
         verticalLayout_23->addLayout(verticalLayout_21);
 
-        stopCaliBtn = new QPushButton(groupBox);
-        stopCaliBtn->setObjectName(QStringLiteral("stopCaliBtn"));
+        pauseCaliBtn = new QPushButton(groupBox);
+        pauseCaliBtn->setObjectName(QStringLiteral("pauseCaliBtn"));
 
-        verticalLayout_23->addWidget(stopCaliBtn);
+        verticalLayout_23->addWidget(pauseCaliBtn);
+
+        continueBtn = new QPushButton(groupBox);
+        continueBtn->setObjectName(QStringLiteral("continueBtn"));
+
+        verticalLayout_23->addWidget(continueBtn);
 
         acquireUserInputDataBtn = new QPushButton(groupBox);
         acquireUserInputDataBtn->setObjectName(QStringLiteral("acquireUserInputDataBtn"));
 
         verticalLayout_23->addWidget(acquireUserInputDataBtn);
+
+        advance3MinBtn = new QPushButton(groupBox);
+        advance3MinBtn->setObjectName(QStringLiteral("advance3MinBtn"));
+
+        verticalLayout_23->addWidget(advance3MinBtn);
 
         advance1MinBtn = new QPushButton(groupBox);
         advance1MinBtn->setObjectName(QStringLiteral("advance1MinBtn"));
@@ -445,7 +457,7 @@ public:
 
         verticalLayout_23->setStretch(0, 20);
         verticalLayout_23->setStretch(1, 1);
-        verticalLayout_23->setStretch(7, 20);
+        verticalLayout_23->setStretch(9, 20);
 
         horizontalLayout_12->addLayout(verticalLayout_23);
 
@@ -957,8 +969,10 @@ public:
         delFileBtn->setText(QApplication::translate("OcrControl", "\345\210\240\351\231\244\345\244\264\346\226\207\344\273\266", 0));
         delFileBtn_2->setText(QApplication::translate("OcrControl", "\350\247\206\351\242\221\350\265\267\345\247\213\345\270\247\346\225\260", 0));
         label_33->setText(QApplication::translate("OcrControl", "\350\247\206\351\242\221\345\244\204\347\220\206\350\277\233\345\272\246", 0));
-        stopCaliBtn->setText(QApplication::translate("OcrControl", "\346\232\202\345\201\234", 0));
+        pauseCaliBtn->setText(QApplication::translate("OcrControl", "\346\232\202\345\201\234", 0));
+        continueBtn->setText(QApplication::translate("OcrControl", "\347\273\247\347\273\255\350\257\206\345\210\253", 0));
         acquireUserInputDataBtn->setText(QApplication::translate("OcrControl", "\350\276\223\345\205\245", 0));
+        advance3MinBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\2333\345\210\206\351\222\237", 0));
         advance1MinBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\2331\345\210\206\351\222\237", 0));
         advance30SecBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\23330\347\247\222", 0));
         advance10SecBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\23310\347\247\222", 0));

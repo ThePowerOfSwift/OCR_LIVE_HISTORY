@@ -8,13 +8,7 @@ OcrControl::OcrControl(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	/*double tt;
-	double t1;
-	myReadHistoryVideo.open("D:\\1.d14",tt,t1);
-
-	Mat frame;
-	myReadHistoryVideo.read(10,frame);*/
-
+	 
 
 	//网络
 	bllRealTimeTrans = new BllRealTimeTrans();
@@ -43,7 +37,9 @@ OcrControl::OcrControl(QWidget *parent)
 	//算法
 	bllDataIdentify = new BllDataIdentify();//数据识别
 	threadDataIdentify = new ThreadDataIdentify();//数据识别线程
+	
 	bllDataIdentify->moveToThread(threadDataIdentify);
+
 	QObject::connect(bllDataIdentify, SIGNAL(readyRead(DataOutput, QByteArray, int, int)), bllRealTimeTrans, SLOT(submitRealData(DataOutput, QByteArray,int, int)));//开始发送
 	QObject::connect(bllDataIdentify, SIGNAL(readyRead(DataOutput, QByteArray,int,int)), this, SLOT(updateData(DataOutput, QByteArray,int,int)));//停止计算
 
@@ -66,6 +62,13 @@ OcrControl::OcrControl(QWidget *parent)
 	ui.fileTableWidget->resizeColumnsToContents();	// 显示文件名 
 
 	//QObject::connect(Global::myIAcq, SIGNAL(stopDataIdentify()), bllDataIdentify, SLOT(stop()));//停止计算
+
+
+	// 历史视频 快进 
+
+	
+//	QObject::connect(this, SIGNAL(setSignal( )), bllDataIdentify, SLOT(testSlot( )));
+
 
 	int labelHeight = 17;
 	
@@ -379,7 +382,7 @@ OcrControl::~OcrControl()
 	//删除识别算法线程
 	if (threadDataIdentify->isRunning())
 	{
-		Global::stopDataIdentifyTag = true;//停止识别
+		Global::pauseDataIdentifyTag = true;//停止识别
 		threadDataIdentify->quit();
 	}
 
@@ -454,7 +457,7 @@ void OcrControl::appendStatus(QString status)
 void OcrControl::on_startAcqBtn_clicked()
 {
 
-	Global::acqStop = false;//开始模拟标示符
+	Global::stopDataIdentifyTag = false;//开始模拟标示符
 	//Global::threadAcq->start();//采集启动
 	//emit startAcq();//开始采集
 	
@@ -506,6 +509,7 @@ void OcrControl::on_startAcqBtn_clicked()
 	else //实时直播
 	{
 		threadDataIdentify->start();//开始识别
+
 		emit startIdentify(NULL, false );//开始识别
 		Global::myIAcq->read();
 	}
@@ -544,23 +548,21 @@ void OcrControl::startProcessHistoryVideo()
 */
 void OcrControl::on_stopAcqBtn_clicked()
 {
-	 
-		Global::acqStop = true;//停止模拟标示符
-		//emit stopAcq();//停止采集
+	  
+		Global::stopDataIdentifyTag = true;
+
+		emit stopAcq();//停止采集
 
 		//停止采集 while 循环
 
-
+		
 		Global::myIAcq->unLoadDevice();
 		//Global::threadAcq->quit();
 
 		//emit stopDataIdentify();//停止识别
-
-
-		Global::stopDataIdentifyTag = true;//停止识别
+ 
 		threadDataIdentify->quit();
 
-	 
 	
 }
 
@@ -678,7 +680,8 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 	{
 		
 		ui.adTimeLbl->setText("raceTime");
-		ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: Green;"));
+		ui.adTimeLbl->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
+		//	ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: Green;"));
 		ui.adTimeLbl->setPalette(pe);
 		ui.sessionTextEdit->setText(QString::number(Global::session));//更新全局场次号
 		ui.raceTimeTextEdit->setText(QString::number(Global::raceTime));//更新全局比赛时间
@@ -931,4 +934,48 @@ void OcrControl::on_caliSessionCountDownBtn_clicked()
 {
 
 
+}
+
+
+
+/*
+历史视频快进1min
+*/
+void OcrControl::on_advance3MinBtn_clicked()
+{
+	Global::frameAccValue = 60*3 ;
+}
+
+/*
+历史视频快进1min
+*/
+void OcrControl::on_advance1MinBtn_clicked()
+{
+	Global::frameAccValue = 60;
+}
+/*
+历史视频快进 30s
+*/
+void OcrControl::on_advance30SecBtn_clicked()
+{
+	Global::frameAccValue = 30;
+}
+/*
+历史视频快进 10s
+*/
+void OcrControl::on_advance10SecBtn_clicked()
+{
+	Global::frameAccValue = 10;
+}
+
+
+void OcrControl::on_pauseCaliBtn_clicked()
+{
+	Global::pauseDataIdentifyTag = true;//停止模拟标示符
+}
+
+
+void OcrControl::on_continueBtn_clicked()
+{
+	Global::pauseDataIdentifyTag = false;
 }

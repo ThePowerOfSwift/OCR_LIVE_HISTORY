@@ -35,6 +35,7 @@ public:
 	// 
 	QFile logFile;
 
+
 	void writeDataFile(DataOutput &dataOutput);
 public slots:
 	//初始化算法
@@ -43,6 +44,7 @@ public slots:
 	//开始识别
 	void start(QString fileName, int videoType );
 
+ 
 	//停止识别
 	void stop();
 
@@ -52,8 +54,7 @@ public slots:
 
 	// 倒计时 被用户从 界面改变
 	void sessionCountDownTextChanged();
-
-
+ 
 
 signals:
 	void readyRead(DataOutput output, QByteArray byteArray,int imageWidth ,int imageHeight);
@@ -62,6 +63,8 @@ signals:
 	void readNextFile();
 	// 场次号发生了变化，请求服务器 本场次号对应的raceID
 	void requestRaceIdSig();
+
+
 
 private:
 	//DataIdentify DataIdentify;//识别算法
@@ -101,7 +104,7 @@ private:
 
 	HK18D14DataIdentify mHK18D14DataIdentify;
 
-	bool stopDataIdentifyTag;//标识符
+	bool pauseDataIdentifyTag;//标识符
 
 
 	ReadHistoryVideo myReadHistoryVideo;
@@ -151,6 +154,10 @@ private:
 #ifdef WRITE_IMAGES_BEFORE_DataIdentify
 	int  bmpCount;
 #endif
+
+	// 历史数据增量
+
+	int frameAccValue;
 
  
 };

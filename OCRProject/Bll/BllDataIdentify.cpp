@@ -8,14 +8,7 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 	: QObject(parent)
 {
 
-
-	ReadHistoryVideo myReadVideo;
-
-	double totalFrames;
-	double fps;
-	myReadVideo.open("E:\\BaiduYunDownload\\20140528202552.mpg", totalFrames, fps);
-
-	Mat frameImage;
+ 
 
 	// 写数据文件
 
@@ -24,7 +17,7 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 		return;
 
 
-	stopDataIdentifyTag = false;//初始化
+	pauseDataIdentifyTag = false;//初始化
 
 	for (int i = 0; i < 30; i++)
 		memset( myRaceTimeStruct, 0, sizeof(raceNumTimeStruct)*30);
@@ -62,6 +55,10 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 	isRaceSessionDetected = false;
 
 	isRightRaceTimeCountDownDetected = false;
+
+	frameAccValue = 0;
+
+	Global::frameAccValue = 1;
 }
 
 BllDataIdentify::~BllDataIdentify()
@@ -660,7 +657,7 @@ int BllDataIdentify::startHistoryDataIdentify(QString fileName, int videoType)
 	{
 		Global::videoStartPos = 0;
 	}
-	for (int f = Global::videoStartPos; f < totalFrames/videoFps & !Global::acqStop ;f++)
+	for (int f = Global::videoStartPos; f < totalFrames / videoFps & !Global::stopDataIdentifyTag;)
 	{
 		myReadHistoryVideo.read(f, frameMat);
 
@@ -670,8 +667,18 @@ int BllDataIdentify::startHistoryDataIdentify(QString fileName, int videoType)
 		algorithmExecHistory(videoType, NULL, frameMat, progressPercent);
 
 		Sleep(800);
+		 
 
+		f += Global::frameAccValue;
 
+		Global::frameAccValue = 1;
+
+		//暂停即进入睡眠，停止暂停，退出
+		while(Global::pauseDataIdentifyTag)
+		{
+			Sleep(1);
+		}
+	
 	}
 	
 	//处理完本文件 激发一个信号，读取文件列表下一个文件
@@ -983,7 +990,7 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 */
 int  BllDataIdentify::startLiveDataIdentify(int videoType)
 {
-	Global::stopDataIdentifyTag = false;//开始跑
+	Global::pauseDataIdentifyTag = false;//开始跑
 	int width = IMAGE_WIDTH;
 	int height = IMAGE_HEIGHT;
 
@@ -1005,6 +1012,12 @@ int  BllDataIdentify::startLiveDataIdentify(int videoType)
 			//算法
 			algorithmExecLive(videoType, data, Mat());
 		}
+
+		while (Global::pauseDataIdentifyTag)
+		{
+			Sleep(1);
+		}
+
  
 	}
 
@@ -1084,7 +1097,8 @@ void BllDataIdentify::writeDataFile(DataOutput &dataOutput)
 */
 void BllDataIdentify::stop()
 {
-	Global::stopDataIdentifyTag = true;
+	Global::pauseDataIdentifyTag = true;
 }
 
+ 
  

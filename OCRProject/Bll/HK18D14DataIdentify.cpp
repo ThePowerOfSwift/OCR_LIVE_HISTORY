@@ -205,7 +205,7 @@ void HK18D14DataIdentify::haveData()
 
 	for (int i = 0; i < HAVEDATA_PIXELNUMBER; i++)
 	{
-		bgr[i] = image_temp.at<Vec3b>(HAVEDATA_YINDEX * (i + 1), HAVEDATA_XINDEX);
+		bgr[i] = image_temp.at<Vec3b>(HAVEDATA_YINDEX * (i + 1), 42);
 		bluePixel[i] = bgr[i][0];
 		greenPixel[i] = bgr[i][1];
 		redPixel[i] = bgr[i][2];
@@ -215,7 +215,7 @@ void HK18D14DataIdentify::haveData()
 		redMean += redPixel[i] / HAVEDATA_PIXELNUMBER;
 	}
 
-	if (blueMean > 50 && greenMean < 45 && redMean < 50 )
+	if (blueMean > 50 && greenMean < 60 && redMean < 60 )
 	{
 		haveDataFlag = true;
 	}
@@ -1316,7 +1316,7 @@ bool HK18D14DataIdentify::haveGroundColor(Mat srcMat ,int flag )
 
 	qDebug("graySum = %d " ,graySum );
 
-	int threshold = 50000 ;
+	int threshold = 56000 ;
 	if (graySum >= threshold)
 	{
 		return true;
@@ -1469,6 +1469,7 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 
 			if (i == 6 & j == 8 )
 			{
+
 				qDebug("Mark \n");
 #ifdef  QDEBUG_OUTPUT
 				qDebug("Mark \n");
