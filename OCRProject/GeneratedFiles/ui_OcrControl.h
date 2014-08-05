@@ -26,7 +26,6 @@
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QTextBrowser>
-#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -47,11 +46,11 @@ public:
     QVBoxLayout *verticalLayout_18;
     QHBoxLayout *horizontalLayout_2;
     QLabel *label;
-    QTextEdit *sessionTextEdit;
+    QLineEdit *sessionLineEdit;
     QLabel *label_2;
-    QTextEdit *raceTimeTextEdit;
+    QLineEdit *raceTimeLineEdit;
     QLabel *label_20;
-    QTextEdit *CountRaceTimeTextEdit;
+    QLineEdit *CountRaceTimeLineEdit;
     QPushButton *caliSessionCountDownBtn;
     QGroupBox *groupBox_3;
     QVBoxLayout *verticalLayout_12;
@@ -83,7 +82,7 @@ public:
     QProgressBar *videoProgressBar;
     QPushButton *pauseCaliBtn;
     QPushButton *continueBtn;
-    QPushButton *acquireUserInputDataBtn;
+    QPushButton *inputUserDataBtn;
     QPushButton *advance3MinBtn;
     QPushButton *advance1MinBtn;
     QPushButton *advance30SecBtn;
@@ -105,7 +104,7 @@ public:
     QVBoxLayout *verticalLayout_11;
     QHBoxLayout *horizontalLayout_7;
     QLabel *label_37;
-    QLabel *label_38;
+    QLabel *userInputLabel;
     QLabel *QINLabel;
     QLabel *label_21;
     QLabel *label_22;
@@ -205,33 +204,33 @@ public:
 
         horizontalLayout_2->addWidget(label);
 
-        sessionTextEdit = new QTextEdit(groupBox_2);
-        sessionTextEdit->setObjectName(QStringLiteral("sessionTextEdit"));
-        sessionTextEdit->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
+        sessionLineEdit = new QLineEdit(groupBox_2);
+        sessionLineEdit->setObjectName(QStringLiteral("sessionLineEdit"));
+        sessionLineEdit->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
 
-        horizontalLayout_2->addWidget(sessionTextEdit);
+        horizontalLayout_2->addWidget(sessionLineEdit);
 
         label_2 = new QLabel(groupBox_2);
         label_2->setObjectName(QStringLiteral("label_2"));
 
         horizontalLayout_2->addWidget(label_2);
 
-        raceTimeTextEdit = new QTextEdit(groupBox_2);
-        raceTimeTextEdit->setObjectName(QStringLiteral("raceTimeTextEdit"));
-        raceTimeTextEdit->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
+        raceTimeLineEdit = new QLineEdit(groupBox_2);
+        raceTimeLineEdit->setObjectName(QStringLiteral("raceTimeLineEdit"));
+        raceTimeLineEdit->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
 
-        horizontalLayout_2->addWidget(raceTimeTextEdit);
+        horizontalLayout_2->addWidget(raceTimeLineEdit);
 
         label_20 = new QLabel(groupBox_2);
         label_20->setObjectName(QStringLiteral("label_20"));
 
         horizontalLayout_2->addWidget(label_20);
 
-        CountRaceTimeTextEdit = new QTextEdit(groupBox_2);
-        CountRaceTimeTextEdit->setObjectName(QStringLiteral("CountRaceTimeTextEdit"));
-        CountRaceTimeTextEdit->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
+        CountRaceTimeLineEdit = new QLineEdit(groupBox_2);
+        CountRaceTimeLineEdit->setObjectName(QStringLiteral("CountRaceTimeLineEdit"));
+        CountRaceTimeLineEdit->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
 
-        horizontalLayout_2->addWidget(CountRaceTimeTextEdit);
+        horizontalLayout_2->addWidget(CountRaceTimeLineEdit);
 
         caliSessionCountDownBtn = new QPushButton(groupBox_2);
         caliSessionCountDownBtn->setObjectName(QStringLiteral("caliSessionCountDownBtn"));
@@ -426,10 +425,10 @@ public:
 
         verticalLayout_23->addWidget(continueBtn);
 
-        acquireUserInputDataBtn = new QPushButton(groupBox);
-        acquireUserInputDataBtn->setObjectName(QStringLiteral("acquireUserInputDataBtn"));
+        inputUserDataBtn = new QPushButton(groupBox);
+        inputUserDataBtn->setObjectName(QStringLiteral("inputUserDataBtn"));
 
-        verticalLayout_23->addWidget(acquireUserInputDataBtn);
+        verticalLayout_23->addWidget(inputUserDataBtn);
 
         advance3MinBtn = new QPushButton(groupBox);
         advance3MinBtn->setObjectName(QStringLiteral("advance3MinBtn"));
@@ -577,10 +576,10 @@ public:
 
         horizontalLayout_7->addWidget(label_37);
 
-        label_38 = new QLabel(qplFrame);
-        label_38->setObjectName(QStringLiteral("label_38"));
+        userInputLabel = new QLabel(qplFrame);
+        userInputLabel->setObjectName(QStringLiteral("userInputLabel"));
 
-        horizontalLayout_7->addWidget(label_38);
+        horizontalLayout_7->addWidget(userInputLabel);
 
         QINLabel = new QLabel(qplFrame);
         QINLabel->setObjectName(QStringLiteral("QINLabel"));
@@ -946,11 +945,6 @@ public:
         OcrControl->setWindowTitle(QApplication::translate("OcrControl", "OcrControl", 0));
         groupBox_2->setTitle(QString());
         label->setText(QApplication::translate("OcrControl", "\345\234\272\346\254\241\345\217\267\357\274\232", 0));
-        sessionTextEdit->setHtml(QApplication::translate("OcrControl", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">1</p></body></html>", 0));
         label_2->setText(QApplication::translate("OcrControl", "\345\200\222\350\256\241\346\227\266", 0));
         label_20->setText(QApplication::translate("OcrControl", "\351\241\272\350\256\241\346\227\266", 0));
         caliSessionCountDownBtn->setText(QApplication::translate("OcrControl", "\346\240\241\346\255\243", 0));
@@ -971,7 +965,7 @@ public:
         label_33->setText(QApplication::translate("OcrControl", "\350\247\206\351\242\221\345\244\204\347\220\206\350\277\233\345\272\246", 0));
         pauseCaliBtn->setText(QApplication::translate("OcrControl", "\346\232\202\345\201\234", 0));
         continueBtn->setText(QApplication::translate("OcrControl", "\347\273\247\347\273\255\350\257\206\345\210\253", 0));
-        acquireUserInputDataBtn->setText(QApplication::translate("OcrControl", "\350\276\223\345\205\245", 0));
+        inputUserDataBtn->setText(QApplication::translate("OcrControl", "\350\276\223\345\205\245", 0));
         advance3MinBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\2333\345\210\206\351\222\237", 0));
         advance1MinBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\2331\345\210\206\351\222\237", 0));
         advance30SecBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\23330\347\247\222", 0));
@@ -985,7 +979,7 @@ public:
         label_18->setText(QApplication::translate("OcrControl", "13", 0));
         label_19->setText(QApplication::translate("OcrControl", "14", 0));
         label_37->setText(QString());
-        label_38->setText(QApplication::translate("OcrControl", "Label", 0));
+        userInputLabel->setText(QApplication::translate("OcrControl", "Label", 0));
         QINLabel->setText(QApplication::translate("OcrControl", " Q   I   N ", 0));
         label_21->setText(QApplication::translate("OcrControl", "2", 0));
         label_22->setText(QApplication::translate("OcrControl", "3", 0));

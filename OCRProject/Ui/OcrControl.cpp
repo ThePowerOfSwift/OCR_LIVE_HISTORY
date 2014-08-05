@@ -55,8 +55,8 @@ OcrControl::OcrControl(QWidget *parent)
 	
 	//用户从界面修改了 场次号 和倒计时 
 
-	QObject::connect(ui.sessionTextEdit, SIGNAL(textChanged()), bllDataIdentify, SLOT(sessionNumTextChanged())); 
-	QObject::connect(ui.raceTimeTextEdit, SIGNAL(textChanged()), bllDataIdentify, SLOT(sessionCountDownTextChanged()));
+	QObject::connect(ui.sessionLineEdit, SIGNAL(textChanged()), bllDataIdentify, SLOT(sessionNumTextChanged())); 
+	QObject::connect(ui.raceTimeLineEdit, SIGNAL(textChanged()), bllDataIdentify, SLOT(sessionCountDownTextChanged()));
 
 	ui.fileTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);//表格为整行选择
 	ui.fileTableWidget->resizeColumnsToContents();	// 显示文件名 
@@ -618,7 +618,7 @@ void OcrControl::updateADData(DataOutput  output, QByteArray  array,int imageWid
 		ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
 		
 
-		ui.CountRaceTimeTextEdit->setText(QString::number(Global::countRaceTime) ) ;
+		ui.CountRaceTimeLineEdit->setText(QString::number(Global::countRaceTime) ) ;
 		ui.adTimeLbl->setPalette(pe);
 		ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
 
@@ -683,14 +683,14 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 		ui.adTimeLbl->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
 		//	ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: Green;"));
 		ui.adTimeLbl->setPalette(pe);
-		ui.sessionTextEdit->setText(QString::number(Global::session));//更新全局场次号
-		ui.raceTimeTextEdit->setText(QString::number(Global::raceTime));//更新全局比赛时间
+		ui.sessionLineEdit->setText(QString::number(Global::session));//更新全局场次号
+		ui.raceTimeLineEdit->setText(QString::number(Global::raceTime));//更新全局比赛时间
+		/*
+		ui.sessionLineEdit->setFontPointSize(20);
+		ui.raceTimeLineEdit->setFontPointSize(20);
 
-		ui.sessionTextEdit->setFontPointSize(20);
-		ui.raceTimeTextEdit->setFontPointSize(20);
-
-		ui.sessionTextEdit->setTextColor(QColor("white"));
-		ui.raceTimeTextEdit->setTextColor(QColor("white"));
+		ui.sessionLineEdit->setTextColor(QColor("white"));
+		ui.raceTimeLineEdit->setTextColor(QColor("white"));*/
 
 		updateUiData(output, array);//更新马信息
 		if (output.isQPL)
@@ -710,7 +710,7 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 	curFileName = curFileName.mid(curFileName.count() - 9, 9);
 	ui.imageFileNameLabel->setText(curFileName);
 	
-	ui.CountRaceTimeTextEdit->setText(QString::number(Global::countRaceTime));
+	ui.CountRaceTimeLineEdit->setText(QString::number(Global::countRaceTime));
 	ui.adTimeLbl->setPalette(pe);
 	ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
 
@@ -720,15 +720,29 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 
 void OcrControl::updateUiData(DataOutput output, QByteArray array)
 {
+
+	ui.userInputLabel->setText(QString(" O R "));
 	//更新马信息
 	for (int i = 0; i < indexLabelList.size(); i++)
 	{
-		indexLabelList[i]->setText(QString::number(i+1));
+		if (i < output.horseNum)
+		{
+			indexLabelList[i]->setText(QString::number(i + 1));
+		}
+		else
+		{
+			indexLabelList[i]->setText(QString("0"));
+		}
 	}
+		
 	for (int i = 0; i < horseNameEditList.size(); i++)
 	{
-		
-		horseNameEditList[i]->setText(QString("马名%1").arg(i));
+		if (i < output.horseNum)
+			horseNameEditList[i]->setText(QString("马名%1").arg(i));
+		else
+		{
+			indexLabelList[i]->setText(QString("0"));
+		}
 	}
 	for (int i = 0; i < winLableList.size(); i++)
 	{
@@ -933,6 +947,11 @@ QString OcrControl::takeTopFile(int row)
 void OcrControl::on_caliSessionCountDownBtn_clicked()
 {
 
+	QString sessionStr;
+	sessionStr = ui.sessionLineEdit->text();
+	Global::session = sessionStr.toInt();
+
+	ui.sessionLineEdit->setText(QString::number(Global::session));//更新全局场次号
 
 }
 
@@ -978,4 +997,149 @@ void OcrControl::on_pauseCaliBtn_clicked()
 void OcrControl::on_continueBtn_clicked()
 {
 	Global::pauseDataIdentifyTag = false;
+}
+
+//输入用户校正数据，主要是win pla ，qin qpl
+void OcrControl::on_inputUserDataBtn_clicked()
+{
+	
+	DataOutput resultData;
+
+	//更新马信息
+ 
+	for (int i = 0; i < horseNameEditList.size(); i++)
+	{
+		QString horseName;
+		horseName = horseNameEditList[i]->text();
+
+		if (horseName == "0")
+		{
+			break;
+		}
+
+	}
+	for (int i = 0; i < winLableList.size(); i++)
+	{
+
+		QString win;
+		win = winLableList[i]->text();
+
+		resultData.WIN[i] = win.toFloat();
+		 
+	}
+	for (int i = 0; i < plaLableList.size(); i++)
+	{
+
+		QString pla;
+		pla = plaLableList[i]->text();
+
+		resultData.PLA[i] = pla.toFloat();
+	  
+	}
+
+	for (int i = 0; i < qinList.size(); i++)
+	{
+		QString qplQin;
+		QList<QLineEdit*> list = qinList.at(i);
+		for (int j = 0; j < list.size(); j++)
+		{
+			QLineEdit * label = list.at(j);
+			 
+			qplQin = label->text();
+
+			resultData.QPL_QIN[i][j] = qplQin.toFloat();
+			 
+		}
+	}	 
+	//更新界面 不更新图片，
+	updateAfterUserInput(resultData);
+
+	//写入数据
+}
+
+void OcrControl::updateAfterUserInput(DataOutput  output)
+{
+	//更新马信息
+	 
+	for (int i = 0; i < horseNameEditList.size(); i++)
+	{
+		if (i < output.horseNum)
+			horseNameEditList[i]->setText(QString("马名%1").arg(i));
+		else
+		{
+			indexLabelList[i]->setText(QString("0"));
+		}
+	}
+	for (int i = 0; i < winLableList.size(); i++)
+	{
+
+		winLableList[i]->setText(QString::number(output.WIN[i]));
+
+
+		if (output.isWinPlaHasGroundColor[i][0] == true)
+		{
+			winLableList[i]->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
+		}
+
+	}
+	for (int i = 0; i < plaLableList.size(); i++)
+	{
+
+		plaLableList[i]->setText(QString::number(output.PLA[i]));
+		if (output.isWinPlaHasGroundColor[i][1] == true)
+		{
+			plaLableList[i]->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
+		}
+
+	}
+
+
+	//更新qpl qin
+	for (int i = 0; i < qinList.size(); i++)
+	{
+		QList<QLineEdit*> list = qinList.at(i);
+		for (int j = 0; j < list.size(); j++)
+		{
+			QLineEdit * label = list.at(j);
+			label->setText(QString::number(output.QPL_QIN[i][j]));
+
+			if (output.isQplQinHasGroundColor[i][j] == true)
+			{
+				label->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
+			}
+
+
+		}
+	}
+	// 设置无数据区域 i 0-6 j 0-14 （0,0）（1,1）~（6,6）
+	QPalette pe1;
+	pe1.setColor(QPalette::WindowText, Qt::white);
+
+	for (int i = 0; i < qinList.size(); i++)
+	{
+		QList<QLineEdit*> list = qinList.at(i);
+		QLineEdit * label = list.at(i);
+
+		label->setText(QString::number(i + 8));
+
+		label->setStyleSheet("QLineEdit{background: gray;color: #FFFFFF}");
+
+
+	}
+
+	// 设置无数据区域 i 0-6 j 0-14 （0,1）（1,2）~（6,7）
+	for (int i = 0; i < qinList.size(); i++)
+	{
+		QList<QLineEdit*> list = qinList.at(i);
+		QLineEdit * label = list.at(i + 1);
+
+		//label->setPalette(pe1);
+		label->setStyleSheet("QLineEdit{background: gray;color: #FFFFFF}");
+		label->setText(QString::number(i + 1));
+	}
+
+
+	ui.userInputLabel->setText(QString(" X G "));
+
+
 }

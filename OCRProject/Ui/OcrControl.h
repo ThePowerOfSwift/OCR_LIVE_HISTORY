@@ -126,15 +126,22 @@ public slots:
 	*/
 	void on_pauseCaliBtn_clicked();
 
+	/*
+		@brief 输入用户校正过后的数据
+	*/
+	void on_inputUserDataBtn_clicked();
+
 
 	/*
 		继续采集
 	*/
 
 	void on_continueBtn_clicked();
+	/*
+	用户输入完毕后，进行更新界面，主要是 马名，场次号 ，win pla qin qpl数据
+	*/
 
-
-
+	void updateAfterUserInput(DataOutput  output);
 
 signals:
 	void connect(QString,qint32);
