@@ -103,11 +103,12 @@ private:
 
 	//计算灰度和
 
-	int calculateGraySum(Mat srcMa);
+	int calculateGraySum(Mat srcMa,int &length);
 	// 获取 WIN PLA 识别
 
 	int getWINPLAIdentify();
-
+	// 检查是否包含底色
+	bool haveGroundColor(Mat srcMat, int flag);
 	// 获取 QIN QPL 同时获得 QIN QPL 标记
 	int getQINQPLIdentify();
 

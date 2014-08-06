@@ -152,7 +152,7 @@ bool HK18D14DataIdentify::read(Mat &srcMat, uchar* data, int length, int height,
 	}
 	else
 	{
-		imwrite("srcMat.bmp", srcMat);
+		
 		cvtColor(srcMat, srcMat, CV_BGR2RGB);
 		Mat image_temp = srcMat;
 
@@ -1032,36 +1032,55 @@ int HK18D14DataIdentify::getHorseNameIdentify()
 //通过计算灰度值和，来确定是否发生了马名字的变化，马名字发生了变化，说明
 int HK18D14DataIdentify::isHorseNameChanged()
 {
+
+	//清空上一次的 
+	 
+
 	//存储马名的灰度和
 	int *graySum ;
 	graySum = new int  [dataOutput.horseNum + 1];
 	int  ChangedNum = 0;
 	int graySumThreshold = 3000 ;
+	int *length;
+
+	length = new int[dataOutput.horseNum + 1];
+	
+	memset(graySum, 0, sizeof(int)* dataOutput.horseNum);
+	memset(length, 0, sizeof(int)* dataOutput.horseNum);
+
  	for (int h = 0; h < dataOutput.horseNum;h ++)
 	{
+		
 		Mat horseNameRegion(image, horseNamePosStruct.rect[h]);
 		cvtColor(horseNameRegion, horseNameRegion, CV_RGB2GRAY);
 		Mat horseNameRegionEdge;
 		//Canny(horseNameRegion, horseNameRegionEdge, 450, 400, 3, true);
-		graySum[h] = calculateGraySum(horseNameRegion);
+		 
+		graySum[h] = calculateGraySum(horseNameRegion,length[h]);
 
 		
-		if ( abs(graySum[h] - dataOutput.mHorseInfo.graySum[h]) > graySumThreshold )
+		if ( abs(graySum[h] - dataOutput.mHorseInfo.graySum[h]) > graySumThreshold 
+			& abs(length[h]-dataOutput.mHorseInfo.length[h]) > 4 ) 
 		{
 			ChangedNum++;
+#ifdef QDEBUG_OUTPUT
 			qDebug("  graySum[%d] = %d ,pri = %d \n",h,
 				graySum[h], dataOutput.mHorseInfo.graySum[h]);
-			dataOutput.horseNameChangedNum++;
+#endif
+			ChangedNum++;
 
 		}
 	
 		dataOutput.mHorseInfo.graySum[h] = graySum[h];
+		dataOutput.mHorseInfo.length[h] = length[h];
 	}
 	 
-	if (ChangedNum > 4 )
+	if (ChangedNum > 1 )
 	{
+#ifdef QDEBUG_OUTPUT
 		qDebug("  horseNameChangedNum = %d \n",
 			dataOutput.horseNameChangedNum);
+#endif
 		dataOutput.horseNameChangedNum++;
 	}
 	delete[] graySum;
@@ -1069,20 +1088,48 @@ int HK18D14DataIdentify::isHorseNameChanged()
 
 	return EXEC_SUCCESS;
 
+
 }
-//计算灰度值和，返回值即为灰度值和
-int HK18D14DataIdentify::calculateGraySum(Mat srcMat)
+//计算灰度值和，返回值即为灰度值和 同时做阈值
+int HK18D14DataIdentify::calculateGraySum(Mat srcMat,int &length)
 {
-	int graySum;
+	int graySum = 0 ;
 
 	for (int c = 0; c < srcMat.cols;c++)
 	{
 		for (int r = 0; r < srcMat.rows;r++)
 		{
+			if (srcMat.at<uchar>(r,c) < 100 )
+			{
+				srcMat.at<uchar>(r, c) = 0 ;
+			}
 			graySum += srcMat.at<uchar>(r, c);
 		}
 	}
+
+	int *sum;
+	sum = new int[srcMat.cols + 1];
+	memset(sum, 0, sizeof(int)*srcMat.cols);
+
+	for (int c = 0; c < srcMat.cols; c++)
+	{
+		for (int r = 0; r < srcMat.rows; r++)
+		{
+			sum[c] += srcMat.at<uchar>(r, c);
+		}
+	}
+
+	for (int c = srcMat.cols-1 ; c >= 0 ; c-- )
+	{
+		if (sum[c] > 200 )
+		{
+			length = c;
+			break;
+		}
+	}
+	delete[] sum;
 	return graySum;
+
 
 }
 // 识别 WIN PLA
@@ -1313,10 +1360,11 @@ bool HK18D14DataIdentify::haveGroundColor(Mat srcMat ,int flag )
 		
 	}
 
-
+#ifdef QDEBUG_OUTPUT
 	qDebug("graySum = %d " ,graySum );
-
-	int threshold = 56000 ;
+#endif // DEBUG
+	 
+	int threshold = 60000 ;
 	if (graySum >= threshold)
 	{
 		return true;
@@ -2221,7 +2269,7 @@ int  HK18D14DataIdentify::trimRoiBlankPart(Mat &oriMat, Mat &newRoiMat, CvRect &
 		{
 			graySum[r] += oriMat.at<uchar>(r, c);
 		}
-		qDebug("graySum[%d] =%d \n",r,graySum[r]);
+		 
 	}
 
 	for (int r = 0; r< oriMat.rows; r++)

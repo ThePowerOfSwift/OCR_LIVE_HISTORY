@@ -20,12 +20,10 @@ AcqDriver::AcqDriver(QObject *parent)
 	timerCount = 0;
 #ifdef OFFLINE_DEBUG
 		
-	count = 2400 ;
+	count =2000;
 #endif
 
-
  
-
 
 }
 
@@ -43,7 +41,7 @@ void AcqDriver::createFalseData()
 
 	fileName = QString(".bmp");
 	fileName.prepend(QString::number(count, 10));
-	//fileName.prepend(QString("16000"));
+	//fileName.prepend(QString("0"));
 	//fileName.prepend(QString("Number_orignal_"));
 	//fileName.prepend(QString("./imageSamples/"));
 	

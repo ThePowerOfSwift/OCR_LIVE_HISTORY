@@ -161,7 +161,7 @@ OcrControl::OcrControl(QWidget *parent)
 	ui.verticalLayout_4->addItem(verticalSpacer);
 
 
-	int labelWidth = 25;
+	int labelWidth = 35 ;
 	 
 	for (int j = 0; j < 7; j++)
 	{

@@ -100,7 +100,7 @@ private:
 
 	//计算灰度和
 
-	int calculateGraySum(Mat srcMa);
+	int calculateGraySum(Mat srcMa, int &length );
 	// 获取 WIN PLA 识别
 
 	int getWINPLAIdentify();

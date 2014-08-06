@@ -228,7 +228,7 @@ void DataIdentify::haveData()
 		haveDataFlag = false;
 	}
 
-	dataOutput.haveDataFlag = haveDataFlag;
+ 
 
 	// =====================================
 	// region 2
@@ -280,6 +280,7 @@ void DataIdentify::haveData()
 		}
 			
 	}
+	dataOutput.haveDataFlag = haveDataFlag;
 
 
 	 
@@ -968,33 +969,48 @@ int DataIdentify::getHorseNameIdentify()
 //通过计算灰度值和，来确定是否发生了马名字的变化，马名字发生了变化，说明
 int DataIdentify::isHorseNameChanged()
 {
+
+	//清空上一次的 
+	 
+
 	//存储马名的灰度和
 	int *graySum ;
 	graySum = new int  [dataOutput.horseNum + 1];
 	int  ChangedNum = 0;
 	int graySumThreshold = 3000 ;
+	int *length;
+
+	length = new int[dataOutput.horseNum + 1];
+	
+	memset(graySum, 0, sizeof(int)* dataOutput.horseNum);
+	memset(length, 0, sizeof(int)* dataOutput.horseNum);
+
  	for (int h = 0; h < dataOutput.horseNum;h ++)
 	{
+		
 		Mat horseNameRegion(image, horseNamePosStruct.rect[h]);
 		cvtColor(horseNameRegion, horseNameRegion, CV_RGB2GRAY);
 		Mat horseNameRegionEdge;
 		//Canny(horseNameRegion, horseNameRegionEdge, 450, 400, 3, true);
-		graySum[h] = calculateGraySum(horseNameRegion);
+		 
+		graySum[h] = calculateGraySum(horseNameRegion,length[h]);
 
 		
-		if ( abs(graySum[h] - dataOutput.mHorseInfo.graySum[h]) > graySumThreshold )
+		if ( abs(graySum[h] - dataOutput.mHorseInfo.graySum[h]) > graySumThreshold 
+			& abs(length[h]-dataOutput.mHorseInfo.length[h]) > 4 ) 
 		{
 			ChangedNum++;
 			qDebug("  graySum[%d] = %d ,pri = %d \n",h,
 				graySum[h], dataOutput.mHorseInfo.graySum[h]);
-			dataOutput.horseNameChangedNum++;
+			ChangedNum++;
 
 		}
 	
 		dataOutput.mHorseInfo.graySum[h] = graySum[h];
+		dataOutput.mHorseInfo.length[h] = length[h];
 	}
 	 
-	if (ChangedNum > 4 )
+	if (ChangedNum > 1 )
 	{
 		qDebug("  horseNameChangedNum = %d \n",
 			dataOutput.horseNameChangedNum);
@@ -1006,18 +1022,44 @@ int DataIdentify::isHorseNameChanged()
 	return EXEC_SUCCESS;
 
 }
-//计算灰度值和，返回值即为灰度值和
-int DataIdentify::calculateGraySum(Mat srcMat)
+//计算灰度值和，返回值即为灰度值和 同时做阈值
+int DataIdentify::calculateGraySum(Mat srcMat,int &length)
 {
-	int graySum;
+	int graySum = 0 ;
 
 	for (int c = 0; c < srcMat.cols;c++)
 	{
 		for (int r = 0; r < srcMat.rows;r++)
 		{
+			if (srcMat.at<uchar>(r,c) < 100 )
+			{
+				srcMat.at<uchar>(r, c) = 0 ;
+			}
 			graySum += srcMat.at<uchar>(r, c);
 		}
 	}
+
+	int *sum;
+	sum = new int[srcMat.cols + 1];
+	memset(sum, 0, sizeof(int)*srcMat.cols);
+
+	for (int c = 0; c < srcMat.cols; c++)
+	{
+		for (int r = 0; r < srcMat.rows; r++)
+		{
+			sum[c] += srcMat.at<uchar>(r, c);
+		}
+	}
+
+	for (int c = srcMat.cols-1 ; c >= 0 ; c-- )
+	{
+		if (sum[c] > 200 )
+		{
+			length = c;
+			break;
+		}
+	}
+	delete[] sum;
 	return graySum;
 
 }
@@ -1138,6 +1180,10 @@ int DataIdentify::getWINPLAIdentify()
 				continue ; 
 
 			}
+			else
+			{
+				dataOutput.mHorseInfo.isSCR[i] = false;
+			}
 
 			float tempSum = 0.0;
 			if (dotFlag)															// contain a dot
@@ -1219,6 +1265,44 @@ int DataIdentify::getWINPLAIdentify()
 	return EXEC_SUCCESS;
 }
 
+
+
+//检测数字底下是否有 绿色底色
+// srcMat彩色原图
+bool DataIdentify::haveGroundColor(Mat srcMat, int flag)
+{
+	//转为灰度图像
+	cvtColor(srcMat, srcMat, CV_RGB2GRAY);
+
+	//灰度阈值
+	int graySum = 0;
+	for (int c = 0; c < srcMat.cols; c++)
+	{
+		for (int r = 0; r < srcMat.rows; r++)
+		{
+			if (srcMat.at<uchar>(r, c) < 85)
+			{
+				srcMat.at<uchar>(r, c) = 0;
+			}
+			graySum += srcMat.at<uchar>(r, c);
+		}
+
+
+	}
+
+
+	qDebug("graySum = %d ", graySum);
+
+	int threshold = 55000;
+	if (graySum >= threshold)
+	{
+		return true;
+	}
+	else
+		return false;
+
+
+}
  
 
 //识别 QIN QPL   同时识别ＱＩＮ　ＱＰＬ

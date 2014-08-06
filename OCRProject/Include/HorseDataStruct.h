@@ -116,9 +116,11 @@ struct HorseInfo
 	 
 	int  horseID[HORSENUMBER];				// the horse ID
 	bool isSCR[HORSENUMBER];				//退赛 标志位
-
+	//马名的灰度和
 	int  graySum[HORSENUMBER];				//灰度值和
-	
+	//名字长度
+	int length[HORSENUMBER];
+
  //	QString horseName[HORSENUMBER];
 };
 

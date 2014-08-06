@@ -105,10 +105,12 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 	// 第一次检测到的场次号必须是正确的，否则所有场次号都是错误的。
 	// 如果每次都从1开始，那么可以保证 所有场次号正确。
 
-	if (isRaceSessionDetected & (firstRaceSessionDetected + outputStruct.horseNameChangedNum - 1 
-								- Global::session == 1))
+//	if (isRaceSessionDetected & (firstRaceSessionDetected + outputStruct.horseNameChangedNum - 1 
+//								- Global::session == 1))
+	if ( outputStruct.horseNameChangedNum - Global::session == 1 )
 	{
-		Global::session = firstRaceSessionDetected + outputStruct.horseNameChangedNum - 1;
+		//Global::session = firstRaceSessionDetected + outputStruct.horseNameChangedNum - 1;
+		Global::session = outputStruct.horseNameChangedNum;
 
 		//场次号发生了变化，请求新的场次号
 		emit requestRaceIdSig();
@@ -215,7 +217,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 
 			if (maxContentCount > 8 & isRaceSessionDetected == false )
 			{
-				Global::session = maxContent;
+				//Global::session = maxContent;
 				// 场次号发生了变化，请求新的场次号
 				emit requestRaceIdSig();
 			//	Global::isSessionRaceIdRequested = false;
@@ -663,6 +665,8 @@ int BllDataIdentify::startHistoryDataIdentify(QString fileName, int videoType)
 
 		qDebug("frame count = %d",f);
 		progressPercent = 100* f * videoFps / totalFrames;
+
+		imwrite("frameMat.bmp", frameMat);
 
 		algorithmExecHistory(videoType, NULL, frameMat, progressPercent);
 
