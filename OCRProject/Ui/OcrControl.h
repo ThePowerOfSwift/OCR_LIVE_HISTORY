@@ -3,6 +3,7 @@
 #define OCRCONTROL_H
 
 #include <QWidget>
+#include <QFile>
 #include "ui_OcrControl.h"
 #include "Bll/BllRealTimeTrans.h"
 #include "Include/HorseDataStruct.h"
@@ -120,7 +121,10 @@ public slots:
 	历史视频快进 10s
 	*/
 	void on_advance10SecBtn_clicked();
-
+	/*
+		视频回撤
+	*/
+	void on_pullBackBtn_clicked();
 	/*
 	 暂停采集
 	*/
@@ -188,7 +192,26 @@ private:
 	int historyVideoFileNum;
 
 
+	//保存上一次 快进的数据值
+
+	int preVideoAdvanceValue;
 //	ReadHistoryVideo myReadHistoryVideo;
+
+
+	//文件 
+
+	QFile horseNameHistoryDataFile;
+	QFile horseNameIdDataFile;
+
+	QTextStream horseNameHistoryData;
+	QTextStream horseNameIdData;
+
+	QString horseNameHistoryStr;
+	QString horseNameIdStr;
+
+	//历史视频比赛日期
+
+	QString historyVideoDate;
 
 };
 

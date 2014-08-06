@@ -83,6 +83,7 @@ public:
     QPushButton *pauseCaliBtn;
     QPushButton *continueBtn;
     QPushButton *inputUserDataBtn;
+    QPushButton *pullBackBtn;
     QPushButton *advance3MinBtn;
     QPushButton *advance1MinBtn;
     QPushButton *advance30SecBtn;
@@ -430,6 +431,11 @@ public:
 
         verticalLayout_23->addWidget(inputUserDataBtn);
 
+        pullBackBtn = new QPushButton(groupBox);
+        pullBackBtn->setObjectName(QStringLiteral("pullBackBtn"));
+
+        verticalLayout_23->addWidget(pullBackBtn);
+
         advance3MinBtn = new QPushButton(groupBox);
         advance3MinBtn->setObjectName(QStringLiteral("advance3MinBtn"));
 
@@ -456,7 +462,7 @@ public:
 
         verticalLayout_23->setStretch(0, 20);
         verticalLayout_23->setStretch(1, 1);
-        verticalLayout_23->setStretch(9, 20);
+        verticalLayout_23->setStretch(10, 20);
 
         horizontalLayout_12->addLayout(verticalLayout_23);
 
@@ -966,6 +972,7 @@ public:
         pauseCaliBtn->setText(QApplication::translate("OcrControl", "\346\232\202\345\201\234", 0));
         continueBtn->setText(QApplication::translate("OcrControl", "\347\273\247\347\273\255\350\257\206\345\210\253", 0));
         inputUserDataBtn->setText(QApplication::translate("OcrControl", "\350\276\223\345\205\245", 0));
+        pullBackBtn->setText(QApplication::translate("OcrControl", "\350\277\224\345\233\236\345\277\253\350\277\233\345\211\215", 0));
         advance3MinBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\2333\345\210\206\351\222\237", 0));
         advance1MinBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\2331\345\210\206\351\222\237", 0));
         advance30SecBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\23330\347\247\222", 0));

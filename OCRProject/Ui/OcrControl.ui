@@ -274,7 +274,7 @@
                       </widget>
                      </item>
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_23" stretch="20,1,0,0,0,0,0,0,0,20">
+                      <layout class="QVBoxLayout" name="verticalLayout_23" stretch="20,1,0,0,0,0,0,0,0,0,20">
                        <item>
                         <layout class="QVBoxLayout" name="verticalLayout_3">
                          <item>
@@ -350,6 +350,13 @@
                         <widget class="QPushButton" name="inputUserDataBtn">
                          <property name="text">
                           <string>输入</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pullBackBtn">
+                         <property name="text">
+                          <string>返回快进前</string>
                          </property>
                         </widget>
                        </item>

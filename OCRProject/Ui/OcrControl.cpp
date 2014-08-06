@@ -360,6 +360,36 @@ OcrControl::OcrControl(QWidget *parent)
 	// 有了新的场次号，请求raceID
 	QObject::connect(bllDataIdentify, SIGNAL(requestRaceIdSig()), bllRealTimeTrans, SLOT(requestRaceID()));//停止计算
 
+	//打开文件
+	horseNameIdDataFile.setFileName(".//dat//horseNameIdDataFile.txt");
+
+	if (!horseNameIdDataFile.open(QIODevice::ReadOnly | QIODevice::Text))
+		return;
+
+	horseNameIdData.setDevice(&horseNameIdDataFile);
+ 
+	while (!horseNameIdData.atEnd())
+	{
+		horseNameIdStr += horseNameIdData.readLine();
+		 
+	}
+
+	horseNameIdDataFile.close();
+
+	horseNameHistoryDataFile.setFileName(".//dat//horseNameHistoryDataFile.txt");
+	if (!horseNameHistoryDataFile.open(QIODevice::ReadOnly | QIODevice::Text))
+		return;
+
+	horseNameHistoryData.setDevice(&horseNameHistoryDataFile);
+
+	while (!horseNameHistoryData.atEnd())
+	{
+		horseNameHistoryStr += horseNameHistoryData.readLine();
+
+	}
+
+	horseNameIdDataFile.close();
+	 
 }
 
 OcrControl::~OcrControl()
@@ -532,10 +562,17 @@ void OcrControl::startProcessHistoryVideo()
 		fileName = takeTopFile(historyVideoFileNum );
 		//fileName = "E:\\BaiduYunDownload\\20130109184858_clip1.wmv";
 		emit startIdentify(fileName, Global::videoType);//开始识别
+		int labelPos;
+
+		labelPos = fileName.indexOf("01N");
+		historyVideoDate = fileName.mid(labelPos+3, 8);
 	}
 
-	 ;
+	int temp;
+	temp = horseNameHistoryStr.indexOf(historyVideoDate);
 
+	QString str;
+	str = horseNameHistoryStr.mid(temp, 2000);
 	
 	/*
 	for (int row = 0; row < ui.fileTableWidget->rowCount(); row++)
@@ -963,6 +1000,8 @@ void OcrControl::on_caliSessionCountDownBtn_clicked()
 void OcrControl::on_advance3MinBtn_clicked()
 {
 	Global::frameAccValue = 60*3 ;
+
+	preVideoAdvanceValue = Global::frameAccValue;
 }
 
 /*
@@ -971,6 +1010,7 @@ void OcrControl::on_advance3MinBtn_clicked()
 void OcrControl::on_advance1MinBtn_clicked()
 {
 	Global::frameAccValue = 60;
+	preVideoAdvanceValue = Global::frameAccValue;
 }
 /*
 历史视频快进 30s
@@ -978,6 +1018,7 @@ void OcrControl::on_advance1MinBtn_clicked()
 void OcrControl::on_advance30SecBtn_clicked()
 {
 	Global::frameAccValue = 30;
+	preVideoAdvanceValue = Global::frameAccValue;
 }
 /*
 历史视频快进 10s
@@ -985,9 +1026,14 @@ void OcrControl::on_advance30SecBtn_clicked()
 void OcrControl::on_advance10SecBtn_clicked()
 {
 	Global::frameAccValue = 10;
+	preVideoAdvanceValue = Global::frameAccValue;
 }
 
+void OcrControl::on_pullBackBtn_clicked()
+{
 
+	Global::frameAccValue = Global::frameAccValue - preVideoAdvanceValue;
+}
 void OcrControl::on_pauseCaliBtn_clicked()
 {
 	Global::pauseDataIdentifyTag = true;//停止模拟标示符

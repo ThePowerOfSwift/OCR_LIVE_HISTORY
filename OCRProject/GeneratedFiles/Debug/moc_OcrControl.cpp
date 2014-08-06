@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_OcrControl_t {
-    QByteArrayData data[54];
-    char stringdata[888];
+    QByteArrayData data[55];
+    char stringdata[911];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -79,10 +79,11 @@ QT_MOC_LITERAL(46, 686, 25),
 QT_MOC_LITERAL(47, 712, 25),
 QT_MOC_LITERAL(48, 738, 26),
 QT_MOC_LITERAL(49, 765, 26),
-QT_MOC_LITERAL(50, 792, 23),
-QT_MOC_LITERAL(51, 816, 27),
-QT_MOC_LITERAL(52, 844, 22),
-QT_MOC_LITERAL(53, 867, 20)
+QT_MOC_LITERAL(50, 792, 22),
+QT_MOC_LITERAL(51, 815, 23),
+QT_MOC_LITERAL(52, 839, 27),
+QT_MOC_LITERAL(53, 867, 22),
+QT_MOC_LITERAL(54, 890, 20)
     },
     "OcrControl\0connect\0\0disconnect\0login\0"
     "requestHorseInfo\0requestRaceId\0raceNO\0"
@@ -107,7 +108,7 @@ QT_MOC_LITERAL(53, 867, 20)
     "on_advance1MinBtn_clicked\0"
     "on_advance30SecBtn_clicked\0"
     "on_advance10SecBtn_clicked\0"
-    "on_pauseCaliBtn_clicked\0"
+    "on_pullBackBtn_clicked\0on_pauseCaliBtn_clicked\0"
     "on_inputUserDataBtn_clicked\0"
     "on_continueBtn_clicked\0updateAfterUserInput"
 };
@@ -119,7 +120,7 @@ static const uint qt_meta_data_OcrControl[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      42,   14, // methods
+      43,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -127,50 +128,51 @@ static const uint qt_meta_data_OcrControl[] = {
       11,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    2,  224,    2, 0x06 /* Public */,
-       3,    0,  229,    2, 0x06 /* Public */,
-       4,    0,  230,    2, 0x06 /* Public */,
-       5,    0,  231,    2, 0x06 /* Public */,
-       6,    1,  232,    2, 0x06 /* Public */,
-       8,    1,  235,    2, 0x06 /* Public */,
-      10,    0,  238,    2, 0x06 /* Public */,
-      11,    0,  239,    2, 0x06 /* Public */,
-      12,    0,  240,    2, 0x06 /* Public */,
-      13,    2,  241,    2, 0x06 /* Public */,
-      16,    0,  246,    2, 0x06 /* Public */,
+       1,    2,  229,    2, 0x06 /* Public */,
+       3,    0,  234,    2, 0x06 /* Public */,
+       4,    0,  235,    2, 0x06 /* Public */,
+       5,    0,  236,    2, 0x06 /* Public */,
+       6,    1,  237,    2, 0x06 /* Public */,
+       8,    1,  240,    2, 0x06 /* Public */,
+      10,    0,  243,    2, 0x06 /* Public */,
+      11,    0,  244,    2, 0x06 /* Public */,
+      12,    0,  245,    2, 0x06 /* Public */,
+      13,    2,  246,    2, 0x06 /* Public */,
+      16,    0,  251,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      17,    0,  247,    2, 0x0a /* Public */,
-      18,    0,  248,    2, 0x0a /* Public */,
-      19,    0,  249,    2, 0x0a /* Public */,
-      20,    0,  250,    2, 0x0a /* Public */,
-      21,    0,  251,    2, 0x0a /* Public */,
-      22,    0,  252,    2, 0x0a /* Public */,
-      23,    0,  253,    2, 0x0a /* Public */,
-      24,    1,  254,    2, 0x0a /* Public */,
-      26,    0,  257,    2, 0x0a /* Public */,
-      27,    0,  258,    2, 0x0a /* Public */,
-      28,    4,  259,    2, 0x0a /* Public */,
-      34,    4,  268,    2, 0x0a /* Public */,
-      35,    2,  277,    2, 0x0a /* Public */,
-      36,    2,  282,    2, 0x0a /* Public */,
-      37,    0,  287,    2, 0x0a /* Public */,
-      38,    0,  288,    2, 0x0a /* Public */,
-      39,    0,  289,    2, 0x0a /* Public */,
-      40,    0,  290,    2, 0x0a /* Public */,
-      41,    1,  291,    2, 0x0a /* Public */,
-      42,    1,  294,    2, 0x0a /* Public */,
-      42,    0,  297,    2, 0x2a /* Public | MethodCloned */,
-      44,    0,  298,    2, 0x0a /* Public */,
-      45,    0,  299,    2, 0x0a /* Public */,
-      46,    0,  300,    2, 0x0a /* Public */,
-      47,    0,  301,    2, 0x0a /* Public */,
-      48,    0,  302,    2, 0x0a /* Public */,
-      49,    0,  303,    2, 0x0a /* Public */,
-      50,    0,  304,    2, 0x0a /* Public */,
-      51,    0,  305,    2, 0x0a /* Public */,
-      52,    0,  306,    2, 0x0a /* Public */,
-      53,    1,  307,    2, 0x0a /* Public */,
+      17,    0,  252,    2, 0x0a /* Public */,
+      18,    0,  253,    2, 0x0a /* Public */,
+      19,    0,  254,    2, 0x0a /* Public */,
+      20,    0,  255,    2, 0x0a /* Public */,
+      21,    0,  256,    2, 0x0a /* Public */,
+      22,    0,  257,    2, 0x0a /* Public */,
+      23,    0,  258,    2, 0x0a /* Public */,
+      24,    1,  259,    2, 0x0a /* Public */,
+      26,    0,  262,    2, 0x0a /* Public */,
+      27,    0,  263,    2, 0x0a /* Public */,
+      28,    4,  264,    2, 0x0a /* Public */,
+      34,    4,  273,    2, 0x0a /* Public */,
+      35,    2,  282,    2, 0x0a /* Public */,
+      36,    2,  287,    2, 0x0a /* Public */,
+      37,    0,  292,    2, 0x0a /* Public */,
+      38,    0,  293,    2, 0x0a /* Public */,
+      39,    0,  294,    2, 0x0a /* Public */,
+      40,    0,  295,    2, 0x0a /* Public */,
+      41,    1,  296,    2, 0x0a /* Public */,
+      42,    1,  299,    2, 0x0a /* Public */,
+      42,    0,  302,    2, 0x2a /* Public | MethodCloned */,
+      44,    0,  303,    2, 0x0a /* Public */,
+      45,    0,  304,    2, 0x0a /* Public */,
+      46,    0,  305,    2, 0x0a /* Public */,
+      47,    0,  306,    2, 0x0a /* Public */,
+      48,    0,  307,    2, 0x0a /* Public */,
+      49,    0,  308,    2, 0x0a /* Public */,
+      50,    0,  309,    2, 0x0a /* Public */,
+      51,    0,  310,    2, 0x0a /* Public */,
+      52,    0,  311,    2, 0x0a /* Public */,
+      53,    0,  312,    2, 0x0a /* Public */,
+      54,    1,  313,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString, QMetaType::Int,    2,    2,
@@ -207,6 +209,7 @@ static const uint qt_meta_data_OcrControl[] = {
     QMetaType::Void, QMetaType::QString,   14,
     QMetaType::QString, QMetaType::Int,   43,
     QMetaType::QString,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -266,10 +269,11 @@ void OcrControl::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 35: _t->on_advance1MinBtn_clicked(); break;
         case 36: _t->on_advance30SecBtn_clicked(); break;
         case 37: _t->on_advance10SecBtn_clicked(); break;
-        case 38: _t->on_pauseCaliBtn_clicked(); break;
-        case 39: _t->on_inputUserDataBtn_clicked(); break;
-        case 40: _t->on_continueBtn_clicked(); break;
-        case 41: _t->updateAfterUserInput((*reinterpret_cast< DataOutput(*)>(_a[1]))); break;
+        case 38: _t->on_pullBackBtn_clicked(); break;
+        case 39: _t->on_pauseCaliBtn_clicked(); break;
+        case 40: _t->on_inputUserDataBtn_clicked(); break;
+        case 41: _t->on_continueBtn_clicked(); break;
+        case 42: _t->updateAfterUserInput((*reinterpret_cast< DataOutput(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -369,13 +373,13 @@ int OcrControl::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 42)
+        if (_id < 43)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 42;
+        _id -= 43;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 42)
+        if (_id < 43)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 42;
+        _id -= 43;
     }
     return _id;
 }
