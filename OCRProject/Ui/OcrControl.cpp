@@ -103,8 +103,8 @@ OcrControl::OcrControl(QWidget *parent)
 		indexLbel_3->setSizePolicy(sizePolicy);
 		indexLbel_3->setAlignment(Qt::AlignLeft);
 
-		indexLbel_3->setMinimumSize(QSize(40, labelHeight));
-		indexLbel_3->setMaximumSize(QSize(40, labelHeight));
+		indexLbel_3->setMinimumSize(QSize(50, labelHeight));
+		indexLbel_3->setMaximumSize(QSize(50, labelHeight));
 		indexLabelList.append(indexLbel_3);
 		horizontalLayout_2->addWidget(indexLbel_3);
 
@@ -128,8 +128,8 @@ OcrControl::OcrControl(QWidget *parent)
 		font1.setPointSize(12);
 		winLbl_3->setFont(font1);
 		winLbl_3->setAlignment(Qt::AlignLeft);
-		winLbl_3->setMinimumSize(QSize(40, labelHeight));
-		winLbl_3->setMaximumSize(QSize(40, labelHeight));
+		winLbl_3->setMinimumSize(QSize(30, labelHeight));
+		winLbl_3->setMaximumSize(QSize(30, labelHeight));
 		winLableList.append(winLbl_3);
 		horizontalLayout_2->addWidget(winLbl_3);
 
@@ -140,13 +140,13 @@ OcrControl::OcrControl(QWidget *parent)
 		PLALbl_3->setFont(font1);
 		PLALbl_3->setAlignment(Qt::AlignLeft);
 
-		PLALbl_3->setMinimumSize(QSize(40, labelHeight));
-		PLALbl_3->setMaximumSize(QSize(40, labelHeight));
+		PLALbl_3->setMinimumSize(QSize(30, labelHeight));
+		PLALbl_3->setMaximumSize(QSize(30, labelHeight));
 		plaLableList.append(PLALbl_3);
 		horizontalLayout_2->addWidget(PLALbl_3);
 
 		horizontalLayout_2->setStretch(0, 1);
-		horizontalLayout_2->setStretch(1, 3);
+		horizontalLayout_2->setStretch(1, 4);
 		horizontalLayout_2->setStretch(2, 3);
 		horizontalLayout_2->setStretch(3, 3);
 
@@ -358,37 +358,16 @@ OcrControl::OcrControl(QWidget *parent)
 	QObject::connect(bllDataIdentify, SIGNAL(readNextFile()), this, SLOT(startProcessHistoryVideo ()));//停止计算
 
 	// 有了新的场次号，请求raceID
-	QObject::connect(bllDataIdentify, SIGNAL(requestRaceIdSig()), bllRealTimeTrans, SLOT(requestRaceID()));//停止计算
+	QObject::connect(bllDataIdentify, SIGNAL(requestRaceIdSig()), bllRealTimeTrans, SLOT(requestRaceID())); 
 
-	//打开文件
-	horseNameIdDataFile.setFileName(".//dat//horseNameIdDataFile.txt");
+	//有了新的场次号，开始索引马名，id
 
-	if (!horseNameIdDataFile.open(QIODevice::ReadOnly | QIODevice::Text))
-		return;
+	//QObject::connect(bllDataIdentify, SIGNAL(requestRaceIdSig()), this, SLOT(getHorseNameFromDataFile()));
 
-	horseNameIdData.setDevice(&horseNameIdDataFile);
- 
-	while (!horseNameIdData.atEnd())
-	{
-		horseNameIdStr += horseNameIdData.readLine();
-		 
-	}
+	
 
-	horseNameIdDataFile.close();
 
-	horseNameHistoryDataFile.setFileName(".//dat//horseNameHistoryDataFile.txt");
-	if (!horseNameHistoryDataFile.open(QIODevice::ReadOnly | QIODevice::Text))
-		return;
-
-	horseNameHistoryData.setDevice(&horseNameHistoryDataFile);
-
-	while (!horseNameHistoryData.atEnd())
-	{
-		horseNameHistoryStr += horseNameHistoryData.readLine();
-
-	}
-
-	horseNameIdDataFile.close();
+	 
 	 
 }
 
@@ -530,11 +509,8 @@ void OcrControl::on_startAcqBtn_clicked()
 	//是历史视频 的话，那么应该读取视频文件 
 	if (videoType != LIVE )
 	{
-		threadDataIdentify->start();//开始识别
-
-		startProcessHistoryVideo();
-
-		
+		threadDataIdentify->start();//开始识别 
+		startProcessHistoryVideo(); 
 	}
 	else //实时直播
 	{
@@ -547,9 +523,112 @@ void OcrControl::on_startAcqBtn_clicked()
 
 }
 
+/*
+	获取马名
+Race Date 	20060101
+Start one Session 	 02
+Toal horse number 12
+*/
+
+
+void OcrControl::getHorseNameFromDataFile(   )
+{ 
+	/* 
+	//清空list
+	 
+	horseNameList.clear();
+	horseIdList.clear();
+ 
+	int labelPos; 
+	labelPos = fileName.indexOf("01N");
+	historyVideoDate = fileName.mid(labelPos + 3, 8);
+
+
+	QString searchLabel; 
+	searchLabel = historyVideoDate + QString("Start one Session \t ");
+	if (Global::session < 10)
+	{
+		searchLabel += QString("0")+QString::number(Global::session);
+	}
+	else
+		searchLabel += QString::number(Global::session);
+
+	int oneSessionStrPos;
+	oneSessionStrPos = horseNameHistoryStr.indexOf(searchLabel);
+
+
+	QString oneSessionStr;
+	oneSessionStr = horseNameHistoryStr.mid(oneSessionStrPos, 140);
+
+	int horseNum = 0;
+	QString horseNumsStr = oneSessionStr.mid(48, 1);
+	horseNum = horseNumsStr.toInt();
+
+	QString horseNamePartStr;
+	horseNamePartStr = oneSessionStr.mid(49, 96);
+
+	QString oneHorseName;
+	QString cha;
+	for (int i = 0; i < horseNamePartStr.size(); i++)
+	{
+		
+		cha = horseNamePartStr.mid(i, 1);
+		if (cha > "z")
+		{
+			oneHorseName += cha;
+		}
+	 
+
+		if ((cha >= QString("1") & cha <= QString("9")) | cha == QString("E"))
+		{
+			if (oneHorseName.size() >= 2)
+			{
+				horseNameList.append(oneHorseName);
+
+				int pos = horseNameIdStr.indexOf(oneHorseName);
+
+				QString idStr;
+
+				idStr = horseNameIdStr.mid(pos - 7,7);
+				int horseId;
+				QString oneNum;
+				for (int index = 0; index < idStr.size();index++)
+				{
+					 
+					if (idStr.mid( index, 1) >= QString("0")
+						& idStr.mid(index, 1) <= QString("9"))
+					{
+						oneNum += idStr.mid(index, 1);
+						 
+					}
+
+					if (idStr.mid(idStr.size() - 1 - index, 1) >= QString("z"))
+					{
+						horseId = oneNum.toInt();
+						horseIdList.append(horseId);
+						break;
+					}
+				}
+				oneHorseName = QString("");
+
+
+				
+				
+
+			}
+
+		}
+		 
+		
+	}
+
+
+	*/
+}
+
 void OcrControl::startProcessHistoryVideo()
 {
-	QString fileName;
+	
 
 	//fileName = "E:\\BaiduYunDownload\\20130109184858_clip1.wmv";
 	//emit startIdentify( fileName, videoType );//开始识别
@@ -562,17 +641,12 @@ void OcrControl::startProcessHistoryVideo()
 		fileName = takeTopFile(historyVideoFileNum );
 		//fileName = "E:\\BaiduYunDownload\\20130109184858_clip1.wmv";
 		emit startIdentify(fileName, Global::videoType);//开始识别
-		int labelPos;
 
-		labelPos = fileName.indexOf("01N");
-		historyVideoDate = fileName.mid(labelPos+3, 8);
+	//	getHorseNameFromDataFile() ;
+	
 	}
 
-	int temp;
-	temp = horseNameHistoryStr.indexOf(historyVideoDate);
 
-	QString str;
-	str = horseNameHistoryStr.mid(temp, 2000);
 	
 	/*
 	for (int row = 0; row < ui.fileTableWidget->rowCount(); row++)
@@ -757,6 +831,11 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 
 void OcrControl::updateUiData(DataOutput output, QByteArray array)
 {
+	//场次号，发生变化，重新获取 马名 以及id 
+	if (output.sessionChangedFlag)
+	{
+		getHorseNameFromDataFile();
+	}
 
 	ui.userInputLabel->setText(QString(" O R "));
 	//更新马信息
@@ -774,8 +853,15 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 		
 	for (int i = 0; i < horseNameEditList.size(); i++)
 	{
+		QString horseName;
+		wchar_t *horseNameChar = new wchar_t[6];
+		memset(horseNameChar, 0, 6 * sizeof(wchar_t));
+		memcpy(horseNameChar, output.mHorseInfo.horseName[i], 4 * sizeof(wchar_t));
+
+		horseName = horseName.fromWCharArray(horseNameChar) ;
+
 		if (i < output.horseNum)
-			horseNameEditList[i]->setText(QString("马名%1").arg(i));
+			horseNameEditList[i]->setText(horseName);
 		else
 		{
 			indexLabelList[i]->setText(QString("0"));
@@ -1031,8 +1117,13 @@ void OcrControl::on_advance10SecBtn_clicked()
 
 void OcrControl::on_pullBackBtn_clicked()
 {
-
+	
 	Global::frameAccValue = Global::frameAccValue - preVideoAdvanceValue;
+
+	if (Global::frameAccValue <= 1)
+	{
+		Global::frameAccValue = 1;
+	}
 }
 void OcrControl::on_pauseCaliBtn_clicked()
 {

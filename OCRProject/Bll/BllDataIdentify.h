@@ -92,6 +92,13 @@ private:
 
 	int algorithmExecLive( int videoType, uchar * imageBuf, Mat &srcMat);
 
+
+	/*
+	通过文件名，以及场次号 获取马名 
+	*/
+
+	void getHorseNameFromDataFile(QString fileName, DataOutput &outputStruct);
+
 	DataOutput priDataOutput;
 
 	//live  香港18台 直播 720*576
@@ -160,6 +167,31 @@ private:
 	int frameAccValue;
 
  
+	QString videoFileName;
+	//文件 
+	 
+	QFile horseNameHistoryDataFile;
+	QFile horseNameIdDataFile;
+
+	QTextStream horseNameHistoryData;
+	QTextStream horseNameIdData;
+
+	QString horseNameHistoryStr;
+	QString horseNameIdStr;
+
+	//历史视频比赛日期
+
+	QString historyVideoDate;
+
+
+	//保存马名
+
+	QStringList horseNameList;
+
+	QList <int> horseIdList;
+
+	
+
 };
 
 #endif // BllDataIdentify_H

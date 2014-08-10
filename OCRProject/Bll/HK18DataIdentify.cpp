@@ -61,6 +61,9 @@ HK18DataIdentify::HK18DataIdentify()
 	{
 		for (int j = 0; j < QIN_QPL_COL; j++)
 			qinQPLPosStruct.rect[i][j] = cvRect(0, 0, 0, 0);
+
+		memset(dataOutput.mHorseInfo.horseName[i], 0, sizeof(wchar_t)* 4);
+		dataOutput.mHorseInfo.horseID[i] = 0;
 	}
 
 	// 倒计时位置 初始化
@@ -91,7 +94,8 @@ HK18DataIdentify::HK18DataIdentify()
 
 	raceTimeSvm.load(".\\SVM\\raceTime.xml") ;
 	sessionNumSvm.load(".\\SVM\\sessionNum.xml") ;
-
+	// 
+	dataOutput.horseNameChangedNum = 0;
 }
 
 HK18DataIdentify::~HK18DataIdentify()
@@ -429,6 +433,19 @@ int HK18DataIdentify::setHorseNameRectPos()
 
 	//转灰度图像
 	cvtColor(horseNameRegion, horseNameRegion, CV_RGB2GRAY);
+
+	//过滤掉 低灰度值部分
+	
+	for (int c = 0; c < horseNameRegion.cols;c++)
+	{
+		for (int r = 0; r < horseNameRegion.rows;r++)
+		{
+			if (horseNameRegion.at<uchar>(r,c) < 100 )
+			{
+				horseNameRegion.at<uchar>(r, c) = 0;
+			}
+		}
+	}
 	Mat edge;
 	Canny(horseNameRegion, edge, 450, 400, 3, true);
 	int *y = new int[HORSENUMBER + 1];
@@ -481,13 +498,31 @@ int HK18DataIdentify::setHorseNameRectPos()
 
 int HK18DataIdentify::setWINPLARectPos()
 {
-	 
-	Mat winRegion(image, WIN_POS_RECT);
-	Mat plaRegion(image, PLA_POS_RECT);
 
+	//对图片做预处理 灰度，然后灰度阈值
+	Mat imageGray;
+
+	image.copyTo(imageGray);
+	cvtColor(imageGray, imageGray, CV_RGB2GRAY);
+	for (int c = 0; c < imageGray.cols; c++)
+	{
+		for (int r = 0; r < imageGray.rows; r++)
+		{
+			if (imageGray.at<uchar>(r, c) < 90)
+			{
+				imageGray.at<uchar>(r, c) = 0;
+			}
+		}
+	}
+	Mat winRegion(imageGray, WIN_POS_RECT);
+	Mat plaRegion(imageGray, PLA_POS_RECT);
+
+
+	imwrite("WIN_Region.bmp", winRegion);
+	imwrite("PLA_Region.bmp", plaRegion);
 	//转灰度图像
-	cvtColor(winRegion, winRegion, CV_RGB2GRAY);
-	cvtColor(plaRegion, plaRegion, CV_RGB2GRAY);
+//	cvtColor(winRegion, winRegion, CV_RGB2GRAY);
+//	cvtColor(plaRegion, plaRegion, CV_RGB2GRAY);
 
 	Mat edgePla;
 	Mat edgeWin;
@@ -498,9 +533,18 @@ int HK18DataIdentify::setWINPLARectPos()
 	int *yPla = new int[HORSENUMBER + 1];
 	
 	int x0, x1;
-
-	calculateGraySumXForSetWINPLARect(edgeWin, yWin, dataOutput.horseNum);
-	calculateGraySumXForSetWINPLARect(edgePla, yPla, dataOutput.horseNum);
+	if (calculateGraySumXForSetWINPLARect(winRegion, yWin, dataOutput.horseNum) == EXIT_THIS_OCR )
+	{
+		algorithmState = EXIT_THIS_OCR;
+		return EXIT_THIS_OCR;
+	}
+	
+	if (calculateGraySumXForSetWINPLARect(plaRegion, yPla, dataOutput.horseNum)  == EXIT_THIS_OCR)
+	{
+		algorithmState = EXIT_THIS_OCR;
+		return EXIT_THIS_OCR;
+	}
+	// get the relativ
 	// get the relative position of the three vertex in the first row, relative to the origin 
 	//
 
@@ -578,7 +622,7 @@ int HK18DataIdentify::setWINPLARectPos()
 		winPlaPosStruct.rect[i][1].x = PLA_POS_RECT.x + x0 - 2;
 		winPlaPosStruct.rect[i][1].width = x1 - x0 + 4;
 
-		winPlaPosStruct.rect[i][1].y = PLA_POS_RECT.y + yWin[i];
+		winPlaPosStruct.rect[i][1].y = PLA_POS_RECT.y + yPla[i];
 
 
 		if (i == dataOutput.horseNum - 1)
@@ -588,7 +632,13 @@ int HK18DataIdentify::setWINPLARectPos()
 		else
 		{
 
-			winPlaPosStruct.rect[i][1].height = yWin[i + 1] - yWin[i];
+			//如果高度过高，那么说明出现了 退赛的马匹，那么强制设置高度为固定值。
+			if (yPla[i + 1] - yPla[i] > 18)
+			{
+				yPla[i + 1] = yPla[i] + NUMBER_HEIGHT + 2;
+			}
+
+			winPlaPosStruct.rect[i][1].height = yPla[i + 1] - yPla[i];
 		}
 
 		if (winPlaPosStruct.rect[i][1].width <= 20)
@@ -983,9 +1033,117 @@ int HK18DataIdentify::setCountDownRectPos()
 //识别马名 
 int HK18DataIdentify::getHorseNameIdentify()
 {
+	//通过计算灰度值和，来确定是否发生了马名字的变化，马名字发生了变化，说明
+	// 场次号发生了变化。
+
+	isHorseNameChanged();
 	//暂时不识别
 	int temp = 0 ;
 	return EXIT_SUCCESS;
+}
+
+//通过计算灰度值和，来确定是否发生了马名字的变化，马名字发生了变化，说明
+int HK18DataIdentify::isHorseNameChanged()
+{
+
+	//清空上一次的 
+	 
+
+	//存储马名的灰度和
+	int *graySum ;
+	graySum = new int  [dataOutput.horseNum + 1];
+	int  ChangedNum = 0;
+	int graySumThreshold = 3000 ;
+	int *length;
+
+	length = new int[dataOutput.horseNum + 1];
+	
+	memset(graySum, 0, sizeof(int)* dataOutput.horseNum);
+	memset(length, 0, sizeof(int)* dataOutput.horseNum);
+
+ 	for (int h = 0; h < dataOutput.horseNum;h ++)
+	{
+		
+		Mat horseNameRegion(image, horseNamePosStruct.rect[h]);
+		cvtColor(horseNameRegion, horseNameRegion, CV_RGB2GRAY);
+		Mat horseNameRegionEdge;
+		//Canny(horseNameRegion, horseNameRegionEdge, 450, 400, 3, true);
+		 
+		graySum[h] = calculateGraySum(horseNameRegion,length[h]);
+
+		
+		if ( abs(graySum[h] - dataOutput.mHorseInfo.graySum[h]) > graySumThreshold 
+			& abs(length[h]-dataOutput.mHorseInfo.length[h]) > 4 ) 
+		{
+			ChangedNum++;
+#ifdef QDEBUG_OUTPUT
+			qDebug("  graySum[%d] = %d ,pri = %d \n",h,
+				graySum[h], dataOutput.mHorseInfo.graySum[h]);
+#endif
+			ChangedNum++;
+
+		}
+	
+		dataOutput.mHorseInfo.graySum[h] = graySum[h];
+		dataOutput.mHorseInfo.length[h] = length[h];
+	}
+	 
+	if (ChangedNum > 1 )
+	{
+#ifdef QDEBUG_OUTPUT
+		qDebug("  horseNameChangedNum = %d \n",
+			dataOutput.horseNameChangedNum);
+#endif
+		dataOutput.horseNameChangedNum++;
+	}
+	delete[] graySum;
+
+
+	return EXEC_SUCCESS;
+
+
+}
+//计算灰度值和，返回值即为灰度值和 同时做阈值
+int HK18DataIdentify::calculateGraySum(Mat srcMat,int &length)
+{
+	int graySum = 0 ;
+
+	for (int c = 0; c < srcMat.cols;c++)
+	{
+		for (int r = 0; r < srcMat.rows;r++)
+		{
+			if (srcMat.at<uchar>(r,c) < 100 )
+			{
+				srcMat.at<uchar>(r, c) = 0 ;
+			}
+			graySum += srcMat.at<uchar>(r, c);
+		}
+	}
+
+	int *sum;
+	sum = new int[srcMat.cols + 1];
+	memset(sum, 0, sizeof(int)*srcMat.cols);
+
+	for (int c = 0; c < srcMat.cols; c++)
+	{
+		for (int r = 0; r < srcMat.rows; r++)
+		{
+			sum[c] += srcMat.at<uchar>(r, c);
+		}
+	}
+
+	for (int c = srcMat.cols-1 ; c >= 0 ; c-- )
+	{
+		if (sum[c] > 200 )
+		{
+			length = c;
+			break;
+		}
+	}
+	delete[] sum;
+	return graySum;
+
+
 }
 // 识别 WIN PLA
 
@@ -1000,10 +1158,30 @@ int HK18DataIdentify::getWINPLAIdentify()
 	CvRect rectDot[3];
 	CvRect rectNoDot[3];
 
-	rectDot[0].x = 0;	rectDot[1].x = 9;		rectDot[2].x = 23 ;
-	rectNoDot[0].x = 0; rectNoDot[1].x = 9;	rectNoDot[2].x = 18;
+	rectDot[0].x = 0;	rectDot[1].x = 12;		rectDot[2].x = 25 ;
+	rectNoDot[0].x = 0; rectNoDot[1].x = 14;	rectNoDot[2].x = 23;
 	
-	float factor[2][3] = { { 10, 1, 0.1 }, { 100, 10, 1 } };							// the first line for dot, the second line for no dat
+	float factor[2][3] = { { 10, 1, 0.1 }, { 100, 10, 1 } };	 	// the first line for dot, the second line for no dat
+	//对图片做预处理 灰度，然后灰度阈值
+	Mat imageGray;
+	
+	image.copyTo(imageGray);
+	cvtColor(imageGray, imageGray, CV_RGB2GRAY);
+
+	Mat imageGrayThreshold;
+	imageGray.copyTo(imageGrayThreshold);
+	for (int c = 0; c < imageGrayThreshold.cols; c++)
+	{
+		for (int r = 0; r < imageGrayThreshold.rows; r++)
+		{
+			if (imageGrayThreshold.at<uchar>(r,c) < 85 )
+			{
+				imageGrayThreshold.at<uchar>(r, c) = 0;
+			}
+		}
+	}
+
+	imwrite("WINPLA_ROI.bmp", imageGrayThreshold);
 
 	// svm DataIdentify each number
 	Mat edge;
@@ -1013,20 +1191,13 @@ int HK18DataIdentify::getWINPLAIdentify()
 		{
 			Mat roi(image, winPlaPosStruct.rect[i][j]);
 
+			Mat roiColor(image, winPlaPosStruct.rect[i][j]);
+
+			dataOutput.isWinPlaHasGroundColor[i][j] = haveGroundColor(roiColor,2 );
 			CvSize roiSize;
 			roiSize.height = winPlaPosStruct.rect[i][j].height;
 			roiSize.width = winPlaPosStruct.rect[i][j].width;
 
-			for (int i = 0; i < 3; i++)													// set the rect for single number in number region
-			{
-				rectDot[i].y = 0;
-				rectDot[i].width = 8;
-				rectDot[i].height = roiSize.height ;
-
-				rectNoDot[i].y = 0;
-				rectNoDot[i].width = 8;
-				rectNoDot[i].height = roiSize.height ;
-			}
 
 
 			Mat roiThreshold(roiSize, CV_8UC3);
@@ -1061,6 +1232,38 @@ int HK18DataIdentify::getWINPLAIdentify()
 		
 			*/
 			 
+			for (int i = 0; i < 3; i++)			// set the rect for single number in number region
+			{
+				 
+				if (i ==2 )
+				{
+					rectNoDot[i].width = roiNewSize.x+roiNewSize.width - rectNoDot[i].x;
+					rectDot[i].width = roiNewSize.x + roiNewSize.width - rectDot[i].x;
+				}
+				else if ( i == 0 )
+				{
+					rectNoDot[i].width = 8;
+					rectDot[i].width =  8;
+
+					//使用 截取后的x值
+					rectDot[i].x = roiNewSize.x;
+					rectNoDot[i].x = roiNewSize.x;
+				}
+				else
+				{
+					rectNoDot[i].width = 10;
+					rectDot[i].width = 10 ;
+				}
+				
+				rectDot[i].y = roiNewSize.y;
+			 
+				rectDot[i].height = roiNew.rows;
+
+				rectNoDot[i].y = roiNewSize.y;
+
+				rectNoDot[i].height = roiNew.rows;
+			}
+			
 
 			// 将阈值后的图像增强 roiThreshold 进行小数点判断
 			for (int c = 0; c < roiThreshold.cols; c++)
@@ -1085,7 +1288,7 @@ int HK18DataIdentify::getWINPLAIdentify()
 			}
 			bool dotFlag = judgeWINPLADot(1, roiThreshold, roiThresholdEdge);
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
-			writeSamples(i, j, 6, roiNew);
+			writeSamples(i, j, 6, roi);
 #endif
  
 			//赛马退赛 标志 ，如果截取的数据区域小于30 说明此地方为 --- ，马匹已经退赛
@@ -1097,16 +1300,18 @@ int HK18DataIdentify::getWINPLAIdentify()
 				continue ; 
 
 			}
+			else
+			{
+				dataOutput.mHorseInfo.isSCR[i] = false ;
+			}
 
 			float tempSum = 0.0;
 			if (dotFlag)															// contain a dot
 			{
 				for (int k = 0; k < 3; k++)					// segment each single number and svm
 				{
-					if (k == 2 && rectDot[k].x + rectDot[k].width >= roiNew.cols)	// cross the boarder
-						rectDot[k].width = roiNew.cols - rectDot[k].x;
-
-					Mat singleNum(roiNew, rectDot[k]);									// the single number image
+				 
+					Mat singleNum(roi, rectDot[k]);									// the single number image
 
 			 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
@@ -1135,11 +1340,9 @@ int HK18DataIdentify::getWINPLAIdentify()
 			else                                                                 // have no dot
 			{
 				for (int k = 0; k < 3; k++)
-				{
-					if (k == 2 && rectNoDot[k].x + rectNoDot[k].width >= roiNew.cols)
-						rectNoDot[k].width = roiNew.cols - rectNoDot[k].x;
+				{ 
 					 
-					Mat singleNum(roiNew, rectNoDot[k]);
+					Mat singleNum(roi, rectNoDot[k]);
 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
 					
@@ -1178,6 +1381,43 @@ int HK18DataIdentify::getWINPLAIdentify()
 	return EXEC_SUCCESS;
 }
 
+//检测数字底下是否有 绿色底色
+// srcMat彩色原图
+bool HK18DataIdentify::haveGroundColor(Mat srcMat ,int flag )
+{
+	//转为灰度图像
+	cvtColor(srcMat, srcMat, CV_RGB2GRAY);
+
+	//灰度阈值
+	int graySum = 0;
+	for (int c = 0; c < srcMat.cols;c++)
+	{
+		for (int r = 0; r < srcMat.rows;r++)
+		{
+			if (srcMat.at<uchar>(r,c) < 85 )
+			{
+				srcMat.at<uchar>(r, c) = 0;
+			}
+			graySum += srcMat.at<uchar>(r, c);
+		}
+
+		
+	}
+
+#ifdef QDEBUG_OUTPUT
+	qDebug("graySum = %d " ,graySum );
+#endif // DEBUG
+	 
+	int threshold = 60000 ;
+	if (graySum >= threshold)
+	{
+		return true;
+	}
+	else
+		return false;
+	 
+
+}
 //识别 QIN QPL   同时识别ＱＩＮ　ＱＰＬ
 int HK18DataIdentify::getQINQPLIdentify()
 {
@@ -1637,7 +1877,7 @@ int HK18DataIdentify::calculateGraySumXForSetWINPLARect(Mat &mat, int *y, int &h
 	{
 		//Global::AppendLogString(QString("Error:calculateGraySumX :mat is empty "), true);
 #ifdef  QDEBUG_OUTPUT
-		qDebug("ERROR : calculateGraySumXForSetHorseNameRect :mat is empty \n");
+		qDebug("ERROR : calculateGraySumXForSetWINPLARect :mat is empty \n");
 #endif //  QDEBUG_OUTPUT
 
 
@@ -1661,7 +1901,7 @@ int HK18DataIdentify::calculateGraySumXForSetWINPLARect(Mat &mat, int *y, int &h
 			graySumX[pixelY] += mat.at<uchar>(pixelY, pixelX);
 		}
 #ifdef QDEBUG_OUTPUT
-		qDebug("calculateGraySumXForSetHorseNameRect %d = %d \n", pixelY, graySumX[pixelY]);
+		qDebug("calculateGraySumXForSetWINPLARect %d = %d \n", pixelY, graySumX[pixelY]);
 #endif
 	}
 	int j = 0;
@@ -1670,14 +1910,16 @@ int HK18DataIdentify::calculateGraySumXForSetWINPLARect(Mat &mat, int *y, int &h
 	{
 
 		//设置为 300 过滤掉 部分数字的底色
-		if ((graySumX[i] < 300 && graySumX[i + 1] > 300
-			&& graySumX[i + 2] > 300))
+		if ((graySumX[i] <= THEREHOLD && graySumX[i + 1] >= THEREHOLD
+			&& graySumX[i + 2] >= THEREHOLD ) )
 		{
 			y[j] = i;
 #ifdef QDEBUG_OUTPUT
-			qDebug(" calculateGraySumXForSetHorseNameRect : The  y %d is  %d", j, i);
+			qDebug(" calculateGraySumXForSetWINPLARect : The  y %d is  %d", j, i);
 #endif
 			j++;
+
+			i += 5;
 
 		}
 	}
@@ -2177,19 +2419,58 @@ int  HK18DataIdentify::trimRoiBlankPart(Mat &oriMat, Mat &newRoiMat, CvRect &roi
 	}
 
 
+	int y0, y1;
+	int  *graySum = new int[oriMat.rows +1 ];
+
+	memset(graySum, 0, (oriMat.rows + 1)*sizeof(int));
+	for (int r = 0; r< oriMat.rows;r++)
+	{
+		for (int c = 0; c < oriMat.cols; c++)
+		{
+			graySum[r] += oriMat.at<uchar>(r, c);
+		}
+		 
+	}
+
+	for (int r = 0; r< oriMat.rows; r++)
+	{
+		if (graySum[r] > 0)
+		{
+			y0 = r;
+			break;
+		}
+	}
+
+	for (int r = 0; r< oriMat.rows; r++)
+	{
+		if (graySum[oriMat.rows-r] > 0)
+		{
+			y1 = oriMat.rows - r;
+			break;
+		}
+	}
+
+	delete[] graySum;
 	roiNewSize.x = x0;
 
-	if ((x1 + 2) > oriMat.cols)
+	if ((x1 + 1) > oriMat.cols)
 		roiNewSize.width = oriMat.cols - x0;
 	else
-		roiNewSize.width = x1 - x0 + 2;
+		roiNewSize.width = x1 - x0 + 1;
 
-	roiNewSize.y = 0;
-	roiNewSize.height = edge.rows;
+	roiNewSize.y = y0;
+	 
+	roiNewSize.height = y1-y0+1;
 
 	newRoiMat = Mat(oriMat, roiNewSize);
 
-	return EXEC_SUCCESS;
+	if (roiNewSize.width < 15 )
+	{
+		return EXIT_THIS_OCR;
+	}
+	else 
+		return EXEC_SUCCESS;
+
 }
 
 

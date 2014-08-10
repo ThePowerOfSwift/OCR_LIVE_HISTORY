@@ -147,6 +147,12 @@ public slots:
 
 	void updateAfterUserInput(DataOutput  output);
 
+
+	/*
+	
+	*/
+
+	void getHorseNameFromDataFile(   );
 signals:
 	void connect(QString,qint32);
 	void disconnect();
@@ -197,22 +203,9 @@ private:
 	int preVideoAdvanceValue;
 //	ReadHistoryVideo myReadHistoryVideo;
 
-
-	//文件 
-
-	QFile horseNameHistoryDataFile;
-	QFile horseNameIdDataFile;
-
-	QTextStream horseNameHistoryData;
-	QTextStream horseNameIdData;
-
-	QString horseNameHistoryStr;
-	QString horseNameIdStr;
-
-	//历史视频比赛日期
-
-	QString historyVideoDate;
-
+	//历史文件 名称
+	QString fileName;
+	
 };
 
 #endif // OCRCONTROL_H

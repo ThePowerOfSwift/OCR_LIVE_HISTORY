@@ -67,6 +67,9 @@ HK18D14DataIdentify::HK18D14DataIdentify()
 		dataOutput.svmResult[i] = -1;
 		dataOutput.WIN[i] = 0.0;
 		dataOutput.PLA[i] = 0.0;
+
+		memset(dataOutput.mHorseInfo.horseName[i], 0, sizeof(wchar_t)* 4);
+		dataOutput.mHorseInfo.horseID[i] = 0;
 	}
 	for (int i = 0; i < 7; i++)
 	{
@@ -119,6 +122,9 @@ HK18D14DataIdentify::HK18D14DataIdentify()
 
 	// 
 	dataOutput.horseNameChangedNum = 0;
+
+
+
 }
 
 HK18D14DataIdentify::~HK18D14DataIdentify()
@@ -478,9 +484,12 @@ int HK18D14DataIdentify::setHorseNameRectPos()
 
 	
 	Mat edge;
-	Canny(horseNameRegion, edge, 150, 100, 3, true);
+	//Canny(horseNameRegion, edge, 150, 100, 3, true);
+
+	edge = horseNameRegion;
 
 
+	imwrite("horseNameRegion.bmp", edge);
 	int *y = new int[HORSENUMBER + 1];
  
 	//同时获取马的数目
@@ -539,7 +548,7 @@ int HK18D14DataIdentify::setWINPLARectPos()
 	{
 		for (int r = 0; r < imageGray.rows; r++)
 		{
-			if (imageGray.at<uchar>(r, c) < 85)
+			if (imageGray.at<uchar>(r, c) < 90 )
 			{
 				imageGray.at<uchar>(r, c) = 0;
 			}
@@ -558,8 +567,17 @@ int HK18D14DataIdentify::setWINPLARectPos()
 	
 	int x0, x1;
 
-	calculateGraySumXForSetWINPLARect(winRegion, yWin, dataOutput.horseNum);
-	calculateGraySumXForSetWINPLARect(plaRegion, yPla, dataOutput.horseNum);
+	if (calculateGraySumXForSetWINPLARect(winRegion, yWin, dataOutput.horseNum) == EXIT_THIS_OCR )
+	{
+		algorithmState = EXIT_THIS_OCR;
+		return EXIT_THIS_OCR;
+	}
+	
+	if (calculateGraySumXForSetWINPLARect(plaRegion, yPla, dataOutput.horseNum)  == EXIT_THIS_OCR)
+	{
+		algorithmState = EXIT_THIS_OCR;
+		return EXIT_THIS_OCR;
+	}
 	// get the relative position of the three vertex in the first row, relative to the origin 
 	//
 	
@@ -636,7 +654,7 @@ int HK18D14DataIdentify::setWINPLARectPos()
 		winPlaPosStruct.rect[i][1].x = PLA_POS_RECT.x + x0 - 2;
 		winPlaPosStruct.rect[i][1].width = x1 - x0 + 4;
 
-		winPlaPosStruct.rect[i][1].y = PLA_POS_RECT.y + yWin[i];
+		winPlaPosStruct.rect[i][1].y = PLA_POS_RECT.y + yPla[i];
 
 
 		if (i == dataOutput.horseNum - 1)
@@ -646,7 +664,7 @@ int HK18D14DataIdentify::setWINPLARectPos()
 		else
 		{
 
-			winPlaPosStruct.rect[i][1].height = yWin[i + 1] - yWin[i];
+			winPlaPosStruct.rect[i][1].height = yPla[i + 1] - yPla[i];
 		}
 
 		if (winPlaPosStruct.rect[i][1].width <= 20)
@@ -691,6 +709,34 @@ int HK18D14DataIdentify::setQINQPLRectPos()
 		return EXIT_THIS_OCR;
 	}
 	
+//获取一列QIN QPL 位置
+	qinQplSubRect = new CvRect[19];
+	{
+		qinQplSubRect[0] = LB_REGION1_RECT;
+		qinQplSubRect[1] = LB_REGION2_RECT;
+		qinQplSubRect[2] = LB_REGION3_RECT;
+		qinQplSubRect[3] = LB_REGION4_RECT;
+		qinQplSubRect[4] = LB_REGION5_RECT;
+		qinQplSubRect[5] = LB_REGION6_RECT;
+
+		qinQplSubRect[6] = RU_REGION1_RECT;
+		qinQplSubRect[7] = RU_REGION2_RECT;
+		qinQplSubRect[8] = RU_REGION3_RECT;
+		qinQplSubRect[9] = RU_REGION4_RECT;
+		qinQplSubRect[10] = RU_REGION5_RECT;
+		qinQplSubRect[11] = RU_REGION6_RECT;
+
+
+		qinQplSubRect[12] = R_REGION1_RECT;
+		qinQplSubRect[13] = R_REGION2_RECT;
+		qinQplSubRect[14] = R_REGION3_RECT;
+		qinQplSubRect[15] = R_REGION4_RECT;
+		qinQplSubRect[16] = R_REGION5_RECT;
+		qinQplSubRect[17] = R_REGION6_RECT;
+		qinQplSubRect[18] = R_REGION7_RECT;
+
+
+	}
 
 	Mat image_temp;
 	image.copyTo(image_temp);
@@ -727,13 +773,20 @@ int HK18D14DataIdentify::setQINQPLRectPos()
 	imwrite("ori1.bmp", image_temp);
 	//colorThreshold(image_temp, image_temp, 120);
 	cvtColor(image_temp, image_temp, CV_RGB2GRAY);
-
 	 
 	imwrite("ori2.bmp", image_temp);
 
 	int deltaNum = HORSENUMBER - dataOutput.horseNum;
 	for (int i = 0; i < 19 - deltaNum; i++)
 	{
+		//如果马匹数量不到8 ，那么 前6个区域都不用识别了
+		if (deltaNum >= 6 )
+		{
+			if (i < 6)
+			{
+				continue; 
+			}
+		}
 		QString fileName;
 		Mat qinQPLPosStructRoiEdge;
 
@@ -743,6 +796,7 @@ int HK18D14DataIdentify::setQINQPLRectPos()
 		fileName.prepend(".bmp");
 		fileName.prepend(QString::number(i));
 		imwrite(fileName.toStdString(), qinQPLPosStructRoi);
+
 
 		if (setEveryQINQPLPos(qinQPLPosStructRoi, i) == EXIT_THIS_OCR)
 		{
@@ -825,10 +879,9 @@ int  HK18D14DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			qinQPLPosStruct.rect[i][rectNum].y = qinQplSubRect[rectNum].y + y[i - rectNum - 1] - 1;
 			if (i == 6 - delataNum)
 			{
-				 
-
+				  
 				//最后一个数字区域的高度可以使用第一行，第0列的高度
-				qinQPLPosStruct.rect[i][rectNum].height =  qinQPLPosStruct.rect[1][0].height;
+				qinQPLPosStruct.rect[i][rectNum].height = NUMBER_HEIGHT ;
 			}
 			else
 			{
@@ -895,7 +948,7 @@ int  HK18D14DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			if (i == roiNum - 1)
 			{
 				//如果此时 无法通过计算y 来得到高度，那么采用前面已经计算过的高度，因为高度值基本保持一致
-				qinQPLPosStruct.rect[i][rectNum - 4].height =qinQPLPosStruct.rect[1][0].height;
+				qinQPLPosStruct.rect[i][rectNum - 4].height = NUMBER_HEIGHT ;
 			}
 			else
 			{
@@ -965,7 +1018,7 @@ int  HK18D14DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			qinQPLPosStruct.rect[i][rectNum - 4].y = qinQplSubRect[rectNum].y + y[i] - 1;
 			if (i == roiNum - 1)
 			{
-				qinQPLPosStruct.rect[i][rectNum - 4].height = 17 ;
+				qinQPLPosStruct.rect[i][rectNum - 4].height = NUMBER_HEIGHT;
 			}
 			else
 			{
@@ -1469,7 +1522,7 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 				continue;
 
 			//宽度太小，过滤掉
-			if (qinQPLPosStruct.rect[i][j].width < 5 )
+			if (qinQPLPosStruct.rect[i][j].width < 5 | qinQPLPosStruct.rect[i][j].height < 5  )
 			{
 				continue; 
 			}
@@ -1515,7 +1568,7 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 			//roiSize.width = qinQPLPosStruct.rect[i][j].width;
 		 
 
-			if (i == 6 & j == 8 )
+			if (i == 5 & j == 10 )
 			{
 
 				qDebug("Mark \n");
@@ -1532,7 +1585,11 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 			Mat roiNew;
 		 
 			
-			trimRoiBlankPart(roiForDotJudge, roiForDotJudge, roiNewSize);
+			if (trimRoiBlankPart(roiForDotJudge, roiForDotJudge, roiNewSize) == EXIT_THIS_OCR)
+			{
+				return EXIT_THIS_OCR;
+			}
+			
  
 			roiNew = Mat(roi, roiNewSize);
  
@@ -1856,7 +1913,7 @@ int HK18D14DataIdentify::calculateGraySumXForSetWINPLARect(Mat &mat, int *y, int
 	{
 		//Global::AppendLogString(QString("Error:calculateGraySumX :mat is empty "), true);
 #ifdef  QDEBUG_OUTPUT
-		qDebug("ERROR : calculateGraySumXForSetHorseNameRect :mat is empty \n");
+		qDebug("ERROR : calculateGraySumXForSetWINPLARect :mat is empty \n");
 #endif //  QDEBUG_OUTPUT
 
 
@@ -1880,25 +1937,46 @@ int HK18D14DataIdentify::calculateGraySumXForSetWINPLARect(Mat &mat, int *y, int
 			graySumX[pixelY] += mat.at<uchar>(pixelY, pixelX);
 		}
 #ifdef QDEBUG_OUTPUT
-		qDebug("calculateGraySumXForSetHorseNameRect %d = %d \n", pixelY, graySumX[pixelY]);
+		qDebug("calculateGraySumXForSetWINPLARect %d = %d \n", pixelY, graySumX[pixelY]);
 #endif
 	}
 	int j = 0;
 	int THEREHOLD = 80;
 	for (int i = 0; i < dimension; i++)
 	{
-
-		//设置为 300 过滤掉 部分数字的底色
-		if ((graySumX[i] < THEREHOLD && graySumX[i + 1] > THEREHOLD
-			&& graySumX[i + 2] > THEREHOLD ))
+		if (i == 0 & graySumX[i ] > THEREHOLD)
 		{
 			y[j] = i;
-#ifdef QDEBUG_OUTPUT
-			qDebug(" calculateGraySumXForSetHorseNameRect : The  y %d is  %d", j, i);
-#endif
-			j++ ;
-
+			j++;
+			i += 5;
 		}
+		else
+		{
+			//设置为 300 过滤掉 部分数字的底色
+			if ((graySumX[i] < THEREHOLD && graySumX[i + 1] > THEREHOLD))
+				//退赛的情况，就2个像素有值，会被省略掉
+				//		&& graySumX[i + 2] > THEREHOLD && graySumX[i + 3] > THEREHOLD
+				//		&& graySumX[i + 4] > THEREHOLD ))
+			{
+				y[j] = i;
+#ifdef QDEBUG_OUTPUT
+				qDebug(" calculateGraySumXForSetWINPLARect : The  y %d is  %d", j, i);
+#endif
+				j++;
+				i += 5;
+
+			}
+		}
+
+		//未能识别
+		if (j >= 2 )
+		{
+			if (y[j-1] - y[j-2] >= 34 )
+			{
+				return EXIT_THIS_OCR;
+			}
+		}
+		
 	}
 	 
 	if (graySumX != NULL)
@@ -1912,7 +1990,7 @@ int HK18D14DataIdentify::calculateGraySumXForSetWINPLARect(Mat &mat, int *y, int
 	{
 		//Global::AppendLogString(QString("Error:calculateGraySumX :Func error  j != roiNum"), true);
 #ifdef QDEBUG_OUTPUT
-		qDebug("calculateGraySumXForSetHorseNameRect :Func error  j != roiNum \n ");
+		qDebug("calculateGraySumXForSetWINPLARect :Func error  j != roiNum \n ");
 #endif
 
 		algorithmState = EXIT_THIS_OCR;
@@ -1964,18 +2042,31 @@ int HK18D14DataIdentify::calculateGraySumXForSetHorseNameRect(Mat &mat, int *y, 
 	int THEREHOLD = 300;
 	for (int i = 0; i < dimension; i++)
 	{
-
-		//设置为 300 过滤掉 部分数字的底色
-		if ((graySumX[i] < 300 && graySumX[i + 1] > 300
-			&& graySumX[i + 2] > 300))
+		if (i == 0 & graySumX[0] > THEREHOLD)
 		{
 			y[j] = i;
-#ifdef QDEBUG_OUTPUT
-			qDebug(" calculateGraySumXForSetHorseNameRect : The  y %d is  %d", j, i);
-#endif
 			j++;
-  
+
+			i += 10 ;
 		}
+		else
+		{
+
+			//设置为 300 过滤掉 部分数字的底色
+			if ((graySumX[i] < THEREHOLD && graySumX[i + 1] > THEREHOLD
+				&& graySumX[i + 2] > THEREHOLD))
+			{
+				y[j] = i;
+#ifdef QDEBUG_OUTPUT
+				qDebug(" calculateGraySumXForSetHorseNameRect : The  y %d is  %d", j, i);
+#endif
+				j++;
+
+				i += 10;
+
+			}
+		}
+		
 	}
 	//获取马的数目
 	horseNum = j;
@@ -2098,7 +2189,7 @@ int  HK18D14DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 	for (int c = 0; c < edge.cols; c++)
 	{
 		sum = 0;
-		for (int r = 0; r < edge.rows; r++)
+		for (int r = 0; r < edge.rows / 2 ; r++)
 		{
 			sum += edge.at<uchar>(r, c);
 			//	qDebug("roi.at[%d][%d] = %d \n",r,c,roi.at<uchar>(r,c));
@@ -2153,7 +2244,7 @@ int  HK18D14DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 	else if (delta >= 25 ) // three number . 27
 	{
 		//获取3个数字的 坐标值 x
-		 
+		
 		{
 			x[0] = 0 ;
 			x[1] = 9 ;
@@ -2170,11 +2261,39 @@ int  HK18D14DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 	}
 	else if (delta <= 24 & delta > 20  ) // tow number with dot .
 	{
-		x[0] = 9;
-		x[1] = 11;
-		x[2] = 0;
 
-		return 0;
+		if (graySum[edge.cols / 2] != 0 & graySum[edge.cols / 2 - 1] != 0
+			& graySum[edge.cols / 2 + 1] != 0)
+		{
+			{
+				x[0] = 0;
+				x[1] = 9;
+				x[2] = 18;
+				algorithmState = EXEC_SUCCESS;
+
+			}
+			if (graySum != NULL)
+			{
+				delete[] graySum;
+				graySum = NULL;
+			}
+			return 2;
+		}
+		else
+		{
+			x[0] = 9;
+			x[1] = 11;
+			x[2] = 0;
+
+			if (graySum != NULL)
+			{
+				delete[] graySum;
+				graySum = NULL;
+			}
+			return 0;
+
+		}
+	
  
 	}
 	else if (delta <= 20 ) // two number 
@@ -2304,7 +2423,12 @@ int  HK18D14DataIdentify::trimRoiBlankPart(Mat &oriMat, Mat &newRoiMat, CvRect &
 
 	newRoiMat = Mat(oriMat, roiNewSize);
 
-	return EXEC_SUCCESS;
+	if (roiNewSize.width < 10 )
+	{
+		return EXIT_THIS_OCR;
+	}
+	else 
+		return EXEC_SUCCESS;
 }
 
 
@@ -2416,6 +2540,17 @@ int  HK18D14DataIdentify::calculateXBewttenNumber(Mat &mat, int  *x )
 			break;
 		}
 
+	}
+
+	for (int i = x[0]; i< x[1]; i ++)
+	{
+		if (graySumX[i] > THEREHOLD )
+		{
+#ifdef QDEBUG_OUTPUT
+			qDebug("calculateXBewttenNumber: it is a tow number without dot .");
+#endif
+			return EXIT_THIS_OCR;
+		}
 	}
  
 
@@ -2775,7 +2910,7 @@ int  HK18D14DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, i
 	{
 		//Global::AppendLogString(QString("Error:calculateGraySumX :mat is empty "), true);
 #ifdef  QDEBUG_OUTPUT
-		qDebug("ERROR : calculateGraySumXForSetRect2 :mat is empty \n");
+		qDebug("ERROR : calculateGraySumXForSetQINQPLRect :mat is empty \n");
 #endif //  QDEBUG_OUTPUT
 
 
@@ -2800,7 +2935,7 @@ int  HK18D14DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, i
 			graySumX[pixelY] += mat.at<uchar>(pixelY, pixelX);
 		}
 #ifdef QDEBUG_OUTPUT
-		qDebug("calculateGraySumXForSetRect2 %d = %d \n", pixelY, graySumX[pixelY]);
+		qDebug("calculateGraySumXForSetQINQPLRect %d = %d \n", pixelY, graySumX[pixelY]);
 #endif
 	}
 	int j = 0;
@@ -2822,7 +2957,7 @@ int  HK18D14DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, i
 			{
 				y[j] = i;
 #ifdef QDEBUG_OUTPUT
-				qDebug(" calculateGraySumXForSetRect2 : The  y %d is  %d", j, i);
+				qDebug(" calculateGraySumXForSetQINQPLRect : The  y %d is  %d", j, i);
 #endif
 				j++;
 
@@ -2832,7 +2967,7 @@ int  HK18D14DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, i
 				{
 					//Global::AppendLogString(QString("Error:calculateGraySumXForSetRect2 :Func error j>roiNum "), true);
 #ifdef QDEBUG_OUTPUT
-					qDebug("calculateGraySumXForSetRect2 :Func error j =%d >roiNum=%d \n ",j,roiNum );
+					qDebug("calculateGraySumXForSetQINQPLRect :Func error j =%d >roiNum=%d \n ",j,roiNum );
 #endif		
 					if (graySumX != NULL)
 					{
@@ -2862,7 +2997,7 @@ int  HK18D14DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, i
 	{
 		//Global::AppendLogString(QString("Error:calculateGraySumX :Func error  j != roiNum"), true);
 #ifdef QDEBUG_OUTPUT
-		qDebug("calculateGraySumXForSetRect2 :Func error  j %d != roiNum  %d \n ",j,roiNum);
+		qDebug("calculateGraySumXForSetQINQPLRect :Func error  j %d != roiNum  %d \n ",j,roiNum);
 #endif
 		//delete[] graySumX;
 		//graySumX = NULL;

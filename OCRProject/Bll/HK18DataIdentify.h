@@ -15,7 +15,7 @@ using namespace cv;
 //#define  WRITE_SESSION_CLASSIFY_SAMPELS 
 //#define  WRITE_MINUTE_CLASSIFY_SAMPELS
 //#define  QDEBUG_OUTPUT
-//#define		WRITE_ROI_SMAPLES_CLASS_INFO1
+#define		WRITE_ROI_SMAPLES_CLASS_INFO1
 //#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
 
 
@@ -93,9 +93,19 @@ private:
 
 	 //获取马名
 	int getHorseNameIdentify();
+
+	//检测是否马名发生变化，用于判断场次号变化
+	int isHorseNameChanged();
+
+	//计算灰度和
+
+	int calculateGraySum(Mat srcMa, int &length );
 	// 获取 WIN PLA 识别
 
 	int getWINPLAIdentify();
+	// 判断是否有底色 绿色底色 flag =1 为win pla ，flag = 2 为qpl qin
+
+	bool  haveGroundColor(Mat srcMat,int flag );
 
 	// 获取 QIN QPL 同时获得 QIN QPL 标记
 	int getQINQPLIdentify();
@@ -178,7 +188,7 @@ private:
 // 马名
 #define HORSENAME_REGION_RECT cvRect(63+(originX-ORIGIN_X_BASE),52+(originY-ORIGIN_Y_BASE),121-63,308-53)
 //QIN QPL标签位置
-#define  QINQPL_LABEL_POS_RECT cvRect(87+(originX-ORIGIN_X_BASE),314+(originY-ORIGIN_Y_BASE),126-87,332-314)
+#define  QINQPL_LABEL_POS_RECT cvRect(114+(originX-ORIGIN_X_BASE),316+(originY-ORIGIN_Y_BASE),12,15)
 
 //QIN QPL
 #define		WHOLE_QINQPL_POS_RECT  cvRect(12+(originX-ORIGIN_X_BASE), 314+(originY-ORIGIN_Y_BASE), 624-12, 476-314)

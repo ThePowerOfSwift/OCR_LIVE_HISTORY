@@ -59,6 +59,41 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 	frameAccValue = 0;
 
 	Global::frameAccValue = 1;
+
+
+	//打开文件
+	horseNameIdDataFile.setFileName(".//dat//horseNameIdDataFile.txt");
+
+	if (!horseNameIdDataFile.open(QIODevice::ReadOnly | QIODevice::Text))
+		return;
+
+	horseNameIdData.setDevice(&horseNameIdDataFile);
+
+	while (!horseNameIdData.atEnd())
+	{
+		horseNameIdStr += horseNameIdData.readLine();
+
+	}
+
+	//刨掉前5000匹马
+
+	horseNameIdStr = horseNameIdStr.mid(20000, horseNameIdStr.size() - 20000);
+	horseNameIdDataFile.close();
+
+	horseNameHistoryDataFile.setFileName(".//dat//horseNameHistoryDataFile.txt");
+	if (!horseNameHistoryDataFile.open(QIODevice::ReadOnly | QIODevice::Text))
+		return;
+
+	horseNameHistoryData.setDevice(&horseNameHistoryDataFile);
+
+	while (!horseNameHistoryData.atEnd())
+	{
+		horseNameHistoryStr += horseNameHistoryData.readLine();
+
+	}
+
+	horseNameIdDataFile.close();
+
 }
 
 BllDataIdentify::~BllDataIdentify()
@@ -96,7 +131,9 @@ void BllDataIdentify::sessionCountDownTextChanged()
 */
 LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 {
-	 
+	 // 场次号改变标记为 false
+	outputStruct.sessionChangedFlag = false ;
+
 	if (outputStruct.session == -1 || outputStruct.raceTime == -1)
 	{
 		//return -1;
@@ -107,14 +144,19 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 
 //	if (isRaceSessionDetected & (firstRaceSessionDetected + outputStruct.horseNameChangedNum - 1 
 //								- Global::session == 1))
+	
 	if ( outputStruct.horseNameChangedNum - Global::session == 1 )
 	{
 		//Global::session = firstRaceSessionDetected + outputStruct.horseNameChangedNum - 1;
 		Global::session = outputStruct.horseNameChangedNum;
 
+		//获取马名
+		getHorseNameFromDataFile(videoFileName,outputStruct);
+
 		//场次号发生了变化，请求新的场次号
 		emit requestRaceIdSig();
 		
+		outputStruct.sessionChangedFlag = true;
 		//将 场次号请求raceid 标志位 清空
 	//	Global::isSessionRaceIdRequested = false;
 
@@ -128,6 +170,11 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 		raceTimeCountDownNear9 = false;
 	}
 	 
+	if (Global::session == 1)
+	{
+		getHorseNameFromDataFile(videoFileName, outputStruct);
+	}
+
 	/* 
 	//判定场次号 以及倒计时  场次号发生变化 
 	if (sessionChanged == true & sessionChangedDly1 != true )
@@ -219,7 +266,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 			{
 				//Global::session = maxContent;
 				// 场次号发生了变化，请求新的场次号
-				emit requestRaceIdSig();
+				//emit requestRaceIdSig();
 			//	Global::isSessionRaceIdRequested = false;
 
 				//获取第一次检测到了场次号。
@@ -308,7 +355,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 	}
 	if (Global::session == -1)
 	{
-		Global::session = 0 ;
+		Global::session = 1 ;
 	}
 	//此时没有检测到倒计时 输出 0 
 	if (Global::raceTime == -1 )
@@ -411,14 +458,17 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 
 
 	//WIN改变数目过多 等待3个周期在发送新数据，并且有2个以上数据 超出了改变那范围 ，此时场次号发生了改变
-	if (WINChangedNum >= HORSENUMBER / 2 & PLAChangedNum >= HORSENUMBER / 2 & (dataOutOfRangeCount > 2))
+	//如果场次号发生了变化，那么立刻发送
+	if ((outputStruct.horseNameChangedNum - Global::session != 1)
+		& WINChangedNum >= HORSENUMBER / 2 & PLAChangedNum >= HORSENUMBER / 2 & (dataOutOfRangeCount > 2))
 	{
 		sessionChangedCountDown = 3;
 		sessionChanged = true;
 
 	}
 	//当QIN QPL发生切换时候 ，等待3个定时器周期，在发送新的数据，保持数据稳定。
-	if (priDataOutput.isQPL != outputStruct.isQPL)
+	if ((outputStruct.horseNameChangedNum - Global::session != 1)
+		& (priDataOutput.isQPL != outputStruct.isQPL) )
 	{
 		if (sessionChanged == false)
 		{
@@ -558,12 +608,12 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 			if (sessionChangedCountDown == 0)
 				outputStruct.changeStatus = WIN_CHANGED;
 		}
-		else if (PLAChangedNum > 0)
+		if (PLAChangedNum > 0)
 		{
 			if (sessionChangedCountDown == 0)
 				outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
 		}
-		else if (QINQPLCHangedNum > 0)
+		if (QINQPLCHangedNum > 0)
 		{
 			if (QINQPLTransformedCountDown == 0)
 				outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
@@ -1037,6 +1087,9 @@ void BllDataIdentify::start(QString fileName, int videoType)
 
 	if (videoType != LIVE )
 	{
+		 
+		videoFileName = fileName;
+		
 		startHistoryDataIdentify(fileName, videoType);
 	}
 	else
@@ -1044,6 +1097,113 @@ void BllDataIdentify::start(QString fileName, int videoType)
 		startLiveDataIdentify(videoType );
 	}
 	
+
+}
+
+
+/*
+获取马名
+Race Date 	20060101
+Start one Session 	 02
+Toal horse number 12
+*/
+void BllDataIdentify::getHorseNameFromDataFile(QString fileName,DataOutput &outputStruct)
+{
+
+	//清空list
+
+	horseNameList.clear();
+	horseIdList.clear();
+
+	int labelPos;
+	labelPos = fileName.indexOf("01N");
+	historyVideoDate = fileName.mid(labelPos + 3, 8);
+
+
+	QString searchLabel;
+	searchLabel = historyVideoDate + QString("Start one Session \t ");
+	if (Global::session < 10)
+	{
+		searchLabel += QString("0") + QString::number(Global::session);
+	}
+	else
+		searchLabel += QString::number(Global::session);
+
+	int oneSessionStrPos;
+	oneSessionStrPos = horseNameHistoryStr.indexOf(searchLabel);
+
+
+	QString oneSessionStr;
+	oneSessionStr = horseNameHistoryStr.mid(oneSessionStrPos, 140);
+
+	int horseNum = 0;
+	QString horseNumsStr = oneSessionStr.mid(48, 1);
+	horseNum = horseNumsStr.toInt();
+
+	QString horseNamePartStr;
+	horseNamePartStr = oneSessionStr.mid(49, 96);
+
+	QString oneHorseName;
+	QString cha;
+
+	int horseCount = 0;
+	for (int i = 0; i < horseNamePartStr.size(); i++)
+	{
+
+		cha = horseNamePartStr.mid(i, 1);
+		if (cha > "z")
+		{
+			oneHorseName += cha;
+		}
+
+
+		if ((cha >= QString("1") & cha <= QString("9")) | cha == QString("E"))
+		{
+			if (oneHorseName.size() >= 2)
+			{
+
+				horseNameList.append(oneHorseName);
+
+				wchar_t * encodedName;
+				oneHorseName.toWCharArray(outputStruct.mHorseInfo.horseName[horseCount]);
+
+				int pos = horseNameIdStr.indexOf(oneHorseName);
+
+				QString idStr;
+
+				idStr = horseNameIdStr.mid(pos - 7, 7);
+				int horseId;
+				QString oneNum;
+				for (int index = 0; index < idStr.size(); index++)
+				{
+
+					if (idStr.mid(index, 1) >= QString("0")
+						& idStr.mid(index, 1) <= QString("9"))
+					{
+						oneNum += idStr.mid(index, 1);
+
+					}
+
+					if (idStr.mid(idStr.size() - 1 - index, 1) >= QString("z"))
+					{
+						horseId = oneNum.toInt();
+						outputStruct.mHorseInfo.horseID[horseCount] = horseId;
+						//	horseIdList.append(horseId);
+						break;
+					}
+				}
+				oneHorseName = QString("");
+ 
+				horseCount++;
+
+			}
+
+		}
+
+
+	}
+
+
 
 }
 

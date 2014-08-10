@@ -121,6 +121,8 @@ struct HorseInfo
 	//名字长度
 	int length[HORSENUMBER];
 
+	wchar_t horseName[HORSENUMBER][5]; //名字 。
+
  //	QString horseName[HORSENUMBER];
 };
 
@@ -209,6 +211,11 @@ struct DataOutput
 	//历史视频处理 百分比 
 
 	int videoProgressPercent;
+
+
+	//标记 场次号发生变化 ，只显示一次
+
+	bool sessionChangedFlag;
 
 };
 

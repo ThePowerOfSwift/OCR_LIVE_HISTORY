@@ -78,6 +78,10 @@ DataIdentify::DataIdentify()
 	{
 		for (int j = 0; j < 3; j++)
 			winPlaPosStruct.rect[i][j] = cvRect(0, 0, 0, 0);
+
+		memset(dataOutput.mHorseInfo.horseName[i], 0, sizeof(wchar_t)* 4);
+		dataOutput.mHorseInfo.horseID[i] = 0;
+
 	}
 
 

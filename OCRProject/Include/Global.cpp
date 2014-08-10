@@ -52,12 +52,12 @@ qint32 Global::videoStartPos = 0;
 qint32 Global::videoType = 0;
 
 //历史视频文件，快进累加
-qint32 Global::frameAccValue = 0;
+qint32 Global::frameAccValue = 1 ;
 
  /***********比赛数据***********/
 qint32 Global::raceId;//比赛唯一识别ID，服务端获得
 QList<TagHorseInfo> Global::horseInfoList;//赛马信息：HorseID，HorseName，服务端获得
-qint32 Global::session;//比赛场次号
+qint32 Global::session = 1;//比赛场次号
 
 qint32 Global::raceTime;//比赛时间
 
