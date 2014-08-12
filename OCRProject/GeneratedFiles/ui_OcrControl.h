@@ -151,6 +151,7 @@ public:
     QHBoxLayout *horizontalLayout_4;
     QVBoxLayout *verticalLayout_15;
     QVBoxLayout *verticalLayout_10;
+    QCheckBox *is63TAICheckBox;
     QPushButton *requestHorseInfoBtn;
     QPushButton *requestRaceIdBtn;
     QVBoxLayout *verticalLayout_9;
@@ -689,11 +690,8 @@ public:
 
         qinFrame = new QFrame(qplFrame);
         qinFrame->setObjectName(QStringLiteral("qinFrame"));
-        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(qinFrame->sizePolicy().hasHeightForWidth());
-        qinFrame->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(qinFrame->sizePolicy().hasHeightForWidth());
+        qinFrame->setSizePolicy(sizePolicy);
         qinFrame->setMinimumSize(QSize(500, 120));
         qinFrame->setMaximumSize(QSize(500, 120));
         qinFrame->setStyleSheet(QStringLiteral(""));
@@ -878,6 +876,11 @@ public:
         verticalLayout_10 = new QVBoxLayout();
         verticalLayout_10->setSpacing(6);
         verticalLayout_10->setObjectName(QStringLiteral("verticalLayout_10"));
+        is63TAICheckBox = new QCheckBox(frame_4);
+        is63TAICheckBox->setObjectName(QStringLiteral("is63TAICheckBox"));
+
+        verticalLayout_10->addWidget(is63TAICheckBox);
+
         requestHorseInfoBtn = new QPushButton(frame_4);
         requestHorseInfoBtn->setObjectName(QStringLiteral("requestHorseInfoBtn"));
 
@@ -1017,6 +1020,7 @@ public:
         disconnectBtn->setText(QApplication::translate("OcrControl", "\346\226\255\345\274\200", 0));
         submitRaceTimeBtn->setText(QApplication::translate("OcrControl", "\346\217\220\344\272\244\346\257\224\350\265\233\346\227\266\351\225\277", 0));
         submitRealBtn->setText(QApplication::translate("OcrControl", "\346\217\220\344\272\244\345\256\236\346\227\266\346\225\260\346\215\256", 0));
+        is63TAICheckBox->setText(QApplication::translate("OcrControl", "63\345\217\260", 0));
         requestHorseInfoBtn->setText(QApplication::translate("OcrControl", "\350\257\267\346\261\202\351\251\254\344\277\241\346\201\257", 0));
         requestRaceIdBtn->setText(QApplication::translate("OcrControl", "\350\257\267\346\261\202RaceId", 0));
         videoTypeComboBox->clear();

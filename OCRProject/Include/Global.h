@@ -145,6 +145,9 @@ public:
 	static QFile historyIdentifyDataFile;
 
 	static QDataStream historyIdentifyDataWS;
+
+	//当前视频是否是63台需要识别的数据
+	static bool is63TAIVideoData;
 	/***********比赛数据***********/
 
 	//历史视频 起始帧位置

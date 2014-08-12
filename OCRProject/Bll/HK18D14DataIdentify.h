@@ -30,8 +30,8 @@ public:
 	//dataOutput里面包含了mHorseInfo
 	DataOutput dataOutput;
  
-	bool isHistoryVideo;															// true: history video, false: live video 
-	bool haveDataFlag;																// DataIdentify the frame has data or not
+	bool isHistoryVideo;				// true: history video, false: live video 
+	bool haveDataFlag;					// DataIdentify the frame has data or not
  
 	bool read(Mat &srcMat, uchar* data, int length, int height = 480, int width = 640);		// return the error type, if all right, then return 0
 	void haveData();

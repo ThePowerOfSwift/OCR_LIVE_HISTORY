@@ -111,6 +111,11 @@ HK63D14DataIdentify::~HK63D14DataIdentify()
 */
 bool HK63D14DataIdentify::read(Mat &srcMat, uchar* data, int length, int height, int width)
 {
+
+	memset(dataOutput.WIN, 0, sizeof(float)*14);
+	memset(dataOutput.PLA, 0, sizeof(float)* 14);
+	memset(dataOutput.QPL_QIN, 0, sizeof(float)* 15*7);
+
 	// 历史数据读入为Mat ，实时直播读入为 data 指针
 	if (data != NULL)
 	{
@@ -184,7 +189,7 @@ void HK63D14DataIdentify::haveData()
 
 	for (int i = 0; i < HAVEDATA_PIXELNUMBER; i++)
 	{
-		bgr[i] = image_temp.at<Vec3b>(HAVEDATA_YINDEX * (i + 1), 42);
+		bgr[i] = image_temp.at<Vec3b>(10 * (i)+250 , 20);
 		bluePixel[i] = bgr[i][0];
 		greenPixel[i] = bgr[i][1];
 		redPixel[i] = bgr[i][2];
@@ -194,7 +199,7 @@ void HK63D14DataIdentify::haveData()
 		redMean += redPixel[i] / HAVEDATA_PIXELNUMBER;
 	}
 
-	if (blueMean > 50 && greenMean < 60 && redMean < 60 )
+	if (abs(blueMean -77) < 10  && abs(greenMean-34) < 10 && abs(redMean - 32 ) < 10 )
 	{
 		haveDataFlag = true;
 	}
@@ -211,7 +216,7 @@ void HK63D14DataIdentify::haveData()
 	CvPoint point[6];
 	Vec3b region2_bgr[6];
 	
-	int x1 = 40, x2 = 670;
+	int x1 = 12, x2 = 670;
 	int y = 400, delta_y = 50;
 
 
@@ -243,7 +248,16 @@ void HK63D14DataIdentify::haveData()
 
 	if (haveDataFlag == true)
 	{
-		if (region2_blueMean > 40 && region2_greenMean < 60 && region2_redMean > 50)
+		if (abs(region2_blueMean - 26) < 10 && abs(region2_greenMean - 72) < 10 
+					&& abs(region2_redMean - 32) < 50)
+		{
+			haveDataFlag = true;
+			cvtColor(image, image_temp, CV_RGB2BGR);
+			//运行状态初始化为成功
+			algorithmState = EXEC_SUCCESS;
+		}
+		else if (abs(region2_blueMean - 81) < 10 && abs(region2_greenMean - 47) < 10
+			&& abs(region2_redMean - 32) < 66)
 		{
 			haveDataFlag = true;
 			cvtColor(image, image_temp, CV_RGB2BGR);
@@ -257,6 +271,8 @@ void HK63D14DataIdentify::haveData()
 		}
 			
 	}
+//	imshow("1", image);
+//	waitKey();
 	dataOutput.haveDataFlag = haveDataFlag;
 
 
@@ -293,7 +309,7 @@ void HK63D14DataIdentify::originPosition()
 
 		rowSum[i] = rowSum[i] / regionWidth;
 
-	//	qDebug("rowSum[%d] = %d ", i, rowSum[i]);
+		qDebug("rowSum[%d] = %d ", i, rowSum[i]);
 	}
 
 
@@ -306,13 +322,13 @@ void HK63D14DataIdentify::originPosition()
 
 		colSum[i] = colSum[i] / regionHeight;
 
-	//	qDebug("colSum[%d] = %d ",i,colSum[i]);
+		qDebug("colSum[%d] = %d ",i,colSum[i]);
 	}
 
 	// DataIdentify the originX
 	for (int i = 0; i < regionWidth; i++)
 	{
-		if (colSum[i] > 60 ) // 
+		if (colSum[i] > 45 ) // 
 		{
 			originX = i - 1;
 			break;
@@ -543,7 +559,7 @@ int HK63D14DataIdentify::setWINPLARectPos()
 	QString path = QString(".//temp//");
 
 	writeSamples(QString("WIN_Region.bmp"), winRegion, path);
-	writeSamples(QString("PLA_Region.bmp"), winRegion, path);
+	writeSamples(QString("PLA_Region.bmp"), plaRegion, path);
 
 #endif
 
@@ -592,7 +608,7 @@ int HK63D14DataIdentify::setWINPLARectPos()
 		if (i == dataOutput.horseNum - 1)
 		{
 			
-			winPlaPosStruct.rect[i][0].height = winPlaPosStruct.rect[i - 1][0].height;
+			winPlaPosStruct.rect[i][0].height = NUMBER_HEIGHT ;
 		}
 		else
 		{
@@ -645,7 +661,7 @@ int HK63D14DataIdentify::setWINPLARectPos()
 
 		if (i == dataOutput.horseNum - 1)
 		{
-			winPlaPosStruct.rect[i][1].height = winPlaPosStruct.rect[i - 1][1].height;
+			winPlaPosStruct.rect[i][1].height = NUMBER_HEIGHT;
 		}
 		else
 		{
@@ -730,33 +746,7 @@ int HK63D14DataIdentify::setQINQPLRectPos()
 	//Mat qinQPLPosStructMat(image_temp, qinQPLPosStructMatRECT);
 
 	Mat qinQPLPosStructRegionSub1(image_temp, QINQPL_POS_RECT );
-
-	//做颜色阈值
-	Vec3b pixel; // B G R
-	int sum = 0 ;
-	for (int c = 0; c < image_temp.cols; c++)
-	{
-		for (int r = 0; r < image_temp.rows; r++)
-		{
-			pixel = image_temp.at<Vec3b>(r, c); //  
-
-			sum = (pixel[0] - 170) * (pixel[0] - 170);
-
-			sum += (pixel[1] - 160) * (pixel[1] - 160);
-
-			sum += (pixel[2] - 168) * (pixel[2] - 168);
-
-			if (sum >= 10000 )
-			{
-				pixel[0] = 0;
-				pixel[1] = 0;
-				pixel[2] = 0;
-			}
-			image_temp.at<Vec3b>(r, c) = pixel;
-			sum = 0;
-		}
-	}
-
+ 
 #ifdef WRITE_ROI_SMAPLES_TEMP
 	QString path = QString(".//temp//");
 
@@ -768,7 +758,17 @@ int HK63D14DataIdentify::setQINQPLRectPos()
 	 
 	//colorThreshold(image_temp, image_temp, 120);
 	cvtColor(image_temp, image_temp, CV_RGB2GRAY);
-	 
+	 //颜色灰度阈值
+	for (int c = 0; c < image_temp.cols; c++)
+	{
+		for (int r = 0; r < image_temp.rows; r++)
+		{
+			if (image_temp.at<uchar>(r,c) < 100 )
+			{
+				image_temp.at<uchar>(r, c) = 0;
+			}
+		}
+	}
 #ifdef WRITE_ROI_SMAPLES_TEMP
 	 
 
@@ -895,7 +895,7 @@ int  HK63D14DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			}
 			else
 			{
-				if (y[i - rectNum] - y[i - rectNum - 1] > 18)
+				if (y[i - rectNum] - y[i - rectNum - 1] > 22 )
 				{
 					y[i - rectNum] = y[i - rectNum - 1] + NUMBER_HEIGHT  ;
 				}
@@ -962,7 +962,7 @@ int  HK63D14DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			}
 			else
 			{
-				if (y[i + 1] - y[i ] > 18)
+				if (y[i + 1] - y[i ] > 22 )
 				{
 					y[i +1] = y[i ] + NUMBER_HEIGHT  ;
 				}
@@ -1033,7 +1033,7 @@ int  HK63D14DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			else
 			{
 				//为了排除掉   退赛马匹 的数字高度太高。
-				if (y[i + 1] - y[i] > 18)
+				if (y[i + 1] - y[i] > 22 )
 				{
 					y[i + 1] = y[i] + NUMBER_HEIGHT ;
 				}
@@ -1213,8 +1213,8 @@ int HK63D14DataIdentify::getWINPLAIdentify()
 	CvRect rectDot[3];
 	CvRect rectNoDot[3];
 
-	rectDot[0].x = 0;	rectDot[1].x = 11;		rectDot[2].x = 22;
-	rectNoDot[0].x = 0; rectNoDot[1].x = 13;	rectNoDot[2].x =22 ;
+	rectDot[0].x = 0;	rectDot[1].x = 16;		rectDot[2].x = 22;
+	rectNoDot[0].x = 0; rectNoDot[1].x = 14;	rectNoDot[2].x =22 ;
 	
 	float factor[2][3] = { { 10, 1, 0.1 }, { 100, 10, 1 } };							// the first line for dot, the second line for no dat
 	
@@ -1274,37 +1274,33 @@ int HK63D14DataIdentify::getWINPLAIdentify()
 
 			roiNew = Mat(roiForDotJudge, roiNewSize);
 
-			for (int i = 0; i < 3; i++)			// set the rect for single number in number region
+			for (int index = 0; index < 2; index++)			// set the rect for sindexngle number in number region
 			{
-				if (i ==2 )
+				if (index ==1)
 				{
-					rectNoDot[i].width = roi.cols - rectNoDot[i].x;
-					rectDot[i].width = roi.cols - rectDot[i].x;
+					rectNoDot[index].width = roi.cols - rectNoDot[index].x;
+					rectDot[index].width = roi.cols - rectDot[index].x;
 				}
-				else if ( i == 0 )
+				else if (index == 0)
 				{
-					rectNoDot[i].width = 13;
-					rectDot[i].width = 11;
+					rectNoDot[index].width = 14;
+					rectDot[index].width = 13;
 				}
-				else
-				{
-					rectNoDot[i].width = 9 ;
-					rectDot[i].width = 9 ;
-				}
-				
-				rectDot[i].y = roiNewSize.y;
 			 
-				rectDot[i].height = roiNew.rows;
+				
+				rectDot[index].y = roiNewSize.y;
+			 
+				rectDot[index].height = roiNew.rows;
 
-				rectNoDot[i].y = roiNewSize.y;
+				rectNoDot[index].y = roiNewSize.y;
 
-				rectNoDot[i].height = roiNew.rows;
+				rectNoDot[index].height = roiNew.rows;
 			}
 
 		
 			 
  
-			if (i == 3 && j == 1 )
+			if (i == 4 && j == 0 )
 			{
 
 				int temp = 0;
@@ -1317,6 +1313,7 @@ int HK63D14DataIdentify::getWINPLAIdentify()
 			bool dotFlag;
 			dotFlag = judgeWINPLADot(1, roiNew, roiForDotJudge);
 			
+			 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
 			
 			
@@ -1326,14 +1323,14 @@ int HK63D14DataIdentify::getWINPLAIdentify()
 			fileNameStr.append(QString("j_"));
 			fileNameStr.append(QString::number((int)j, 10));
 			fileNameStr.append(QString("k_"));
-			fileNameStr.append(QString::number((int)0, 10));
+			fileNameStr.append(QString::number((int)6, 10));
 			fileNameStr.append(QString(".bmp"));
 
 			writeSamples(fileNameStr, roiNew, path);
 #endif
  
 			//赛马退赛 标志 ，如果截取的数据区域小于30 说明此地方为 --- ，马匹已经退赛
-			if (roiNew.cols < 20 )
+			if (roiNew.rows < 10 )
 			{
 				dataOutput.mHorseInfo.isSCR[i] = true;
 				dataOutput.WIN[i] = -1;
@@ -1349,7 +1346,7 @@ int HK63D14DataIdentify::getWINPLAIdentify()
 			float tempSum = 0.0;
 			if (dotFlag)															// contain a dot
 			{
-				for (int k = 0; k < 3; k++)					// segment each single number and svm
+				for (int k = 0; k < 2; k++)					// segment each single number and svm
 				{
 					  
 					Mat singleNum(roi, rectDot[k]);									// the single number image
@@ -1368,7 +1365,7 @@ int HK63D14DataIdentify::getWINPLAIdentify()
 					fileNameStr.append(QString::number((int)k, 10));
 					fileNameStr.append(QString(".bmp"));
 
-					writeSamples(fileNameStr, roiNew, path);
+					writeSamples(fileNameStr, singleNum, path);
 #endif
 
 
@@ -1392,7 +1389,7 @@ int HK63D14DataIdentify::getWINPLAIdentify()
 			}
 			else                                                                 // have no dot
 			{
-				for (int k = 0; k < 3; k++)
+				for (int k = 0; k < 2; k++)
 				{
 					 
 					 
@@ -1411,7 +1408,7 @@ int HK63D14DataIdentify::getWINPLAIdentify()
 					fileNameStr.append(QString::number((int)k, 10));
 					fileNameStr.append(QString(".bmp"));
 
-					writeSamples(fileNameStr, roiNew, path);
+					writeSamples(fileNameStr, singleNum, path);
 #endif
 
 					resize(singleNum, singleNum, cvSize(10, 20));
@@ -1509,28 +1506,7 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 	//做颜色阈值
 	Vec3b pixel; // B G R
 	int sum = 0;
-	for (int c = 0; c < imageTemp.cols; c++)
-	{
-		for (int r = 0; r < imageTemp.rows; r++)
-		{
-			pixel = imageTemp.at<Vec3b>(r, c); //  
-
-			sum = (pixel[0] - 170) * (pixel[0] - 170);
-
-			sum += (pixel[1] - 160) * (pixel[1] - 160);
-
-			sum += (pixel[2] - 168) * (pixel[2] - 168);
-
-			if (sum >= 7000)
-			{
-				pixel[0] = 0;
-				pixel[1] = 0;
-				pixel[2] = 0;
-			}
-			imageTemp.at<Vec3b>(r, c) = pixel;
-			sum = 0;
-		}
-	}
+ 
 	 
 	 
 	cvtColor(imageTemp, imageTemp, CV_RGB2GRAY);
@@ -1638,10 +1614,10 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 			//roiSize.width = qinQPLPosStruct.rect[i][j].width;
 		 
 
-			if (i == 5 & j == 10 )
+			if (i == 1 & j == 3  )
 			{
 
-				qDebug("Mark \n");
+			 
 #ifdef  QDEBUG_OUTPUT
 				qDebug("Mark \n");
 #endif //  QDEBUG_OUTPUT
@@ -1668,9 +1644,19 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 			memset(x, 0, 4);
 
 
- 
+			QString fileNameStr;
+			QString path = QString(".//temp//");
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
-			writeSamples(i, j, 6, roiForDotJudge);
+
+			fileNameStr = QString("");
+			fileNameStr.append(QString("i_"));
+			fileNameStr.append(QString::number((int)i, 10));
+			fileNameStr.append(QString("j_"));
+			fileNameStr.append(QString::number((int)j, 10));
+			fileNameStr.append(QString("k_"));
+			fileNameStr.append(QString::number((int)6, 10));
+			fileNameStr.append(QString(".bmp"));
+			writeSamples(fileNameStr, roiForDotJudge,path );
 #endif // WRITE_ROI_SMAPLES_CLASS
 
 			Mat edge;
@@ -1743,7 +1729,16 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 
 					Mat singleNum(roiNew, rect[0][k]);								// the single number image
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+					fileNameStr = QString("");
+					fileNameStr.append(QString("i_"));
+					fileNameStr.append(QString::number((int)i, 10));
+					fileNameStr.append(QString("j_"));
+					fileNameStr.append(QString::number((int)j, 10));
+					fileNameStr.append(QString("k_"));
+					fileNameStr.append(QString::number((int)k, 10));
+					fileNameStr.append(QString(".bmp"));
+					writeSamples(fileNameStr, singleNum, path);
+ 
 #endif
 					resize(singleNum, singleNum, cvSize(10, 20));
 					hog.compute(singleNum, descriptorVector, winStride, padding);
@@ -1787,9 +1782,20 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 
 			 
 					Mat singleNum(roiNew, rect[1][k]);								// the single number image
+ 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+					fileNameStr = QString("");
+					fileNameStr.append(QString("i_"));
+					fileNameStr.append(QString::number((int)i, 10));
+					fileNameStr.append(QString("j_"));
+					fileNameStr.append(QString::number((int)j, 10));
+					fileNameStr.append(QString("k_"));
+					fileNameStr.append(QString::number((int)k, 10));
+					fileNameStr.append(QString(".bmp"));
+					writeSamples(fileNameStr, singleNum, path);
+
 #endif
+ 
 					resize(singleNum, singleNum, cvSize(10, 20));
 					hog.compute(singleNum, descriptorVector, winStride, padding);
 					for (int m = 0; m < HOGFEATURENUMBER; m++)
@@ -1830,7 +1836,18 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 					Mat singleNum(roiNew, rect[2][k]);								// the single number image
 
 #ifdef  WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+ 
+					fileNameStr = QString("");
+					fileNameStr.append(QString("i_"));
+					fileNameStr.append(QString::number((int)i, 10));
+					fileNameStr.append(QString("j_"));
+					fileNameStr.append(QString::number((int)j, 10));
+					fileNameStr.append(QString("k_"));
+					fileNameStr.append(QString::number((int)k, 10));
+					fileNameStr.append(QString(".bmp"));
+					writeSamples(fileNameStr, singleNum, path);
+
+ 
 #endif
 					resize(singleNum, singleNum, cvSize(10, 20));
 					hog.compute(singleNum, descriptorVector, winStride, padding);
@@ -2112,7 +2129,7 @@ int HK63D14DataIdentify::calculateGraySumXForSetHorseNameRect(Mat &mat, int *y, 
 #endif
 	}
 	int j = 0;
-	int THEREHOLD = 300;
+	int THEREHOLD = 10;
 	for (int i = 0; i < dimension; i++)
 	{
 		if (i == 0 & graySumX[0] > THEREHOLD)
@@ -2204,7 +2221,7 @@ bool HK63D14DataIdentify::judgeWINPLADot(int i, Mat &edge, Mat &roiThresholdEdge
 	int  maxLength = 0;
 	if (edge.cols >= 20 )
 	{
-		for (int i = 15; i < 21;i++)
+		for (int i = 10; i < edge.cols;i++)
 		{
 			if (graySum[i] < 20 )
 			{
@@ -2221,15 +2238,15 @@ bool HK63D14DataIdentify::judgeWINPLADot(int i, Mat &edge, Mat &roiThresholdEdge
 		graySum = NULL;
 	}
 
-	//大于28 不一定都是带有小数点，小于28也不一定都是 不带有小数点
-	if (edge.cols >  28) // 29 以上为有小数点的
+	//大于23 不一定都是带有小数点，小于23也不一定都是 不带有小数点
+	if (edge.cols >  24) // 23 以上为有小数点的
 	{
 		return   true;
 	}
-	else if (edge.cols <= 28 ) //判断是否有带有小数点的进入
+	else if (edge.cols <= 24 ) //判断是否有带有小数点的进入
 	{
-		//有两个以上的空格 即可认为有小数点
-		if (maxLength > 2 )
+		//有5个以上的空格 即可认为有小数点
+		if (maxLength > 5 )
 		{
 			return true;
 		}
@@ -2407,9 +2424,15 @@ int HK63D14DataIdentify::judgeQINQPL()
 	}
  
 	Mat roi(image, QINQPL_LABEL_POS_RECT);
-	// 	imshow("a", roi);
-	// 	waitKey();
+	 
 
+#ifdef WRITE_ROI_SMAPLES_TEMP
+	QString path = QString(".//temp//");
+
+	writeSamples(QString("judgeQINQPL.bmp"), roi, path);
+
+
+#endif
 	cvtColor(roi, roi, CV_RGB2GRAY);
 
 	resize(roi, roi, cvSize(10, 20), 0, 0, INTER_CUBIC);
@@ -2461,7 +2484,9 @@ int  HK63D14DataIdentify::trimRoiBlankPart(Mat &oriMat, Mat &newRoiMat, CvRect &
 		{
 			graySum[r] += oriMat.at<uchar>(r, c);
 		}
-		 
+#ifdef QDEBUG_OUTPUT
+		qDebug("trimRoiBlankPart:: graySum %d = %d ", r, graySum[r]);
+#endif
 	}
 
 	for (int r = 0; r< oriMat.rows; r++)

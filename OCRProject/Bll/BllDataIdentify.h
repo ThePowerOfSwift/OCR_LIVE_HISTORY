@@ -13,6 +13,7 @@
 #include "Bll/YZTDataIdentify.h"
 
 #include "Bll/HK18D14DataIdentify.h"
+#include "Bll/HK63D14DataIdentify.h"
 
 //#define  CALLBACK_MODE
 #define WRITE_IMAGES_BEFORE_DataIdentify
@@ -109,8 +110,16 @@ private:
 
 	void getHorseNameFromDataFile(QString fileName, DataOutput &outputStruct);
 
-
+	/*
+		写历史文件
+	*/
 	void writeHistoryData(DataOutput &dataOutput);
+	/*
+		当历史视频的日期发生了变化，那么所有的相关全局变量都要初始化
+	*/
+
+	void initGlobal();
+
 
 	DataOutput priDataOutput;
 
@@ -123,6 +132,8 @@ private:
 	DataIdentify    dataIdentifyClass;
 
 	HK18D14DataIdentify mHK18D14DataIdentify;
+
+	HK63D14DataIdentify mHK63D14DataIdentify;
 
 	bool pauseDataIdentifyTag;//标识符
 

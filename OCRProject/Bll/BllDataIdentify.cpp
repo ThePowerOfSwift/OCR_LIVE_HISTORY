@@ -152,6 +152,9 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 		// 日期发生了变化
 		if (videoFileDate != Global::historyVideoDate)
 		{
+
+			initGlobal();
+
 			Global::historyIdentifyDataFile.close();
 
 			// 写数据文件
@@ -171,26 +174,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 		videoFileDate = Global::historyVideoDate;
 		
 		
-		/*
-		QDataStream   writeDataStream(&Global::historyIdentifyDataFile);
-		int a = 56;
-		writeDataStream <<a<< endl;
-		Global::historyIdentifyDataFile.close();
-		
-
-		if (!Global::historyIdentifyDataFile.open(QIODevice::ReadOnly | QIODevice::Text))
-			return -1;
-		QDataStream readDataStream(&Global::historyIdentifyDataFile);
-
-		int b = 0 ;
-
-		readDataStream >> b;
-
-		*/
-
-
-
-
+	 
 
 	}
 	if (Global::isSessioncalibrated)
@@ -959,77 +943,151 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 	{
 
 		//	mHK18DataIdentify = new HK18DataIdentify;
-
-
-		bool emptyData = (mHK18D14DataIdentify).read(imageTemp, imageBuf, (IMAGE_BUFF_LENGTH - BMP_HEADER),
-			IMAGE_HEIGHT, IMAGE_WIDTH);
-
-		if (emptyData == true)
+		if (Global::is63TAIVideoData)
 		{
-			qDebug() << "empty image data" << endl;
+			bool emptyData = (mHK63D14DataIdentify).read(imageTemp, imageBuf, (IMAGE_BUFF_LENGTH - BMP_HEADER),
+				IMAGE_HEIGHT, IMAGE_WIDTH);
 
-		}
-
-		int imageWidth;
-		int imageHeight;
-
-		QByteArray byteArray;
-
-		bool isHistoryVideo;
-
-		//	imshow("q",srcMat);
-		//	waitKey();
-		int nChannel = srcMat.channels();
-		//	buf = new uchar[srcMat.cols*srcMat.rows*nChannel];
-		QImage img;
-		if (nChannel == 3)
-		{
-
-			cv::cvtColor(srcMat, srcMat, CV_BGR2RGB);
-			img = QImage((const unsigned char*)srcMat.data, srcMat.cols, srcMat.rows, QImage::Format_RGB888);
-
-		}
-
-		imageWidth = srcMat.cols;
-		imageHeight = srcMat.rows;
-		byteArray.append((char *)img.bits(), srcMat.cols * srcMat.rows*nChannel);
-
-		isHistoryVideo = true;
-
-
-		int rtValue = (mHK18D14DataIdentify).identify();
-
-		(mHK18D14DataIdentify).dataOutput.videoProgressPercent = progressPercent;
-
-
-		if ((mHK18D14DataIdentify).haveDataFlag == false) //广告
-		{
-			//显示图片，但是不输出结果
-			emit readyReadBmp((mHK18D14DataIdentify).dataOutput, byteArray, imageWidth, imageHeight);
-
-		}
-		else if ((mHK18D14DataIdentify).haveDataFlag == true)
-		{
-			//获取算法数据
-			DataOutput outputStruct = (mHK18D14DataIdentify).dataOutput;
-			//数据处理，屏蔽无效数据为-1
-
-			isDataOutputNew(outputStruct);
-
-			//数据有改变才会发送信号
-			if (outputStruct.changeStatus >= 0)
+			if (emptyData == true)
 			{
+				return -1;
+				qDebug() << "empty image data" << endl;
 
-				emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
 			}
 
-			qDebug() << "【BllDataIdentify】一帧图像识别时间：" << endl;
+			int imageWidth;
+			int imageHeight;
+
+			QByteArray byteArray;
+
+			bool isHistoryVideo;
+
+			//	imshow("q",srcMat);
+			//	waitKey();
+			int nChannel = srcMat.channels();
+			//	buf = new uchar[srcMat.cols*srcMat.rows*nChannel];
+			QImage img;
+			if (nChannel == 3)
+			{
+
+				cv::cvtColor(srcMat, srcMat, CV_BGR2RGB);
+				img = QImage((const unsigned char*)srcMat.data, srcMat.cols, srcMat.rows, QImage::Format_RGB888);
+
+			}
+
+			imageWidth = srcMat.cols;
+			imageHeight = srcMat.rows;
+			byteArray.append((char *)img.bits(), srcMat.cols * srcMat.rows*nChannel);
+
+			isHistoryVideo = true;
+
+
+			int rtValue = (mHK63D14DataIdentify).identify();
+
+			(mHK63D14DataIdentify).dataOutput.videoProgressPercent = progressPercent;
+
+
+			if ((mHK63D14DataIdentify).haveDataFlag == false) //广告
+			{
+				//显示图片，但是不输出结果
+				emit readyReadBmp((mHK63D14DataIdentify).dataOutput, byteArray, imageWidth, imageHeight);
+
+			}
+			else if ((mHK63D14DataIdentify).haveDataFlag == true)
+			{
+				//获取算法数据
+				DataOutput outputStruct = (mHK63D14DataIdentify).dataOutput;
+				//数据处理，屏蔽无效数据为-1
+
+				isDataOutputNew(outputStruct);
+
+				//数据有改变才会发送信号
+				if (outputStruct.changeStatus >= 0)
+				{
+
+					emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
+				}
+
+				qDebug() << "【BllDataIdentify】一帧图像识别时间：" << endl;
+			}
+
+
+			return 1;
 		}
- 
+		else
+		{
+			bool emptyData = (mHK63D14DataIdentify).read(imageTemp, imageBuf, (IMAGE_BUFF_LENGTH - BMP_HEADER),
+				IMAGE_HEIGHT, IMAGE_WIDTH);
+
+			if (emptyData == true)
+			{
+				qDebug() << "empty image data" << endl;
+
+			}
+
+			int imageWidth;
+			int imageHeight;
+
+			QByteArray byteArray;
+
+			bool isHistoryVideo;
+
+			//	imshow("q",srcMat);
+			//	waitKey();
+			int nChannel = srcMat.channels();
+			//	buf = new uchar[srcMat.cols*srcMat.rows*nChannel];
+			QImage img;
+			if (nChannel == 3)
+			{
+
+				cv::cvtColor(srcMat, srcMat, CV_BGR2RGB);
+				img = QImage((const unsigned char*)srcMat.data, srcMat.cols, srcMat.rows,
+					QImage::Format_RGB888);
+
+			}
+
+			imageWidth = srcMat.cols;
+			imageHeight = srcMat.rows;
+			byteArray.append((char *)img.bits(), srcMat.cols * srcMat.rows*nChannel);
+
+			isHistoryVideo = true;
+
+
+			int rtValue = (mHK63D14DataIdentify).identify();
+
+			(mHK63D14DataIdentify).dataOutput.videoProgressPercent = progressPercent;
+
+
+			if ((mHK63D14DataIdentify).haveDataFlag == false) //广告
+			{
+				//显示图片，但是不输出结果
+				emit readyReadBmp((mHK63D14DataIdentify).dataOutput, byteArray, imageWidth, imageHeight);
+
+			}
+			else if ((mHK63D14DataIdentify).haveDataFlag == true)
+			{
+				//获取算法数据
+				DataOutput outputStruct = (mHK63D14DataIdentify).dataOutput;
+				//数据处理，屏蔽无效数据为-1
+
+				isDataOutputNew(outputStruct);
+
+				//数据有改变才会发送信号
+				if (outputStruct.changeStatus >= 0)
+				{
+
+					emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
+				}
+
+				qDebug() << "【BllDataIdentify】一帧图像识别时间：" << endl;
+			}
+
+
+			return 1;
+
+		}
 	}
-	
-	 
-	return 1;
+		
 }
 
 /**/
@@ -1488,5 +1546,44 @@ void BllDataIdentify::stop()
 	Global::pauseDataIdentifyTag = true;
 }
 
+/*
+	初始化全局
+*/
+void BllDataIdentify::initGlobal()
+{
+
+	//历史视频起始帧位置
+	Global::videoStartPos = 0;
+	//识别视频类型
+
+//	Global::videoType = 0;
+
+	//历史视频文件，快进累加
+	Global::frameAccValue = 1;
+
+	/***********比赛数据***********/
+	Global::raceId;//比赛唯一识别ID，服务端获得
+	
+	Global::session = 0;//比赛场次号
+
+	Global::raceTime = 0;//比赛时间
+
+	// 请求到的全局场次号id
+	Global::requestRaceId = 0;
+
+	//本场场次号的全局id 已经请求 标志位
+
+	Global::isSessionRaceIdRequested = false;
+	//比赛已经开始标志
+	Global::raceHasStarted = 0;
+	//比赛当前场次计时 
+	Global::countRaceTime = 0;
+
+	Global::timerCount = 0;
+
+	// 是否用户校正了场次号
+	Global::isSessioncalibrated = false;
+
  
- 
+}
+

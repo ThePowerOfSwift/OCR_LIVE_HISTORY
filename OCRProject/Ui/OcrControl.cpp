@@ -359,9 +359,13 @@ OcrControl::OcrControl(QWidget *parent)
 	QObject::connect(bllDataIdentify, SIGNAL(readNextFile()), this, SLOT(startProcessHistoryVideo ()));//停止计算
 
 	// 有了新的场次号，请求raceID
-	QObject::connect(bllDataIdentify, SIGNAL(requestRaceIdSig()), bllRealTimeTrans, SLOT(requestRaceID())); 
+	QObject::connect(bllDataIdentify, SIGNAL(requestRaceIdSig()), bllRealTimeTrans, SLOT(requestRaceID()));
 
  
+	// 连接 63台checkbox
+	QObject::connect(ui.is63TAICheckBox, SIGNAL(clicked(bool)), this, SLOT(is63TAICheckBoxStateChanged(bool)));
+
+	
 	 
 }
 
@@ -481,20 +485,20 @@ void OcrControl::on_startAcqBtn_clicked()
 
 	if (text == "亚洲台")
 	{
-		videoType = 1;
+		videoType =YAZHOUTAI;
 	}
 	else if (text == "香港18台")
 	{
-		videoType = 2;
+		videoType = HK18TAI;
 	}
 	else if (text == "香港18台D14")
 	{
-		videoType = 3;
+		videoType = HK18D14;
 	}
 
 	else if (text == "直播")
 	{
-		videoType = 0;
+		videoType = LIVE ;
 	}
 
 	Global::videoType = videoType;
@@ -534,10 +538,63 @@ void OcrControl::startProcessHistoryVideo()
 {
 	
  
+	
 	//如果处理掉的文件
 	if (historyVideoFileNum > 0)
 	{
 		fileName = takeTopFile(0);
+
+		if (Global::videoType == YAZHOUTAI)
+		{
+			QString label = ".wmv";
+			int pos = 0;
+			pos = fileName.indexOf(label);
+			if (pos <= 0 )
+			{
+				label = ".bmp";
+				if (fileName.indexOf(label) <= 0)
+				{
+					return;
+				}
+			}
+
+		}
+
+		if (Global::videoType == HK18D14)
+		{
+			
+			QString label = ".d14";
+			int pos = 0;
+			pos = fileName.indexOf(label);
+
+			if (pos <= 0)
+			{
+				label = ".bmp";
+				if (fileName.indexOf(label) <= 0)
+				{
+					return;
+				}
+				 
+			}
+
+		}
+
+		if (Global::videoType == HK18TAI)
+		{
+			QString label = ".wmv";
+			int pos = 0;
+			pos = fileName.indexOf(label);
+			if (pos <= 0)
+			{
+				label = ".bmp";
+				if (fileName.indexOf(label) <= 0)
+				{
+					return;
+				}
+			}
+
+		}
+		 
 		//fileName = "E:\\BaiduYunDownload\\20130109184858_clip1.wmv";
 		emit startIdentify(fileName, Global::videoType);//开始识别
  
@@ -560,16 +617,14 @@ void OcrControl::on_stopAcqBtn_clicked()
 		emit stopAcq();//停止采集
 
 		//停止采集 while 循环
-
-		
+		 
 		Global::myIAcq->unLoadDevice();
 		//Global::threadAcq->quit();
 
 		//emit stopDataIdentify();//停止识别
  
 		threadDataIdentify->quit();
-
-	
+		 
 }
 
 
@@ -628,10 +683,7 @@ void OcrControl::updateADData(DataOutput  output, QByteArray  array,int imageWid
 		ui.adTimeLbl->setPalette(pe);
 		ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
 
-
-		
-
-
+ 
 }
 /**
 * @brief 更新数据
@@ -691,13 +743,7 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 		ui.adTimeLbl->setPalette(pe);
 		ui.sessionLineEdit->setText(QString::number(Global::session));//更新全局场次号
 		ui.raceTimeLineEdit->setText(QString::number(Global::raceTime));//更新全局比赛时间
-		/*
-		ui.sessionLineEdit->setFontPointSize(20);
-		ui.raceTimeLineEdit->setFontPointSize(20);
-
-		ui.sessionLineEdit->setTextColor(QColor("white"));
-		ui.raceTimeLineEdit->setTextColor(QColor("white"));*/
-
+		 
 		updateUiData(output, array);//更新马信息
 		if (output.isQPL)
 		{
@@ -1183,4 +1229,12 @@ void OcrControl::updateAfterUserInput(DataOutput  output)
 	ui.userInputLabel->setText(QString(" X G "));
 
 
+}
+
+/*
+实时获取 63台check box 状态
+*/
+void OcrControl::is63TAICheckBoxStateChanged(bool)
+{
+	Global::is63TAIVideoData = ui.is63TAICheckBox->isChecked();
 }

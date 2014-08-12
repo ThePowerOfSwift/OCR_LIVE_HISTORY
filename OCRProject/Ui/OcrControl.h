@@ -149,10 +149,18 @@ public slots:
 
 
 	/*
-	
+	  获取马名
 	*/
 
 	void getHorseNameFromDataFile(   );
+
+
+	/*
+		63台checkbox 状态改变
+	*/
+
+	void is63TAICheckBoxStateChanged( bool);
+
 signals:
 	void connect(QString,qint32);
 	void disconnect();

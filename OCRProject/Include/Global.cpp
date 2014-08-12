@@ -88,8 +88,14 @@ QString Global::historyVideoDate = "";
 
 QFile Global::historyIdentifyDataFile;
 
+
 QDataStream Global::historyIdentifyDataWS;
- /***********比赛数据***********/
+
+
+bool Global::is63TAIVideoData = false ;
+
+/***********比赛数据***********/
+
 
 
 //系统日志线程

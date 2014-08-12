@@ -363,9 +363,7 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 
 	 }
 	
-//	if (outputStruct.changeStatus != 0 )
-//		qDebug("outputStruct.changeStatus: %d",outputStruct.changeStatus ) ;
-
+ 
 }
 /**
 * @brief 提交实时数据-WIN或PLA

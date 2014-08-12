@@ -15,8 +15,8 @@ using namespace cv;
 //#define  WRITE_SESSION_CLASSIFY_SAMPELS 
 //#define  WRITE_MINUTE_CLASSIFY_SAMPELS
 #define  QDEBUG_OUTPUT
-#define		WRITE_ROI_SMAPLES_CLASS_INFO1
-//#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
+//#define		WRITE_ROI_SMAPLES_CLASS_INFO1
+#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
 #define WRITE_ROI_SMAPLES_TEMP
 
 
@@ -169,8 +169,8 @@ private:
 
 //定义原点位置为  以2010年 10.1 号视频作为基准 ，画面大小 704*576
 
-#define ORIGIN_X_BASE 43
-#define ORIGIN_Y_BASE 26 
+#define ORIGIN_X_BASE 27
+#define ORIGIN_Y_BASE 34
 
 
 //场次号位置
@@ -189,11 +189,11 @@ private:
 #define  COUNTDOWNMINUTE_POS_RECT2 cvRect(504+(originX-ORIGIN_X_BASE),32+(originY-ORIGIN_Y_BASE),10,15)
 
 // WIN PLA
-#define  WIN_POS_RECT cvRect(57+(originX-ORIGIN_X_BASE),69+(originY-ORIGIN_Y_BASE),40,391-69)
+#define  WIN_POS_RECT cvRect(57+(originX-ORIGIN_X_BASE),69+(originY-ORIGIN_Y_BASE),40,371-69)
 // PLA 
-#define  PLA_POS_RECT cvRect(121+(originX-ORIGIN_X_BASE),69+(originY-ORIGIN_Y_BASE),35,391-69)
+#define  PLA_POS_RECT cvRect(121+(originX-ORIGIN_X_BASE),69+(originY-ORIGIN_Y_BASE),35,371-69)
 // 马名
-#define HORSENAME_REGION_RECT cvRect(20+(originX-ORIGIN_X_BASE),69+(originY-ORIGIN_Y_BASE),35,391-69)
+#define HORSENAME_REGION_RECT cvRect(20+(originX-ORIGIN_X_BASE),69+(originY-ORIGIN_Y_BASE),35,371-69)
 //QIN QPL标签位置
 #define  QINQPL_LABEL_POS_RECT cvRect(59+(originX-ORIGIN_X_BASE),377+(originY-ORIGIN_Y_BASE),19,19)
 
@@ -202,18 +202,18 @@ private:
 //QIN QPL 方框 绝对坐标
 #define		QINQPL_POS_RECT cvRect(45+(originX-ORIGIN_X_BASE), 394+(originY-ORIGIN_Y_BASE), 637-45, 524-394)
  
-#define  LB_REGION1_RECT cvRect(49+(originX-ORIGIN_X_BASE), 410+(originY-ORIGIN_Y_BASE),  36 ,117)
-#define  LB_REGION2_RECT cvRect(93+(originX-ORIGIN_X_BASE), 431+(originY-ORIGIN_Y_BASE), 39, 97)
-#define  LB_REGION3_RECT cvRect(138+(originX-ORIGIN_X_BASE), 449+(originY-ORIGIN_Y_BASE), 40, 76)
-#define  LB_REGION4_RECT cvRect(179+(originX-ORIGIN_X_BASE), 467+(originY-ORIGIN_Y_BASE), 40, 58)
+#define  LB_REGION1_RECT cvRect(49+(originX-ORIGIN_X_BASE), 412+(originY-ORIGIN_Y_BASE),  36 ,117)
+#define  LB_REGION2_RECT cvRect(93+(originX-ORIGIN_X_BASE), 432+(originY-ORIGIN_Y_BASE), 39, 97)
+#define  LB_REGION3_RECT cvRect(138+(originX-ORIGIN_X_BASE), 449+(originY-ORIGIN_Y_BASE), 40, 78)
+#define  LB_REGION4_RECT cvRect(179+(originX-ORIGIN_X_BASE), 472+(originY-ORIGIN_Y_BASE), 40, 58)
 
-#define  LB_REGION5_RECT cvRect(222+(originX-ORIGIN_X_BASE), 487+(originY-ORIGIN_Y_BASE), 40  , 38)
-#define  LB_REGION6_RECT cvRect(264+(originX-ORIGIN_X_BASE), 506+(originY-ORIGIN_Y_BASE), 40 , 19 )
+#define  LB_REGION5_RECT cvRect(222+(originX-ORIGIN_X_BASE), 492+(originY-ORIGIN_Y_BASE), 40  , 38)
+#define  LB_REGION6_RECT cvRect(264+(originX-ORIGIN_X_BASE), 511+(originY-ORIGIN_Y_BASE), 40 , 19 )
 
-#define RU_REGION1_RECT  cvRect(83+(originX-ORIGIN_X_BASE), 391+(originY-ORIGIN_Y_BASE), 40, 16)
+#define RU_REGION1_RECT  cvRect(83+(originX-ORIGIN_X_BASE),  391+(originY-ORIGIN_Y_BASE), 40, 16)
 #define RU_REGION2_RECT  cvRect(119+(originX-ORIGIN_X_BASE), 391+(originY-ORIGIN_Y_BASE), 40, 38)
 #define RU_REGION3_RECT  cvRect(160+(originX-ORIGIN_X_BASE), 391+(originY-ORIGIN_Y_BASE), 40, 57)
-#define RU_REGION4_RECT  cvRect(200+(originX-ORIGIN_X_BASE), 391+(originY-ORIGIN_Y_BASE), 40, 78)
+#define RU_REGION4_RECT  cvRect(200+(originX-ORIGIN_X_BASE), 390+(originY-ORIGIN_Y_BASE), 40, 78)
 #define RU_REGION5_RECT  cvRect(240+(originX-ORIGIN_X_BASE), 391+(originY-ORIGIN_Y_BASE), 40, 92)
 #define RU_REGION6_RECT  cvRect(280+(originX-ORIGIN_X_BASE), 391+(originY-ORIGIN_Y_BASE), 40, 117)
 
