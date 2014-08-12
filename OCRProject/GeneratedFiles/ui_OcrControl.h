@@ -466,7 +466,7 @@ public:
 
         horizontalLayout_12->addLayout(verticalLayout_23);
 
-        horizontalLayout_12->setStretch(0, 3);
+        horizontalLayout_12->setStretch(0, 4);
         horizontalLayout_12->setStretch(1, 1);
 
         horizontalLayout_13->addLayout(horizontalLayout_12);
@@ -480,7 +480,7 @@ public:
         horizontalLayout_8->addLayout(verticalLayout_19);
 
         horizontalLayout_8->setStretch(0, 7);
-        horizontalLayout_8->setStretch(1, 2);
+        horizontalLayout_8->setStretch(1, 3);
 
         verticalLayout_20->addLayout(horizontalLayout_8);
 

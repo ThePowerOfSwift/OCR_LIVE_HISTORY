@@ -57,7 +57,7 @@ qint32 Global::frameAccValue = 1 ;
  /***********比赛数据***********/
 qint32 Global::raceId;//比赛唯一识别ID，服务端获得
 QList<TagHorseInfo> Global::horseInfoList;//赛马信息：HorseID，HorseName，服务端获得
-qint32 Global::session = 1;//比赛场次号
+qint32 Global::session = 0;//比赛场次号
 
 qint32 Global::raceTime;//比赛时间
 
@@ -74,7 +74,21 @@ qint32 Global::countRaceTime = 0 ;
 
 qint32 Global::timerCount = 0 ;
 
+// 是否用户校正了场次号
+bool Global::isSessioncalibrated = false ;
 
+
+//历史视频比赛日期
+
+QString Global::historyVideoDate = "";
+
+
+
+//历史数据文件
+
+QFile Global::historyIdentifyDataFile;
+
+QDataStream Global::historyIdentifyDataWS;
  /***********比赛数据***********/
 
 

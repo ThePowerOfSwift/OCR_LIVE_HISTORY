@@ -42,6 +42,8 @@ HK18DataIdentify::HK18DataIdentify()
 		dataOutput.svmResult[i] = -1;
 		dataOutput.WIN[i] = 0.0;
 		dataOutput.PLA[i] = 0.0;
+	memset(dataOutput.mHorseInfo.horseName[i], 0, sizeof(wchar_t)* 4);
+		dataOutput.mHorseInfo.horseID[i] = 0;
 	}
 	for (int i = 0; i < 7; i++)
 	{
@@ -62,8 +64,7 @@ HK18DataIdentify::HK18DataIdentify()
 		for (int j = 0; j < QIN_QPL_COL; j++)
 			qinQPLPosStruct.rect[i][j] = cvRect(0, 0, 0, 0);
 
-		memset(dataOutput.mHorseInfo.horseName[i], 0, sizeof(wchar_t)* 4);
-		dataOutput.mHorseInfo.horseID[i] = 0;
+	
 	}
 
 	// 倒计时位置 初始化
@@ -256,6 +257,7 @@ void HK18DataIdentify::haveData()
 		}
 			
 	}
+	dataOutput.haveDataFlag = haveDataFlag;
 
 
 	 
@@ -1096,6 +1098,11 @@ int HK18DataIdentify::isHorseNameChanged()
 #endif
 		dataOutput.horseNameChangedNum++;
 	}
+	//如果人工校正了场次号，那么此时 重新赋值场次号。
+	if (Global::isSessioncalibrated)
+	{
+		dataOutput.horseNameChangedNum = Global::session;
+	}
 	delete[] graySum;
 
 
@@ -1489,6 +1496,11 @@ int HK18DataIdentify::getQINQPLIdentify()
 			{
 				
 				if (dataOutput.mHorseInfo.isSCR[j+7] == true)
+				{
+					dataOutput.QPL_QIN[i][j] = -1;
+					continue;
+				}
+				if (dataOutput.mHorseInfo.isSCR[i + 7] == true)
 				{
 					dataOutput.QPL_QIN[i][j] = -1;
 					continue;

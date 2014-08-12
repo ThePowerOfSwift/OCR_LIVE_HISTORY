@@ -412,24 +412,12 @@ void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct,QString type)
 				TagWPDataInfo WPData;
 				WPData.HorseID = i;
 				WPData.HorseNO = i;
-				int dataBigger10 = 0;
-				float dataSmaller10 = 0;
-				float dataTemp = 0;
+				 
 				if (type == "WIN")
 				{
-					//dataTemp  = ouputStruct.WIN[i - 1] ;
-					WPData.WinValue = ouputStruct.WIN[i - 1];
-					/*
-					if (dataTemp >= 10)
-						WPData.WinValue = (int)dataTemp;
-					else
-					{
-						dataBigger10 = (int)ouputStruct.WIN[i - 1];
-
-						WPData.WinValue = dataBigger10 ;
-					}*/
-						
 					 
+					WPData.WinValue = ouputStruct.WIN[i - 1];
+				  
 				}
 					
 				else if (type == "PLA")

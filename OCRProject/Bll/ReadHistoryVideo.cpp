@@ -5,7 +5,7 @@
 ReadHistoryVideo::ReadHistoryVideo()
 {
 
-	initD14SDK();
+//	initD14SDK();
 
 }
 
@@ -15,24 +15,44 @@ void ReadHistoryVideo::initD14SDK()
 }
 int ReadHistoryVideo::close()
 {
-	cvReleaseCapture(&capture);
+
+	if (fileType == "d14" | fileType == "h64" | fileType == "D14" | fileType == "H64")
+	{
+		Player_Stop(1);
+		Player_CloseFile(1);
+		Player_CloseStream(1);
+		Player_ReleaseDirectDraw();
+
+	}
+	else
+	{
+		cvReleaseCapture(&capture);
+	}
+
 	return 1;
 }
 ReadHistoryVideo::~ReadHistoryVideo()
 {
 
-	cvReleaseCapture(&capture);
+	
+	if (fileType == "d14" | fileType == "h64" | fileType == "D14" | fileType == "H64")
+	{
+		Player_Stop(1);
+		Player_CloseFile(1);
+		Player_CloseStream(1);
+		Player_ReleaseDirectDraw();
 
-	Player_Stop(1);
-	Player_CloseFile(1);
-	Player_CloseStream(1);
-	Player_ReleaseDirectDraw();
-
+	}
+	else
+	{
+		cvReleaseCapture(&capture);
+	}
 	 
 }
 int ReadHistoryVideo::open(QString fileName,double &totalFrames,double &fps )
 {
 	 
+	initD14SDK();
 	char*  fileNameCharPtr;
 
 	QByteArray ba = fileName.toLatin1();

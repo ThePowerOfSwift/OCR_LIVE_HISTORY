@@ -168,6 +168,8 @@ signals:
 	void startIdentify (QString fileName,int videoType );//开始识别
 	void stopIdentify();//停止识别
 
+
+	void getHorseNameFromDataFileSig();
  
 
 private:
@@ -197,6 +199,7 @@ private:
 
 	int historyVideoFileNum;
 
+	int historyVideoFileProcessedCount;
 
 	//保存上一次 快进的数据值
 
@@ -206,6 +209,8 @@ private:
 	//历史文件 名称
 	QString fileName;
 	
+
+
 };
 
 #endif // OCRCONTROL_H

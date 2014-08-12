@@ -353,6 +353,7 @@ OcrControl::OcrControl(QWidget *parent)
 	// 文件数目为 0
 	historyVideoFileNum = 0;
 
+	historyVideoFileProcessedCount = 0;
 
 	//显示广告	
 	QObject::connect(bllDataIdentify, SIGNAL(readNextFile()), this, SLOT(startProcessHistoryVideo ()));//停止计算
@@ -360,14 +361,7 @@ OcrControl::OcrControl(QWidget *parent)
 	// 有了新的场次号，请求raceID
 	QObject::connect(bllDataIdentify, SIGNAL(requestRaceIdSig()), bllRealTimeTrans, SLOT(requestRaceID())); 
 
-	//有了新的场次号，开始索引马名，id
-
-	//QObject::connect(bllDataIdentify, SIGNAL(requestRaceIdSig()), this, SLOT(getHorseNameFromDataFile()));
-
-	
-
-
-	 
+ 
 	 
 }
 
@@ -533,126 +527,27 @@ Toal horse number 12
 
 void OcrControl::getHorseNameFromDataFile(   )
 { 
-	/* 
-	//清空list
 	 
-	horseNameList.clear();
-	horseIdList.clear();
- 
-	int labelPos; 
-	labelPos = fileName.indexOf("01N");
-	historyVideoDate = fileName.mid(labelPos + 3, 8);
-
-
-	QString searchLabel; 
-	searchLabel = historyVideoDate + QString("Start one Session \t ");
-	if (Global::session < 10)
-	{
-		searchLabel += QString("0")+QString::number(Global::session);
-	}
-	else
-		searchLabel += QString::number(Global::session);
-
-	int oneSessionStrPos;
-	oneSessionStrPos = horseNameHistoryStr.indexOf(searchLabel);
-
-
-	QString oneSessionStr;
-	oneSessionStr = horseNameHistoryStr.mid(oneSessionStrPos, 140);
-
-	int horseNum = 0;
-	QString horseNumsStr = oneSessionStr.mid(48, 1);
-	horseNum = horseNumsStr.toInt();
-
-	QString horseNamePartStr;
-	horseNamePartStr = oneSessionStr.mid(49, 96);
-
-	QString oneHorseName;
-	QString cha;
-	for (int i = 0; i < horseNamePartStr.size(); i++)
-	{
-		
-		cha = horseNamePartStr.mid(i, 1);
-		if (cha > "z")
-		{
-			oneHorseName += cha;
-		}
-	 
-
-		if ((cha >= QString("1") & cha <= QString("9")) | cha == QString("E"))
-		{
-			if (oneHorseName.size() >= 2)
-			{
-				horseNameList.append(oneHorseName);
-
-				int pos = horseNameIdStr.indexOf(oneHorseName);
-
-				QString idStr;
-
-				idStr = horseNameIdStr.mid(pos - 7,7);
-				int horseId;
-				QString oneNum;
-				for (int index = 0; index < idStr.size();index++)
-				{
-					 
-					if (idStr.mid( index, 1) >= QString("0")
-						& idStr.mid(index, 1) <= QString("9"))
-					{
-						oneNum += idStr.mid(index, 1);
-						 
-					}
-
-					if (idStr.mid(idStr.size() - 1 - index, 1) >= QString("z"))
-					{
-						horseId = oneNum.toInt();
-						horseIdList.append(horseId);
-						break;
-					}
-				}
-				oneHorseName = QString("");
-
-
-				
-				
-
-			}
-
-		}
-		 
-		
-	}
-
-
-	*/
 }
 
 void OcrControl::startProcessHistoryVideo()
 {
 	
-
-	//fileName = "E:\\BaiduYunDownload\\20130109184858_clip1.wmv";
-	//emit startIdentify( fileName, videoType );//开始识别
-
-	historyVideoFileNum--;
-	 
+ 
 	//如果处理掉的文件
-	if (historyVideoFileNum >= 0)
+	if (historyVideoFileNum > 0)
 	{
-		fileName = takeTopFile(historyVideoFileNum );
+		fileName = takeTopFile(0);
 		//fileName = "E:\\BaiduYunDownload\\20130109184858_clip1.wmv";
 		emit startIdentify(fileName, Global::videoType);//开始识别
-
-	//	getHorseNameFromDataFile() ;
-	
+ 
 	}
+ 
+	historyVideoFileNum = ui.fileTableWidget->rowCount();
 
+	 
 
-	
-	/*
-	for (int row = 0; row < ui.fileTableWidget->rowCount(); row++)
-	{
-		
-	}*/
+	 
 }
 /**
 * @brief 停止采集
@@ -825,7 +720,7 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 	ui.adTimeLbl->setPalette(pe);
 	ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
 
-
+ 
 
 }
 
@@ -1009,7 +904,13 @@ void OcrControl::on_loadFileBtn_clicked()
 		ui.fileTableWidget->setItem(m, 0, new QTableWidgetItem(fileNamesList.at(i)));//插入指定项
 	}
 
+	ui.fileTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+//	ui.fileTableWidget->setResizeMode(QHeaderView::Stretch);
+
+
 	historyVideoFileNum = fileNamesList.size();
+
+	historyVideoFileProcessedCount = 0;
 }
 /**
 * @brief 追加历史文件
@@ -1075,6 +976,9 @@ void OcrControl::on_caliSessionCountDownBtn_clicked()
 	Global::session = sessionStr.toInt();
 
 	ui.sessionLineEdit->setText(QString::number(Global::session));//更新全局场次号
+
+
+	Global::isSessioncalibrated = true;
 
 }
 

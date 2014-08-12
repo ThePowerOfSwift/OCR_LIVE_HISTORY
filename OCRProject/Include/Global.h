@@ -133,8 +133,18 @@ public:
 
 	static bool isSessionRaceIdRequested;
 
-
+	// 是否 用户矫正了 场次号
+	static bool isSessioncalibrated;
 	
+
+	//历史视频比赛日期
+
+	static QString historyVideoDate;
+
+	//存取识别的历史数据
+	static QFile historyIdentifyDataFile;
+
+	static QDataStream historyIdentifyDataWS;
 	/***********比赛数据***********/
 
 	//历史视频 起始帧位置

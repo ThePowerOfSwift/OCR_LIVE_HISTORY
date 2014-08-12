@@ -16,33 +16,6 @@ HK18D14DataIdentify::HK18D14DataIdentify()
 	memset(sampleCount, 0, sizeof(sampleCount));
 
 	algorithmState = EXEC_SUCCESS;
-	qinQplSubRect = new CvRect[19];
-	{
-		qinQplSubRect[0] = LB_REGION1_RECT;
-		qinQplSubRect[1] = LB_REGION2_RECT;
-		qinQplSubRect[2] = LB_REGION3_RECT;
-		qinQplSubRect[3] = LB_REGION4_RECT;
-		qinQplSubRect[4] = LB_REGION5_RECT;
-		qinQplSubRect[5] = LB_REGION6_RECT;
-
-		qinQplSubRect[6] = RU_REGION1_RECT;
-		qinQplSubRect[7] = RU_REGION2_RECT;
-		qinQplSubRect[8] = RU_REGION3_RECT;
-		qinQplSubRect[9] = RU_REGION4_RECT;
-		qinQplSubRect[10] = RU_REGION5_RECT;
-		qinQplSubRect[11] = RU_REGION6_RECT;
-
-
-		qinQplSubRect[12] = R_REGION1_RECT;
-		qinQplSubRect[13] = R_REGION2_RECT;
-		qinQplSubRect[14] = R_REGION3_RECT;
-		qinQplSubRect[15] = R_REGION4_RECT;
-		qinQplSubRect[16] = R_REGION5_RECT;
-		qinQplSubRect[17] = R_REGION6_RECT;
-		qinQplSubRect[18] = R_REGION7_RECT;
-
-
-	}
 
 	//initLengthHeightComp();
 
@@ -489,7 +462,12 @@ int HK18D14DataIdentify::setHorseNameRectPos()
 	edge = horseNameRegion;
 
 
-	imwrite("horseNameRegion.bmp", edge);
+#ifdef WRITE_ROI_SMAPLES_TEMP
+	QString path = QString(".//temp//");
+	writeSamples(QString("horseNameRegion.bmp"), edge, path);
+#endif
+
+	 
 	int *y = new int[HORSENUMBER + 1];
  
 	//同时获取马的数目
@@ -520,7 +498,11 @@ int HK18D14DataIdentify::setHorseNameRectPos()
 		horseNameRect = Mat(image, horseNamePosStruct.rect[r]);
 		cvtColor(horseNameRect, horseNameRect, CV_RGB2GRAY);
 		//imshow("1", horseNameRect);
-		imwrite(fileName.toStdString(), horseNameRect);
+#ifdef WRITE_ROI_SMAPLES_TEMP
+		QString path = QString(".//temp//");
+		writeSamples(fileName , horseNameRect,path);
+#endif
+	 
 		//waitKey();
 	}
 
@@ -557,11 +539,15 @@ int HK18D14DataIdentify::setWINPLARectPos()
 	Mat winRegion(imageGray, WIN_POS_RECT);
 	Mat plaRegion(imageGray, PLA_POS_RECT);
 
+#ifdef WRITE_ROI_SMAPLES_TEMP
+	QString path = QString(".//temp//");
+
+	writeSamples(QString("WIN_Region.bmp"), winRegion, path);
+	writeSamples(QString("PLA_Region.bmp"), winRegion, path);
+
+#endif
+
  
-	imwrite("WIN_Region.bmp", winRegion);
-	imwrite("PLA_Region.bmp", plaRegion);
-
-
 	int *yWin = new int[HORSENUMBER + 1];
 	int *yPla = new int[HORSENUMBER + 1];
 	
@@ -770,11 +756,27 @@ int HK18D14DataIdentify::setQINQPLRectPos()
 			sum = 0;
 		}
 	}
-	imwrite("ori1.bmp", image_temp);
+
+#ifdef WRITE_ROI_SMAPLES_TEMP
+	QString path = QString(".//temp//");
+
+	writeSamples(QString("ori1.bmp"), image_temp, path);
+	 
+
+#endif
+
+	 
 	//colorThreshold(image_temp, image_temp, 120);
 	cvtColor(image_temp, image_temp, CV_RGB2GRAY);
 	 
-	imwrite("ori2.bmp", image_temp);
+#ifdef WRITE_ROI_SMAPLES_TEMP
+	 
+
+	writeSamples(QString("ori2.bmp"), image_temp, path);
+
+
+#endif
+ 
 
 	int deltaNum = HORSENUMBER - dataOutput.horseNum;
 	for (int i = 0; i < 19 - deltaNum; i++)
@@ -795,7 +797,15 @@ int HK18D14DataIdentify::setQINQPLRectPos()
 
 		fileName.prepend(".bmp");
 		fileName.prepend(QString::number(i));
-		imwrite(fileName.toStdString(), qinQPLPosStructRoi);
+
+#ifdef WRITE_ROI_SMAPLES_TEMP
+		QString path = QString(".//temp//");
+
+		writeSamples(fileName, qinQPLPosStructRoi, path);
+
+
+#endif
+		 
 
 
 		if (setEveryQINQPLPos(qinQPLPosStructRoi, i) == EXIT_THIS_OCR)
@@ -1134,7 +1144,13 @@ int HK18D14DataIdentify::isHorseNameChanged()
 		qDebug("  horseNameChangedNum = %d \n",
 			dataOutput.horseNameChangedNum);
 #endif
-		dataOutput.horseNameChangedNum++;
+		Global::session++;
+		//dataOutput.horseNameChangedNum++;
+	}
+	//如果人工校正了场次号，那么此时 重新赋值场次号。
+	if (Global::isSessioncalibrated)
+	{
+		dataOutput.horseNameChangedNum = Global::session;
 	}
 	delete[] graySum;
 
@@ -1221,10 +1237,17 @@ int HK18D14DataIdentify::getWINPLAIdentify()
 			}
 		}
 	}
+	QString path = QString(".//temp//");
+#ifdef WRITE_ROI_SMAPLES_TEMP
 
-	imwrite("WINPLA_ROI.bmp", imageGrayThreshold);
+	
+	writeSamples(QString("WINPLA_ROI.bmp"), imageGrayThreshold, path);
 
 
+#endif
+ 
+	 
+	QString fileNameStr;
 	// svm DataIdentify each number
  
 	for (int i = 0; i < dataOutput.horseNum; i++)
@@ -1296,7 +1319,18 @@ int HK18D14DataIdentify::getWINPLAIdentify()
 			dotFlag = judgeWINPLADot(1, roiNew, roiForDotJudge);
 			
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
-			writeSamples(i, j, 6, roiNew);
+			
+			
+			fileNameStr = QString("");
+			fileNameStr.append(QString("i_"));
+			fileNameStr.append(QString::number((int)i, 10));
+			fileNameStr.append(QString("j_"));
+			fileNameStr.append(QString::number((int)j, 10));
+			fileNameStr.append(QString("k_"));
+			fileNameStr.append(QString::number((int)0, 10));
+			fileNameStr.append(QString(".bmp"));
+
+			writeSamples(fileNameStr, roiNew, path);
 #endif
  
 			//赛马退赛 标志 ，如果截取的数据区域小于30 说明此地方为 --- ，马匹已经退赛
@@ -1322,10 +1356,22 @@ int HK18D14DataIdentify::getWINPLAIdentify()
 					Mat singleNum(roi, rectDot[k]);									// the single number image
 
 			 
-#ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
-					writeSamples(i, j, k, singleNum);
 
+#ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
+
+
+					fileNameStr = QString("");
+					fileNameStr.append(QString("i_"));
+					fileNameStr.append(QString::number((int)i, 10));
+					fileNameStr.append(QString("j_"));
+					fileNameStr.append(QString::number((int)j, 10));
+					fileNameStr.append(QString("k_"));
+					fileNameStr.append(QString::number((int)k, 10));
+					fileNameStr.append(QString(".bmp"));
+
+					writeSamples(fileNameStr, roiNew, path);
 #endif
+
 
 					resize(singleNum, singleNum, cvSize(10, 20));
 					hog.compute(singleNum, descriptorVector, winStride, padding);
@@ -1353,10 +1399,20 @@ int HK18D14DataIdentify::getWINPLAIdentify()
 					 
 					Mat singleNum(roi, rectNoDot[k]);
 
+
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
-					
-					writeSamples(i, j, k, singleNum); 
-					
+
+
+					fileNameStr = QString("");
+					fileNameStr.append(QString("i_"));
+					fileNameStr.append(QString::number((int)i, 10));
+					fileNameStr.append(QString("j_"));
+					fileNameStr.append(QString::number((int)j, 10));
+					fileNameStr.append(QString("k_"));
+					fileNameStr.append(QString::number((int)k, 10));
+					fileNameStr.append(QString(".bmp"));
+
+					writeSamples(fileNameStr, roiNew, path);
 #endif
 
 					resize(singleNum, singleNum, cvSize(10, 20));
@@ -1495,7 +1551,15 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 		}
 	}
 
-	imwrite("GetQinQpl.bmp", imageTemp);
+#ifdef WRITE_ROI_SMAPLES_TEMP
+	QString path = QString(".//temp//");
+
+	writeSamples(QString("GetQinQpl.bmp"), imageTemp, path);
+
+
+#endif
+
+ 
 
 	float factor[3][3] = { { 1, 0.1, 0 }, { 10, 1, 0 }, { 100, 10, 1 } };							// the first line for dot, the second line for no dat
 
@@ -1505,8 +1569,7 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 	Mat qinQPLPosStructMat(imageTemp, WHOLE_QINQPL_POS_RECT);
 	Mat qinQPLPosStructRegionSub1(imageTemp, QINQPL_POS_RECT);
 
-	//imwrite("image.bmp", image);
-	//
+	 
 	rect[0][0].x = 0;	rect[0][1].x = 9;		rect[0][2].x = 11;			// for two number with dot	
 	rect[1][0].x = 0;	rect[1][1].x = 9;		rect[1][2].x = 0;			// for two number without dot	 
 	rect[2][0].x = 0;	rect[2][1].x = 9;		rect[2][2].x = 19;			// for three number without dot
@@ -1549,6 +1612,14 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 					dataOutput.QPL_QIN[i][j] = -1;
 					continue;
 				}
+
+				if (dataOutput.mHorseInfo.isSCR[i + 7] == true)
+				{
+					dataOutput.QPL_QIN[i][j] = -1;
+					continue;
+				}
+
+
 			}
 		
  
@@ -1598,11 +1669,7 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 			memset(x, 0, 4);
 
 
-
-			/*		imwrite("error.bmp", roi);
-			imshow("roi", roi);
-			waitKey(1000);*/
-			//Mat roiNew(roi, roiNewSize);
+ 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
 			writeSamples(i, j, 6, roiForDotJudge);
 #endif // WRITE_ROI_SMAPLES_CLASS
@@ -1617,9 +1684,16 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 				fileNameTemp.prepend(QString::number(i));
 				fileNameTemp.prepend(QString("i_j"));
 				fileNameTemp.prepend(QString::number(j));
-				imwrite(fileNameTemp.toStdString(), edge);
-				//imshow("roi", roi);
-				//waitKey();
+
+#ifdef WRITE_ROI_SMAPLES_TEMP
+			//	QString path = QString(".//temp//");
+
+				writeSamples(fileNameTemp, edge, path);
+
+
+#endif
+
+		 
 			}
 
 			if (dotFlag == EXIT_THIS_OCR)
@@ -3019,18 +3093,7 @@ int  HK18D14DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, i
 */
 void HK18D14DataIdentify::createClassifySamples(float result, Mat &singleNum)
 {
-
-	//QString curPath = QDir::currentPath();
-
-	/*char fileName[200];
-
-	memset(fileName, 0, sizeof(fileName));
-	int j = 0;
-
-	j = sprintf_s(fileName, 200, "%s", ".//acqSamples//");
-	j += sprintf_s(fileName + j, 200 - j, "%d", (int)result);
-	j += sprintf_s(fileName + j, 200 - j, "%s", "//");
-	j += sprintf_s(fileName + j, 200 - j, "%d", sampleCount[(int) result]);*/
+ 
 
 	QString fileNameStr = QString(".//acqSamples//");
 
@@ -3049,6 +3112,7 @@ void HK18D14DataIdentify::createClassifySamples(float result, Mat &singleNum)
 	fileNameStr = QString("");
 	fileNameStr.append(QString::number(sampleCount[(int)result] % 1000));
 	fileNameStr.append(QString(".bmp"));
+
 	imwrite(fileNameStr.toStdString(), singleNum);
 
 	//退到上一层目录
@@ -3065,22 +3129,10 @@ void HK18D14DataIdentify::createClassifySamples(float result, Mat &singleNum)
 }
 
 
-void HK18D14DataIdentify::writeSamples(int i, int j, int k, Mat &roi)
+void HK18D14DataIdentify::writeSamples(QString fileName, Mat &roi,QString path)
 {
-
-	//QString curPath = QDir::currentPath();
-
-	/*char fileName[200];
-
-	memset(fileName, 0, sizeof(fileName));
-	int j = 0;
-
-	j = sprintf_s(fileName, 200, "%s", ".//acqSamples//");
-	j += sprintf_s(fileName + j, 200 - j, "%d", (int)result);
-	j += sprintf_s(fileName + j, 200 - j, "%s", "//");
-	j += sprintf_s(fileName + j, 200 - j, "%d", sampleCount[(int) result]);*/
-
-	QString fileNameStr = QString(".//roiSamples//");
+ 
+	QString fileNameStr = path;
 
 
 	//QString curPath = QDir::currentPath();
@@ -3088,6 +3140,8 @@ void HK18D14DataIdentify::writeSamples(int i, int j, int k, Mat &roi)
 	QString curPath = QDir::currentPath();
 	//qDebug("curPath = %s \n", qPrintable(curPath));
 	//curPath = QDir::currentPath();
+	
+	/*
 	fileNameStr = QString("");
 	fileNameStr.append(QString("i_"));
 	fileNameStr.append(QString::number((int)i, 10));
@@ -3096,7 +3150,8 @@ void HK18D14DataIdentify::writeSamples(int i, int j, int k, Mat &roi)
 	fileNameStr.append(QString("k_"));
 	fileNameStr.append(QString::number((int)k, 10));
 	fileNameStr.append(QString(".bmp"));
-	imwrite(fileNameStr.toStdString(), roi);
+	*/
+	imwrite(fileName.toStdString(), roi);
 
 	//退到上一层目录
 	QDir::setCurrent("../");
