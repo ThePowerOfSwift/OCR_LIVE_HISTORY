@@ -1545,7 +1545,7 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 	Mat qinQPLPosStructRegionSub1(imageTemp, QINQPL_POS_RECT);
 
 	 
-	rect[0][0].x = 0;	rect[0][1].x = 9;		rect[0][2].x = 11;			// for two number with dot	
+	rect[0][0].x = 0;	rect[0][1].x = 9;		rect[0][2].x = 14;			// for two number with dot	
 	rect[1][0].x = 0;	rect[1][1].x = 9;		rect[1][2].x = 0;			// for two number without dot	 
 	rect[2][0].x = 0;	rect[2][1].x = 9;		rect[2][2].x = 19;			// for three number without dot
  
@@ -1614,7 +1614,7 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 			//roiSize.width = qinQPLPosStruct.rect[i][j].width;
 		 
 
-			if (i == 1 & j == 3  )
+			if (i == 0 & j == 4  )
 			{
 
 			 
@@ -1623,7 +1623,7 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 #endif //  QDEBUG_OUTPUT
 
 
-			}
+			} 
 
 	  
 			CvRect roiNewSize;
@@ -1656,7 +1656,7 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 			fileNameStr.append(QString("k_"));
 			fileNameStr.append(QString::number((int)6, 10));
 			fileNameStr.append(QString(".bmp"));
-			writeSamples(fileNameStr, roiForDotJudge,path );
+			writeSamples(fileNameStr, roiNew, path);
 #endif // WRITE_ROI_SMAPLES_CLASS
 
 			Mat edge;
@@ -1688,7 +1688,7 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 
 			}
 			roiNewSize.y = 0;
-			//roiNewSize.height = roi.rows;
+			//如果新获得的
 			if (roiNewSize.x + roiNewSize.width >= roi.cols)
 			{
 				roiNewSize.width = roi.cols - roiNewSize.x;
@@ -1712,18 +1712,19 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 				{
 					rect[r][c].y = 0;
 					if (c < 1)
-					{
+					{ // 0
 						rect[r][c].width = rect[r][c + 1].x - rect[r][c].x;
 					}
 					else
-					{
+					{ //1 
 						rect[r][c].width = roiNewSize.width - rect[r][c + 1].x;
 
 					}
 					rect[r][c].height = roiNewSize.height;
 					rect[r][c].y = 0;
 				}
-			 
+				//跨过小数点位置
+				rect[0][1].x = rect[0][2].x;
 				for (int k = 0; k < 2; k++)										// segment each single number and svm
 				{ 
 
@@ -2266,9 +2267,9 @@ int  HK63D14DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 	}
 		 
 	//Canny(roi, edge, 150, 100, 3, true);
-	edge = roi;
-	int graySumPeakNum = 0;
-	int peakDistance = 0;
+	edge = roi ;
+	int graySumPeakNum = 0 ;
+	int peakDistance = 0 ;
 
 	int columns = edge.cols;
 
@@ -2279,6 +2280,7 @@ int  HK63D14DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 	for (int c = 0; c < edge.cols; c++)
 	{
 		sum = 0;
+		//计算图片上半部分的灰度和
 		for (int r = 0; r < edge.rows / 2 ; r++)
 		{
 			sum += edge.at<uchar>(r, c);
@@ -2331,7 +2333,7 @@ int  HK63D14DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 		}
 		return EXIT_THIS_OCR  ;
 	}
-	else if (delta >= 25 ) // three number . 27
+	else if (delta >= 28 ) // three number . 27
 	{
 		//获取3个数字的 坐标值 x
 		
@@ -2349,9 +2351,9 @@ int  HK63D14DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 		}
 		return 2;
 	}
-	else if (delta <= 24 & delta > 20  ) // tow number with dot .
+	else if (delta <= 27 & delta > 22  ) // tow number with dot .
 	{
-
+		// 3 位数
 		if (graySum[edge.cols / 2] != 0 & graySum[edge.cols / 2 - 1] != 0
 			& graySum[edge.cols / 2 + 1] != 0)
 		{
@@ -2369,10 +2371,10 @@ int  HK63D14DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 			}
 			return 2;
 		}
-		else
+		else //  2位小数
 		{
 			x[0] = 9;
-			x[1] = 11;
+			x[1] = 13;
 			x[2] = 0;
 
 			if (graySum != NULL)
@@ -2386,7 +2388,7 @@ int  HK63D14DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 	
  
 	}
-	else if (delta <= 20 ) // two number 
+	else if (delta <= 22 ) // two number 
 	{
 		  
 		x[0] = 9;

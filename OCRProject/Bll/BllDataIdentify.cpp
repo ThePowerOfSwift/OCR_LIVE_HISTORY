@@ -1016,7 +1016,7 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 		}
 		else
 		{
-			bool emptyData = (mHK63D14DataIdentify).read(imageTemp, imageBuf, (IMAGE_BUFF_LENGTH - BMP_HEADER),
+			bool emptyData = (mHK18D14DataIdentify).read(imageTemp, imageBuf, (IMAGE_BUFF_LENGTH - BMP_HEADER),
 				IMAGE_HEIGHT, IMAGE_WIDTH);
 
 			if (emptyData == true)
@@ -1053,21 +1053,21 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 			isHistoryVideo = true;
 
 
-			int rtValue = (mHK63D14DataIdentify).identify();
+			int rtValue = (mHK18D14DataIdentify).identify();
 
-			(mHK63D14DataIdentify).dataOutput.videoProgressPercent = progressPercent;
+			(mHK18D14DataIdentify).dataOutput.videoProgressPercent = progressPercent;
 
 
-			if ((mHK63D14DataIdentify).haveDataFlag == false) //广告
+			if ((mHK18D14DataIdentify).haveDataFlag == false) //广告
 			{
 				//显示图片，但是不输出结果
-				emit readyReadBmp((mHK63D14DataIdentify).dataOutput, byteArray, imageWidth, imageHeight);
+				emit readyReadBmp((mHK18D14DataIdentify).dataOutput, byteArray, imageWidth, imageHeight);
 
 			}
-			else if ((mHK63D14DataIdentify).haveDataFlag == true)
+			else if ((mHK18D14DataIdentify).haveDataFlag == true)
 			{
 				//获取算法数据
-				DataOutput outputStruct = (mHK63D14DataIdentify).dataOutput;
+				DataOutput outputStruct = (mHK18D14DataIdentify).dataOutput;
 				//数据处理，屏蔽无效数据为-1
 
 				isDataOutputNew(outputStruct);
