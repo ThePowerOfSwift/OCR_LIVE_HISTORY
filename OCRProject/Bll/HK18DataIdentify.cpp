@@ -1096,12 +1096,26 @@ int HK18DataIdentify::isHorseNameChanged()
 		qDebug("  horseNameChangedNum = %d \n",
 			dataOutput.horseNameChangedNum);
 #endif
-		dataOutput.horseNameChangedNum++;
+		Global::session++;
+
+		//定时器清零 。新的场次号。 如果是历史视频通过 计算帧数来实现
+		Global::timerCount = 0;
+		Global::historyFrameCount = 0;
+		Global::countRaceTime = 0;
+
+		Global::isSessionChanged = true;
+
 	}
 	//如果人工校正了场次号，那么此时 重新赋值场次号。
 	if (Global::isSessioncalibrated)
 	{
 		dataOutput.horseNameChangedNum = Global::session;
+		Global::isSessionChanged = true;
+		//定时器清零 。新的场次号。 如果是历史视频通过 计算帧数来实现
+
+		Global::timerCount = 0;
+		Global::historyFrameCount = 0;
+		Global::countRaceTime = 0;
 	}
 	delete[] graySum;
 
@@ -1519,7 +1533,7 @@ int HK18DataIdentify::getQINQPLIdentify()
 
 
 
-			if (i == 0 & j == 10 )
+			if (i == 4 & j == 10 )
 			{
 				qDebug("Mark \n");
 #ifdef  QDEBUG_OUTPUT
@@ -2259,7 +2273,7 @@ int  HK18DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 		}
 		return 2;
 	}
-	else if (delta <= 24 & delta >= 20  ) // tow number with dot .
+	else if (delta <= 24 & delta >= 19 ) // tow number with dot .
 	{
 		Mat halfEdge = Mat(edge, cvRect(0, 0, edge.cols, edge.rows / 2));
 		memset(graySum, 0, edge.cols*sizeof(int));
@@ -2328,7 +2342,7 @@ int  HK18DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 		//checkIfIsThreeNumber(edge,);
  
 	}
-	else if (delta < 20 & delta >= 5) // two number 
+	else if (delta < 19 & delta >= 5) // two number 
 	{
 		//两位数，防止 两位小数 进入 进行检测， 通过宽度已经无法检测出 两位小数与两位数 如1.1 ，99
 		Mat halfEdge = Mat(edge, cvRect(0, 0, edge.cols, edge.rows / 2));

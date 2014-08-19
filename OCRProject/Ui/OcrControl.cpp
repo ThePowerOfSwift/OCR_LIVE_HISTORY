@@ -567,8 +567,13 @@ void OcrControl::startProcessHistoryVideo()
 			int pos = 0;
 			pos = fileName.indexOf(label);
 
-			if (pos <= 0)
+			QString label1 = ".h64";
+
+			int pos1 = fileName.indexOf(label1);
+
+			if (pos < 0 & pos1 < 0 )
 			{
+				 
 				label = ".bmp";
 				if (fileName.indexOf(label) <= 0)
 				{
@@ -698,6 +703,10 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 
 	if (SHOW_ADBMP | output.haveDataFlag )
 	{
+		//更新
+		ui.sessionLineEdit->setText(QString::number(Global::session));//更新全局场次号
+		ui.raceTimeLineEdit->setText(QString::number(Global::raceTime));//更新全局比赛时间
+		ui.CountRaceTimeLineEdit->setText(QString::number(Global::countRaceTime)); //顺计时
 		//更新图片信息
 		QPixmap pixmap;
 		QImage myImage;
@@ -742,7 +751,7 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 		//	ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: Green;"));
 		ui.adTimeLbl->setPalette(pe);
 		ui.sessionLineEdit->setText(QString::number(Global::session));//更新全局场次号
-		ui.raceTimeLineEdit->setText(QString::number(Global::raceTime));//更新全局比赛时间
+		ui.raceTimeLineEdit->setText(QString::number(Global::raceTime));//更新全局比赛时间 倒计时
 		 
 		updateUiData(output, array);//更新马信息
 		if (output.isQPL)
@@ -762,7 +771,8 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 	curFileName = curFileName.mid(curFileName.count() - 9, 9);
 	ui.imageFileNameLabel->setText(curFileName);
 	
-	ui.CountRaceTimeLineEdit->setText(QString::number(Global::countRaceTime));
+	ui.CountRaceTimeLineEdit->setText(QString::number(Global::countRaceTime)); //顺计时
+
 	ui.adTimeLbl->setPalette(pe);
 	ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
 
@@ -1025,6 +1035,12 @@ void OcrControl::on_caliSessionCountDownBtn_clicked()
 
 
 	Global::isSessioncalibrated = true;
+
+	QString raceTimeStr;
+	raceTimeStr = ui.CountRaceTimeLineEdit->text();
+
+	//更新全局时间
+	Global::raceTime = raceTimeStr.toInt();
 
 }
 

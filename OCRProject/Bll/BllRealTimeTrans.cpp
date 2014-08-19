@@ -503,7 +503,7 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput& ouputStruct, QString type)
 					//封装一个WIN
 					TagQDataInfo QDataInfo;
 					QDataInfo.RaceID = Global::requestRaceId;//所属赛事ID
-					QDataInfo.HorseID = i;//马的唯一编号可关联马信息表
+					QDataInfo.HorseID = ouputStruct.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
 					QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
 					QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
 					QDataInfo.AtTime = 1;
@@ -537,8 +537,8 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput& ouputStruct, QString type)
 
 					//封装一个WIN
 					TagQDataInfo QDataInfo;
-					QDataInfo.RaceID = Global::requestRaceId;//所属赛事ID
-					QDataInfo.HorseID = i;//马的唯一编号可关联马信息表
+					QDataInfo.RaceID = Global::requestRaceId ; //所属赛事ID
+					QDataInfo.HorseID = ouputStruct.mHorseInfo.horseID[i - 1] ; //马的唯一编号可关联马信息表
 					QDataInfo.HorseNO = j;//本场比赛中马的序号，比如第3号，1-13
 					QDataInfo.YNO = i;//在Y轴上的第几号，跟它组合得出的数据 2-14
 					QDataInfo.AtTime = 1;

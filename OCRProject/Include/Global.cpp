@@ -74,9 +74,13 @@ qint32 Global::countRaceTime = 0 ;
 
 qint32 Global::timerCount = 0 ;
 
+
+qint32 Global::historyFrameCount = 0;
 // 是否用户校正了场次号
 bool Global::isSessioncalibrated = false ;
+//是否 场次号发生了变化
 
+bool Global::isSessionChanged = false;
 
 //历史视频比赛日期
 

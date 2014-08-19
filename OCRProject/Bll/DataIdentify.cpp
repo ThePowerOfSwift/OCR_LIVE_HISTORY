@@ -1019,6 +1019,10 @@ int DataIdentify::isHorseNameChanged()
 		qDebug("  horseNameChangedNum = %d \n",
 			dataOutput.horseNameChangedNum);
 		dataOutput.horseNameChangedNum++;
+
+		Global::isSessionChanged = true;
+
+
 	}
 	delete[] graySum;
 

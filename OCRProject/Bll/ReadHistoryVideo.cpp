@@ -16,12 +16,30 @@ void ReadHistoryVideo::initD14SDK()
 int ReadHistoryVideo::close()
 {
 
+	return 1;
 	if (fileType == "d14" | fileType == "h64" | fileType == "D14" | fileType == "H64")
 	{
-		Player_Stop(1);
-		Player_CloseFile(1);
-		Player_CloseStream(1);
-		Player_ReleaseDirectDraw();
+		bool rtValue = false;
+	//	rtValue = Player_Stop(1);
+		if (rtValue == false )
+		{
+			qDebug("ReadHistoryVideo:colse Player_Stop Function exec error !");
+		}
+		rtValue = Player_CloseFile(1);
+		if (rtValue == false)
+		{
+			qDebug("ReadHistoryVideo:colse Player_CloseFile Function exec error !");
+		}
+		rtValue = Player_CloseStream(1);
+		if (rtValue == false)
+		{
+			qDebug("ReadHistoryVideo:colse Player_CloseStream Function exec error !");
+		}
+		rtValue = Player_ReleaseDirectDraw();
+		if (rtValue == false)
+		{
+			qDebug("ReadHistoryVideo:colse Player_ReleaseDirectDraw Function exec error !");
+		}
 
 	}
 	else

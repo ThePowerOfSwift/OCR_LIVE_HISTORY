@@ -123,6 +123,10 @@ public:
 	static qint32 timerCount; //计时
 	static qint32 countRaceTime; //从当前场开始的时候计时 
 
+	// 计算 一场比赛视频的帧数
+
+	static qint32 historyFrameCount;
+
 	//通过识别场次号，请求 服务器 全局场次号
 
 	static qint32 requestRaceId; 
@@ -136,6 +140,9 @@ public:
 	// 是否 用户矫正了 场次号
 	static bool isSessioncalibrated;
 	
+	// 是否场次号变化，如果变化则 请求新场次号，然后将其置为 FALSE
+
+	static bool isSessionChanged;
 
 	//历史视频比赛日期
 

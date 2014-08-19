@@ -1145,11 +1145,23 @@ int HK63D14DataIdentify::isHorseNameChanged()
 			dataOutput.horseNameChangedNum);
 #endif
 		dataOutput.horseNameChangedNum++;
+		Global::isSessionChanged = true;
+		//定时器清零 。新的场次号。 如果是历史视频通过 计算帧数来实现
+		Global::timerCount = 0;
+		Global::historyFrameCount = 0;
+		Global::countRaceTime = 0;
+
 	}
 	//如果人工校正了场次号，那么此时 重新赋值场次号。
 	if (Global::isSessioncalibrated)
 	{
 		dataOutput.horseNameChangedNum = Global::session;
+		Global::isSessionChanged = true;
+		//定时器清零 。新的场次号。 如果是历史视频通过 计算帧数来实现
+		Global::timerCount = 0;
+		Global::historyFrameCount = 0;
+		Global::countRaceTime = 0;
+
 	}
 	delete[] graySum;
 
