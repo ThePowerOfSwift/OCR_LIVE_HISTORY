@@ -1545,7 +1545,7 @@ int HK18DataIdentify::getQINQPLIdentify()
 
 		 
 
-			colorThreshold(roi, roiThreshold, 160);
+			colorThreshold(roi, roiThreshold, 140);
 
 
 			cvtColor(roi, roi, CV_RGB2GRAY);
@@ -1565,9 +1565,13 @@ int HK18DataIdentify::getQINQPLIdentify()
 			{
 				for (int r = 0; r < roiForDotJudge.rows; r++)
 				{
-					if (roiForDotJudge.at<uchar>(r, c) > 10)
+					if (roiForDotJudge.at<uchar>(r, c) > 20)
 					{
 						roiForDotJudge.at<uchar>(r, c) = 250;
+					}
+					else
+					{
+						roiForDotJudge.at<uchar>(r, c) = 0;
 					}
 				}
 			}

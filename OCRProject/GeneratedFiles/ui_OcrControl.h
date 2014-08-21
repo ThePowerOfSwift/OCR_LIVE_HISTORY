@@ -92,7 +92,7 @@ public:
     QFrame *qplFrame;
     QHBoxLayout *horizontalLayout_10;
     QHBoxLayout *horizontalLayout_9;
-    QSpacerItem *horizontalSpacer;
+    QLabel *adTimeLbl;
     QVBoxLayout *verticalLayout_7;
     QLabel *label_34;
     QLabel *label_35;
@@ -131,10 +131,9 @@ public:
     QLabel *label_11;
     QLabel *label_12;
     QLabel *label_13;
-    QSpacerItem *horizontalSpacer_3;
-    QVBoxLayout *verticalLayout_13;
     QLabel *imageFileNameLabel;
-    QLabel *adTimeLbl;
+    QSpacerItem *horizontalSpacer;
+    QVBoxLayout *verticalLayout_13;
     QFrame *frame_4;
     QVBoxLayout *verticalLayout_17;
     QHBoxLayout *horizontalLayout_6;
@@ -506,9 +505,12 @@ public:
         horizontalLayout_9 = new QHBoxLayout();
         horizontalLayout_9->setSpacing(6);
         horizontalLayout_9->setObjectName(QStringLiteral("horizontalLayout_9"));
-        horizontalSpacer = new QSpacerItem(67, 17, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        adTimeLbl = new QLabel(qplFrame);
+        adTimeLbl->setObjectName(QStringLiteral("adTimeLbl"));
+        adTimeLbl->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
+        adTimeLbl->setAlignment(Qt::AlignCenter);
 
-        horizontalLayout_9->addItem(horizontalSpacer);
+        horizontalLayout_9->addWidget(adTimeLbl);
 
         verticalLayout_7 = new QVBoxLayout();
         verticalLayout_7->setSpacing(6);
@@ -685,6 +687,22 @@ public:
 
         horizontalLayout_7->addWidget(label_59);
 
+        horizontalLayout_7->setStretch(0, 1);
+        horizontalLayout_7->setStretch(1, 1);
+        horizontalLayout_7->setStretch(2, 1);
+        horizontalLayout_7->setStretch(3, 1);
+        horizontalLayout_7->setStretch(4, 1);
+        horizontalLayout_7->setStretch(5, 1);
+        horizontalLayout_7->setStretch(6, 1);
+        horizontalLayout_7->setStretch(7, 1);
+        horizontalLayout_7->setStretch(8, 1);
+        horizontalLayout_7->setStretch(9, 1);
+        horizontalLayout_7->setStretch(10, 1);
+        horizontalLayout_7->setStretch(11, 1);
+        horizontalLayout_7->setStretch(12, 1);
+        horizontalLayout_7->setStretch(13, 1);
+        horizontalLayout_7->setStretch(14, 1);
+        horizontalLayout_7->setStretch(15, 1);
 
         verticalLayout_11->addLayout(horizontalLayout_7);
 
@@ -692,8 +710,8 @@ public:
         qinFrame->setObjectName(QStringLiteral("qinFrame"));
         sizePolicy.setHeightForWidth(qinFrame->sizePolicy().hasHeightForWidth());
         qinFrame->setSizePolicy(sizePolicy);
-        qinFrame->setMinimumSize(QSize(500, 120));
-        qinFrame->setMaximumSize(QSize(500, 120));
+        qinFrame->setMinimumSize(QSize(0, 0));
+        qinFrame->setMaximumSize(QSize(16777215, 16777215));
         qinFrame->setStyleSheet(QStringLiteral(""));
         qinFrame->setFrameShape(QFrame::StyledPanel);
         qinFrame->setFrameShadow(QFrame::Raised);
@@ -705,6 +723,8 @@ public:
 
         verticalLayout_11->addWidget(qinFrame);
 
+        verticalLayout_11->setStretch(0, 1);
+        verticalLayout_11->setStretch(1, 4);
 
         horizontalLayout_9->addLayout(verticalLayout_11);
 
@@ -770,34 +790,30 @@ public:
 
         horizontalLayout_9->addLayout(verticalLayout_6);
 
-        horizontalSpacer_3 = new QSpacerItem(44, 17, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_9->addItem(horizontalSpacer_3);
-
-        verticalLayout_13 = new QVBoxLayout();
-        verticalLayout_13->setSpacing(6);
-        verticalLayout_13->setObjectName(QStringLiteral("verticalLayout_13"));
         imageFileNameLabel = new QLabel(qplFrame);
         imageFileNameLabel->setObjectName(QStringLiteral("imageFileNameLabel"));
         imageFileNameLabel->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
         imageFileNameLabel->setAlignment(Qt::AlignCenter);
 
-        verticalLayout_13->addWidget(imageFileNameLabel);
+        horizontalLayout_9->addWidget(imageFileNameLabel);
 
-        adTimeLbl = new QLabel(qplFrame);
-        adTimeLbl->setObjectName(QStringLiteral("adTimeLbl"));
-        adTimeLbl->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
-        adTimeLbl->setAlignment(Qt::AlignCenter);
+        horizontalSpacer = new QSpacerItem(67, 17, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        verticalLayout_13->addWidget(adTimeLbl);
+        horizontalLayout_9->addItem(horizontalSpacer);
 
+        verticalLayout_13 = new QVBoxLayout();
+        verticalLayout_13->setSpacing(6);
+        verticalLayout_13->setObjectName(QStringLiteral("verticalLayout_13"));
 
         horizontalLayout_9->addLayout(verticalLayout_13);
 
-        horizontalLayout_9->setStretch(0, 2);
-        horizontalLayout_9->setStretch(1, 1);
-        horizontalLayout_9->setStretch(2, 5);
-        horizontalLayout_9->setStretch(3, 5);
+        horizontalLayout_9->setStretch(0, 8);
+        horizontalLayout_9->setStretch(1, 8);
+        horizontalLayout_9->setStretch(2, 6);
+        horizontalLayout_9->setStretch(3, 2);
+        horizontalLayout_9->setStretch(4, 12);
+        horizontalLayout_9->setStretch(5, 12);
+        horizontalLayout_9->setStretch(6, 2);
 
         horizontalLayout_10->addLayout(horizontalLayout_9);
 
@@ -980,6 +996,7 @@ public:
         advance1MinBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\2331\345\210\206\351\222\237", 0));
         advance30SecBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\23330\347\247\222", 0));
         advance10SecBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\23310\347\247\222", 0));
+        adTimeLbl->setText(QApplication::translate("OcrControl", "ADTime", 0));
         label_34->setText(QString());
         label_35->setText(QString());
         label_14->setText(QApplication::translate("OcrControl", "9", 0));
@@ -1013,7 +1030,6 @@ public:
         label_12->setText(QApplication::translate("OcrControl", "6", 0));
         label_13->setText(QApplication::translate("OcrControl", "7", 0));
         imageFileNameLabel->setText(QApplication::translate("OcrControl", "imageName", 0));
-        adTimeLbl->setText(QApplication::translate("OcrControl", "ADTime", 0));
         connectBtn->setText(QApplication::translate("OcrControl", "\350\277\236\346\216\245", 0));
         loginBtn->setText(QApplication::translate("OcrControl", "\347\231\273\351\231\206", 0));
         reconnectCheckBox->setText(QApplication::translate("OcrControl", "\350\207\252\345\212\250\351\207\215\350\277\236", 0));

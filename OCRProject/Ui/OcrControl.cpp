@@ -538,7 +538,12 @@ void OcrControl::startProcessHistoryVideo()
 {
 	
  
-	
+	threadDataIdentify->quit();// 退出 	 
+	while (threadDataIdentify->isRunning())
+	{
+		Sleep(1);
+	}
+	threadDataIdentify->start();//开始识别 
 	//如果处理掉的文件
 	if (historyVideoFileNum > 0)
 	{

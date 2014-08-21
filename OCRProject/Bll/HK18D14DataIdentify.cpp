@@ -543,7 +543,7 @@ int HK18D14DataIdentify::setWINPLARectPos()
 	QString path = QString(".//temp//");
 
 	writeSamples(QString("WIN_Region.bmp"), winRegion, path);
-	writeSamples(QString("PLA_Region.bmp"), winRegion, path);
+	writeSamples(QString("PLA_Region.bmp"), plaRegion, path);
 
 #endif
 
@@ -1343,7 +1343,7 @@ int HK18D14DataIdentify::getWINPLAIdentify()
 			fileNameStr.append(QString("j_"));
 			fileNameStr.append(QString::number((int)j, 10));
 			fileNameStr.append(QString("k_"));
-			fileNameStr.append(QString::number((int)0, 10));
+			fileNameStr.append(QString::number((int)6, 10));
 			fileNameStr.append(QString(".bmp"));
 
 			writeSamples(fileNameStr, roiNew, path);
@@ -1385,7 +1385,7 @@ int HK18D14DataIdentify::getWINPLAIdentify()
 					fileNameStr.append(QString::number((int)k, 10));
 					fileNameStr.append(QString(".bmp"));
 
-					writeSamples(fileNameStr, roiNew, path);
+					writeSamples(fileNameStr, singleNum, path);
 #endif
 
 
@@ -1428,7 +1428,7 @@ int HK18D14DataIdentify::getWINPLAIdentify()
 					fileNameStr.append(QString::number((int)k, 10));
 					fileNameStr.append(QString(".bmp"));
 
-					writeSamples(fileNameStr, roiNew, path);
+					writeSamples(fileNameStr, singleNum, path);
 #endif
 
 					resize(singleNum, singleNum, cvSize(10, 20));

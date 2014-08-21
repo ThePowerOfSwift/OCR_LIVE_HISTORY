@@ -146,12 +146,15 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 	 if (Global::isSessionChanged)
 	 {
 		 Global::isSessionChanged = false;
+		 
+		 Global::isSessionRaceIdRequested == false;
 		 //请求新场次号
 		 emit requestRaceIdSig();
-
-
+ 
 		 isRightRaceTimeCountDownDetected = false;
 		 raceTimeCountDownNear9 = false;
+
+		
 
 	 }
 		//获取马名
@@ -174,7 +177,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 				if (!Global::historyIdentifyDataFile.open(QIODevice::WriteOnly))
 					return -1;
 
-			//	Global::historyIdentifyDataWS.setFloatingPointPrecision(QDataStream::SinglePrecision);
+				Global::historyIdentifyDataWS.setFloatingPointPrecision(QDataStream::SinglePrecision);
 				Global::historyIdentifyDataWS.setDevice(&Global::historyIdentifyDataFile);
 
 			}
@@ -184,17 +187,14 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 				if (!Global::historyIdentifyDataFile.open(QIODevice::WriteOnly))
 					return -1;
 
-			//	Global::historyIdentifyDataWS.setFloatingPointPrecision(QDataStream::SinglePrecision);
+				Global::historyIdentifyDataWS.setFloatingPointPrecision(QDataStream::SinglePrecision);
 				Global::historyIdentifyDataWS.setDevice(&Global::historyIdentifyDataFile);
 
 			}
 
 		}
 		videoFileDate = Global::historyVideoDate;
-		
-		
 	 
-
 	}
 	if (Global::isSessioncalibrated)
 	{
@@ -210,36 +210,8 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 		raceTimeCountDownNear9 = false;
 
 	}
-	/*
-	if ( outputStruct.horseNameChangedNum - Global::session == 1 )
-	{
-		//Global::session = firstRaceSessionDetected + outputStruct.horseNameChangedNum - 1;
-		Global::session = outputStruct.horseNameChangedNum;
-
-		//获取马名
-		getHorseNameFromDataFile(videoFileName,outputStruct);
-
-		//场次号发生了变化，请求新的场次号
-		emit requestRaceIdSig();
-		
-		outputStruct.sessionChangedFlag = true;
-		//将 场次号请求raceid 标志位 清空
-	//	Global::isSessionRaceIdRequested = false;
-
-		//定时器清零 。新的场次号。
-		Global::timerCount = 0;  
-		Global::raceTime = 0;
-
-		isRightRaceTimeCountDownDetected = false;
-		raceSessionCount++;
-
-		raceTimeCountDownNear9 = false;
-	}
-	 */
-	if (Global::session == 1)
-	{
-		getHorseNameFromDataFile(videoFileName, outputStruct);
-	}
+ 
+ 
 
 	{
 		// 利用15次用于快速更新   替换原有的30
@@ -324,15 +296,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 
 			}
 			dataNewCount = 0;
-
-			/*
-			//第一次
-			if (Global::raceTime == 0)
-			{
-				Global::raceTime = outputStruct.raceTime;
-			} 
-			else //非第一次
-			*/
+ 
 			{
 				if (maxContent >= 10 & isRightRaceTimeCountDownDetected == false )
 				{
@@ -342,12 +306,19 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 
 				if (isRightRaceTimeCountDownDetected == true)
 				{
-					//取个位数
+					//取个位数 倒计时
 					if (raceTimeCountDownNear9 == true)
 					{
 						if (Global::raceTime - maxContent % 10 <= 3 & Global::raceTime - maxContent % 10 >= 0)
 						{
 							Global::raceTime = maxContent % 10;
+						}
+						//如果出现次数很多，强行赋值
+						if (maxContentCount >= 10 )
+						{
+						 
+							Global::raceTime = maxContent % 10;
+							 
 						}
 
 					}
@@ -356,6 +327,13 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 						if (Global::raceTime - maxContent <= 3 & Global::raceTime - maxContent >= 0)
 						{
 							Global::raceTime = maxContent;
+						}
+						//如果出现次数很多，强行赋值
+						if (maxContentCount >= 10)
+						{
+							 
+							Global::raceTime = maxContent;
+						 
 						}
 					}
 				}
@@ -740,25 +718,21 @@ int BllDataIdentify::startHistoryDataIdentify(QString fileName, int videoType)
 	{
 		Global::videoStartPos = 0;
 	}
-	for (int f = Global::videoStartPos; f < ((totalFrames / videoFps) - 4 )& !Global::stopDataIdentifyTag;)
+	for (int f = Global::videoStartPos; f <= ((totalFrames / videoFps)  )& !Global::stopDataIdentifyTag;)
 	{
-		if (f >= ((totalFrames / videoFps) -4) )
+		if (f >= ((totalFrames / videoFps) ) )
 		{
 			break; 
 		}
 		myReadHistoryVideo.read(f, frameMat);
 
 		qDebug("frame count = %d",f);
-		progressPercent = 100 * f / (totalFrames/ videoFps -4);
+		progressPercent = 100 * f / (totalFrames/ videoFps);
 
 		imwrite("frameMat.bmp", frameMat);
-		if (f == ((int)(totalFrames / videoFps) - 8 ) )
-		{
-			int temp = 0 ;
-		}
+	 
 		algorithmExecHistory(videoType, NULL, frameMat, progressPercent);
 
-		
 
 		Sleep(800);
 		 
@@ -1083,8 +1057,7 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 
 				qDebug() << "【BllDataIdentify】一帧图像识别时间：" << endl;
 			}
-
-
+			 
 			return 1;
 
 		}
@@ -1237,10 +1210,23 @@ void BllDataIdentify::getHorseNameFromDataFile(QString fileName,DataOutput &outp
 	QString fileAppend = ".wmv";
 	labelPos = videoFileName.indexOf(fileAppend);
 
+	//获取 日期
 	if (labelPos > 0)
 	{
-		 
-		Global::historyVideoDate = fileName.mid(labelPos -20, 8);
+		int  startPos = 0;
+
+		for (int i = labelPos; i > 0; i--)
+		{
+			QString oneChar;
+			oneChar = videoFileName.mid(i,1);
+
+			if (oneChar == QString("/"))
+			{
+				startPos = i;
+				break;
+			}
+		}
+		Global::historyVideoDate = fileName.mid(startPos+1, 8);
 	}
 	else
 	{
@@ -1307,17 +1293,23 @@ void BllDataIdentify::getHorseNameFromDataFile(QString fileName,DataOutput &outp
 				QString oneNum;
 				for (int index = 0; index < idStr.size(); index++)
 				{
-
-					if (idStr.mid(index, 1) >= QString("0")
-						& idStr.mid(index, 1) <= QString("9"))
+					QString bitOne;
+					bitOne = idStr.mid(index, 1);
+					if (bitOne >= QString("0") &
+						bitOne <= QString("9"))
 					{
 						oneNum += idStr.mid(index, 1);
 
 					}
 
-					if (idStr.mid(idStr.size() - 1 - index, 1) >= QString("z"))
+					if (idStr.mid(index, 1) == QString("\t"))
 					{
+						
 						horseId = oneNum.toInt();
+						if (horseId == 0)
+						{
+							qDebug("ERROR : BllDataIdentify:horseId = 0 \n");
+						}
 						outputStruct.mHorseInfo.horseID[horseCount] = horseId;
 						//	horseIdList.append(horseId);
 						break;
@@ -1398,12 +1390,25 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 {
  
  //
+
 	QString logStr;
 
 	QTextStream logContentOut(&logFile);
 	//
 	int dataType = 0  ;
-	 
+	QString raceIdStr;
+	if (Global::session < 10)
+	{
+		raceIdStr = Global::historyVideoDate +QString("0")+ QString::number(Global::session);
+	}
+	else
+	{
+		raceIdStr = Global::historyVideoDate + QString::number(Global::session);
+	}
+	
+
+	Global::raceId = raceIdStr.toInt();
+
 	//写入win
 	if (dataOutput.changeStatus == WIN_CHANGED | dataOutput.changeStatus == WIN_PLA_CHANGED 
 		| dataOutput.changeStatus == WIN_QIN_QPL_CHANGED | dataOutput.changeStatus == WIN_PLA_QIN_QPL_CHANGED)
@@ -1417,11 +1422,12 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 			TagWPDataInfo WPData;
 
 			WPData.HorseID = dataOutput.mHorseInfo.horseID[i];
-			WPData.HorseNO = i ;
+			// from 1 to 14 .
+			WPData.HorseNO = i +1 ;
  
 		 	WPData.WinValue = dataOutput.WIN[i];
 				 
-			WPData.RaceID = 0 ;
+			WPData.RaceID = Global::raceId;
 			//顺计时
 			WPData.AtTime = Global::countRaceTime;
 			
@@ -1453,11 +1459,12 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 			TagWPDataInfo WPData;
 
 			WPData.HorseID = dataOutput.mHorseInfo.horseID[i];
-			WPData.HorseNO = i;
+			//从1 到14 
+			WPData.HorseNO = i+ 1; 
 
 			WPData.WinValue = dataOutput.PLA[i];
 
-			WPData.RaceID = 0;
+			WPData.RaceID = Global::raceId ;
 			WPData.AtTime = Global::countRaceTime;
 
 			if (dataType == 0)
@@ -1481,9 +1488,76 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 
 		 )
 	{
-		for (int i = 1; i <= dataOutput.horseNum; /* HORSENUMBER_1; */ i++)
+		for (int i = 1; i <= dataOutput.horseNum; i++)
 		{
+			for (int j = 1; j < i; j++)
+			{
+				//封装一个WIN
+				TagQDataInfo QDataInfo;
+				QDataInfo.RaceID = Global::requestRaceId;//所属赛事ID
+				QDataInfo.HorseID = dataOutput.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
+				QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
+				QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
+				QDataInfo.AtTime = Global::countRaceTime;
+				if (j <= 7) // 正表
+				{					
+					QDataInfo.QinValue = dataOutput.QPL_QIN[j - 1][i];
+				}
+				else //补充图表
+				{
+					QDataInfo.QinValue = dataOutput.QPL_QIN[i - 8][j - 8];
+				}
+
+				//写文件
+				Global::historyIdentifyDataWS << dataType << QDataInfo.RaceID << QDataInfo.HorseID
+					<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
+
+				logContentOut << QString("Type") << QString::number(dataType) << QString::number(QDataInfo.RaceID) <<
+					QString::number(QDataInfo.HorseID) << QString::number(QDataInfo.HorseNO) <<
+					QString::number(QDataInfo.YNO)
+					<< QString::number(QDataInfo.QinValue)
+					<< QString::number(QDataInfo.AtTime);
+			}
+
 			for (int j = i + 1; j <= dataOutput.horseNum; /* HORSENUMBER_1; */ j++)
+			{
+
+				//封装一个WIN
+				TagQDataInfo QDataInfo;
+				QDataInfo.RaceID = Global::requestRaceId;//所属赛事ID
+				QDataInfo.HorseID = dataOutput.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
+				QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
+				QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
+				QDataInfo.AtTime = Global::countRaceTime;
+				if (i <= 7) // 正表
+				{
+					QDataInfo.QinValue = dataOutput.QPL_QIN[i - 1][j];
+				}
+				else //补充图表
+				{
+					QDataInfo.QinValue = dataOutput.QPL_QIN[j - 8][i - 8];
+				}
+
+				//写文件
+				Global::historyIdentifyDataWS << dataType << QDataInfo.RaceID << QDataInfo.HorseID
+					<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
+
+				logContentOut << QString("Type") << QString::number(dataType) << QString::number(QDataInfo.RaceID) <<
+					QString::number(QDataInfo.HorseID) << QString::number(QDataInfo.HorseNO) <<
+					QString::number(QDataInfo.YNO)
+					<< QString::number(QDataInfo.QinValue)
+					<< QString::number(QDataInfo.AtTime);
+
+				 
+			}
+
+
+		}
+
+		/*
+		for (int i = 1; i <= dataOutput.horseNum;  i++)
+		{
+			for (int j = i + 1; j <= dataOutput.horseNum;  j++)
 			{
 				if (dataOutput.isQPL)
 				{
@@ -1494,9 +1568,10 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 
 				//封装一个WIN
 				TagQDataInfo QDataInfo;
-				QDataInfo.RaceID = 0;//所属赛事ID
+				QDataInfo.RaceID = Global::raceId;//所属赛事ID
 				QDataInfo.HorseID = dataOutput.mHorseInfo.horseID[i-1] ;//马的唯一编号可关联马信息表
-				QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
+				//从1 到14 
+				QDataInfo.HorseNO = i   ;//本场比赛中马的序号，比如第3号，1-13 
 				QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
 				QDataInfo.AtTime = Global::countRaceTime ;
 				if (i <= 7) // 正表
@@ -1525,11 +1600,12 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 
 			}
 		}
-
+		*/
+		/*
 			// 发送另外一半数据
-			for (int i = 1; i <= dataOutput.horseNum; /* HORSENUMBER_1; */ i++)
+			for (int i = 1; i <= dataOutput.horseNum;   i++)
 			{
-				for (int j = i + 1; j <= dataOutput.horseNum; /* HORSENUMBER_1; */ j++)
+				for (int j = i + 1; j <= dataOutput.horseNum;  j++)
 				{
 					if (dataOutput.isQPL)
 					{
@@ -1542,9 +1618,10 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 					TagQDataInfo QDataInfo;
 					QDataInfo.RaceID = Global::requestRaceId;//所属赛事ID
 					QDataInfo.HorseID = dataOutput.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
-					QDataInfo.HorseNO = j;//本场比赛中马的序号，比如第3号，1-13
+					//从1到14 。
+					QDataInfo.HorseNO = j  ;//本场比赛中马的序号，比如第3号，1-13
 					QDataInfo.YNO = i;//在Y轴上的第几号，跟它组合得出的数据 2-14
-					QDataInfo.AtTime = 0;
+					QDataInfo.AtTime = Global::countRaceTime;
 
 					if (i <= 7) // 正表
 					{
@@ -1574,17 +1651,10 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 
 				}
 			}
-
+		*/
 	}
 	
-	/*QDataStream outStr;
-	outStr.setDevice(&Global::historyIdentifyDataFile);
-
-	outStr >> dataType;*/
-
-	 
- 
- 
+	
 
 }
 /**

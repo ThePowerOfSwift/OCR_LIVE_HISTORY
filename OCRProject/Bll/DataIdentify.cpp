@@ -1014,21 +1014,37 @@ int DataIdentify::isHorseNameChanged()
 		dataOutput.mHorseInfo.length[h] = length[h];
 	}
 	 
-	if (ChangedNum > 1 )
+	if (ChangedNum > 1)
 	{
+#ifdef QDEBUG_OUTPUT
 		qDebug("  horseNameChangedNum = %d \n",
 			dataOutput.horseNameChangedNum);
-		dataOutput.horseNameChangedNum++;
+#endif
+		Global::session++;
+
+		//定时器清零 。新的场次号。 如果是历史视频通过 计算帧数来实现
+		Global::timerCount = 0;
+	 
+		Global::countRaceTime = 0;
 
 		Global::isSessionChanged = true;
 
+	}
+	//如果人工校正了场次号，那么此时 重新赋值场次号。
+	if (Global::isSessioncalibrated)
+	{
+		dataOutput.horseNameChangedNum = Global::session;
+		Global::isSessionChanged = true;
+		//定时器清零 。新的场次号。 如果是历史视频通过 计算帧数来实现
 
+		Global::timerCount = 0;
+	 
+		Global::countRaceTime = 0;
 	}
 	delete[] graySum;
 
 
 	return EXEC_SUCCESS;
-
 }
 //计算灰度值和，返回值即为灰度值和 同时做阈值
 int DataIdentify::calculateGraySum(Mat srcMat,int &length)

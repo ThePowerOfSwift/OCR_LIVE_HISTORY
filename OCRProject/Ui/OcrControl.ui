@@ -429,19 +429,19 @@
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_10">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="2,1,5,5,0,0">
+         <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="8,8,6,2,12,12,2">
           <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+           <widget class="QLabel" name="adTimeLbl">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 130, 80);</string>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>67</width>
-              <height>17</height>
-             </size>
+            <property name="text">
+             <string>ADTime</string>
             </property>
-           </spacer>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
           </item>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -600,9 +600,9 @@
            </layout>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_11">
+           <layout class="QVBoxLayout" name="verticalLayout_11" stretch="1,4">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1">
               <item>
                <widget class="QLabel" name="label_37">
                 <property name="text">
@@ -886,14 +886,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>500</width>
-                <height>120</height>
+                <width>0</width>
+                <height>0</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>500</width>
-                <height>120</height>
+                <width>16777215</width>
+                <height>16777215</height>
                </size>
               </property>
               <property name="styleSheet">
@@ -1083,47 +1083,33 @@
            </layout>
           </item>
           <item>
-           <spacer name="horizontalSpacer_3">
+           <widget class="QLabel" name="imageFileNameLabel">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 130, 80);</string>
+            </property>
+            <property name="text">
+             <string>imageName</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>44</width>
+              <width>67</width>
               <height>17</height>
              </size>
             </property>
            </spacer>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_13">
-            <item>
-             <widget class="QLabel" name="imageFileNameLabel">
-              <property name="styleSheet">
-               <string notr="true">background-color: rgb(255, 130, 80);</string>
-              </property>
-              <property name="text">
-               <string>imageName</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="adTimeLbl">
-              <property name="styleSheet">
-               <string notr="true">background-color: rgb(255, 130, 80);</string>
-              </property>
-              <property name="text">
-               <string>ADTime</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <layout class="QVBoxLayout" name="verticalLayout_13"/>
           </item>
          </layout>
         </item>

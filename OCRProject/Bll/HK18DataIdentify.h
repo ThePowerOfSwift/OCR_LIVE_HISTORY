@@ -16,7 +16,7 @@ using namespace cv;
 //#define  WRITE_MINUTE_CLASSIFY_SAMPELS
 //#define  QDEBUG_OUTPUT
 //#define		WRITE_ROI_SMAPLES_CLASS_INFO1
-#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
+//#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
 
 
 

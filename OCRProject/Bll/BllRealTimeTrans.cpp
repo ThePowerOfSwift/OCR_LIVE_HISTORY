@@ -412,19 +412,17 @@ void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct,QString type)
 				WPData.HorseNO = i;
 				 
 				if (type == "WIN")
-				{
-					 
+				{					 
 					WPData.WinValue = ouputStruct.WIN[i - 1];
-				  
-				}
-					
+				}					
 				else if (type == "PLA")
 				{
 					WPData.WinValue = ouputStruct.PLA[i - 1];
 				  
 				} 
 				WPData.RaceID =  Global::requestRaceId ;
-				WPData.AtTime = 1;
+
+				WPData.AtTime = Global::countRaceTime ;
 
 				sendBlock.append((char*)&WPData, sizeof(TagWPDataInfo));
 			}
@@ -495,53 +493,48 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput& ouputStruct, QString type)
 			QByteArray sendBlock;
 			//每一列
 
-			for (int i = 1; i <= ouputStruct.horseNum; /* HORSENUMBER_1; */ i++)
+			for (int i = 1; i <= ouputStruct.horseNum;   i++)
 			{
-				for (int j = i + 1; j <= ouputStruct.horseNum; /* HORSENUMBER_1; */ j++)
+				for (int j = 1; j < i; j ++ )
 				{
-					
 					//封装一个WIN
 					TagQDataInfo QDataInfo;
 					QDataInfo.RaceID = Global::requestRaceId;//所属赛事ID
 					QDataInfo.HorseID = ouputStruct.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
 					QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
 					QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
-					QDataInfo.AtTime = 1;
-					if (i <=  7) // 正表
+					QDataInfo.AtTime = Global::countRaceTime ;
+					if (j <= 7) // 正表
 					{
 						if (type == "QIN")//数据值，由XNO与YNO组合得出 QPL+QIN[7][15]
-							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 1][j];
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[j - 1][i];
 						else if (type == "QPL")
-							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 1][j];
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[j - 1][i];
 					}
 					else //补充图表
 					{
 						if (type == "QIN")//数据值，由XNO与YNO组合得出 QPL+QIN[7][15]
-							QDataInfo.QinValue = ouputStruct.QPL_QIN[j-8][i-8];
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 8][j - 8];
 						else if (type == "QPL")
-							QDataInfo.QinValue = ouputStruct.QPL_QIN[j-8][i-8];
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 8][j - 8];
 					}
 
 
 					//发送
 					sendBlock.append((char*)&QDataInfo, sizeof(TagQDataInfo));
+
 				}
-			}
-
-
-			// 发送另外一半数据
-			for (int i = 1; i <= ouputStruct.horseNum; /* HORSENUMBER_1; */  i++)
-			{
-				for (int j = i + 1;j<= ouputStruct.horseNum; /* HORSENUMBER_1; */ j++)
+				 
+				for (int j = i + 1; j <= ouputStruct.horseNum; /* HORSENUMBER_1; */ j++)
 				{
 
 					//封装一个WIN
 					TagQDataInfo QDataInfo;
-					QDataInfo.RaceID = Global::requestRaceId ; //所属赛事ID
-					QDataInfo.HorseID = ouputStruct.mHorseInfo.horseID[i - 1] ; //马的唯一编号可关联马信息表
-					QDataInfo.HorseNO = j;//本场比赛中马的序号，比如第3号，1-13
-					QDataInfo.YNO = i;//在Y轴上的第几号，跟它组合得出的数据 2-14
-					QDataInfo.AtTime = 1;
+					QDataInfo.RaceID = Global::requestRaceId;//所属赛事ID
+					QDataInfo.HorseID = ouputStruct.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
+					QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
+					QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
+					QDataInfo.AtTime = Global::countRaceTime ;
 					if (i <= 7) // 正表
 					{
 						if (type == "QIN")//数据值，由XNO与YNO组合得出 QPL+QIN[7][15]
@@ -561,26 +554,41 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput& ouputStruct, QString type)
 					//发送
 					sendBlock.append((char*)&QDataInfo, sizeof(TagQDataInfo));
 				}
+			 
+				
 			}
 
 			/*
-			for (int i = 0; i < QIN_QPL_ROW_1; i++)
+			// 发送另外一半数据
+			for (int i = 1; i <= ouputStruct.horseNum;   i++)
 			{
-				for (int j = 0; j < QIN_QPL_COL_1; j++)
+				for (int j = i + 1;j<= ouputStruct.horseNum; j++)
 				{
-					
+
 					//封装一个WIN
 					TagQDataInfo QDataInfo;
-					QDataInfo.RaceID = Global::raceId;//所属赛事ID
-					QDataInfo.HorseID = i;//马的唯一编号可关联马信息表
-					QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号马
-					if (type == "QIN")//数据值，由XNO与YNO组合得出
-						QDataInfo.QinValue = ouputStruct.QPL_QIN[i][j];
-					else if (type == "QPL")
-						QDataInfo.QinValue = ouputStruct.QPL_QIN[i][j];
-					QDataInfo.YNO = i;//在Y轴上的第几号，跟它组合得出的数据
-					QDataInfo.AtTime = 1;
+					QDataInfo.RaceID = Global::requestRaceId ; //所属赛事ID
+					QDataInfo.HorseID = ouputStruct.mHorseInfo.horseID[i - 1] ; //马的唯一编号可关联马信息表
+					QDataInfo.HorseNO = j;//本场比赛中马的序号，比如第3号，1-13
+					QDataInfo.YNO = i;//在Y轴上的第几号，跟它组合得出的数据 2-14
+					QDataInfo.AtTime = Global::countRaceTime ;
+					if (i <= 7) // 正表
+					{
+						if (type == "QIN")//数据值，由XNO与YNO组合得出 QPL+QIN[7][15]
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 1][j];
+						else if (type == "QPL")
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 1][j];
+					}
+					else //补充图表
+					{
+						if (type == "QIN")//数据值，由XNO与YNO组合得出 QPL+QIN[7][15]
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[j - 8][i - 8];
+						else if (type == "QPL")
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[j - 8][i - 8];
+					}
 
+
+					//发送
 					sendBlock.append((char*)&QDataInfo, sizeof(TagQDataInfo));
 				}
 			}

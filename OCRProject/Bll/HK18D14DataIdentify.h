@@ -195,7 +195,7 @@ private:
 // 马名
 #define HORSENAME_REGION_RECT cvRect(51+(originX-ORIGIN_X_BASE),56+(originY-ORIGIN_Y_BASE),74,364-58)
 //QIN QPL标签位置
-#define  QINQPL_LABEL_POS_RECT cvRect(87+(originX-ORIGIN_X_BASE),314+(originY-ORIGIN_Y_BASE),126-87,332-314)
+#define  QINQPL_LABEL_POS_RECT cvRect(99+(originX-ORIGIN_X_BASE),371+(originY-ORIGIN_Y_BASE),126-87,332-314)
 
 //QIN QPL
 #define		WHOLE_QINQPL_POS_RECT  cvRect(100+(originX-ORIGIN_X_BASE), 371+(originY-ORIGIN_Y_BASE), 16, 17)

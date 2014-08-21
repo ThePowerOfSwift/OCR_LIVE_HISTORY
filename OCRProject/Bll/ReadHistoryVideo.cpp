@@ -5,13 +5,17 @@
 ReadHistoryVideo::ReadHistoryVideo()
 {
 
-//	initD14SDK();
+	initD14SDK();
 
 }
 
 void ReadHistoryVideo::initD14SDK()
 {
 	BOOL result = Player_InitialDirectDraw();
+	if (result == FALSE )
+	{
+		qDebug("ERROR: ReadHistoryVideo initD14SDK func InitialDirectDraw faild \n");
+	}
 }
 int ReadHistoryVideo::close()
 {
@@ -20,7 +24,9 @@ int ReadHistoryVideo::close()
 	if (fileType == "d14" | fileType == "h64" | fileType == "D14" | fileType == "H64")
 	{
 		bool rtValue = false;
-	//	rtValue = Player_Stop(1);
+		rtValue = Player_Pause(1);
+
+		rtValue = Player_Stop(1);
 		if (rtValue == false )
 		{
 			qDebug("ReadHistoryVideo:colse Player_Stop Function exec error !");
@@ -30,12 +36,12 @@ int ReadHistoryVideo::close()
 		{
 			qDebug("ReadHistoryVideo:colse Player_CloseFile Function exec error !");
 		}
-		rtValue = Player_CloseStream(1);
+		/*rtValue = Player_CloseStream(1);
 		if (rtValue == false)
 		{
 			qDebug("ReadHistoryVideo:colse Player_CloseStream Function exec error !");
-		}
-		rtValue = Player_ReleaseDirectDraw();
+		}*/
+		rtValue = Player_ReleaseDirectDraw( );
 		if (rtValue == false)
 		{
 			qDebug("ReadHistoryVideo:colse Player_ReleaseDirectDraw Function exec error !");
@@ -55,9 +61,9 @@ ReadHistoryVideo::~ReadHistoryVideo()
 	
 	if (fileType == "d14" | fileType == "h64" | fileType == "D14" | fileType == "H64")
 	{
-		Player_Stop(1);
+	//	Player_Stop(1);
 		Player_CloseFile(1);
-		Player_CloseStream(1);
+	//	Player_CloseStream(1);
 		Player_ReleaseDirectDraw();
 
 	}
@@ -70,7 +76,7 @@ ReadHistoryVideo::~ReadHistoryVideo()
 int ReadHistoryVideo::open(QString fileName,double &totalFrames,double &fps )
 {
 	 
-	initD14SDK();
+//	initD14SDK();
 	char*  fileNameCharPtr;
 
 	QByteArray ba = fileName.toLatin1();
