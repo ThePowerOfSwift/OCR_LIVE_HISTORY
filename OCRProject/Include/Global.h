@@ -55,6 +55,9 @@
 #define BMP_HEADER 0 
 #define	 IMAGE_BUFF_LENGTH (720*576*3 + BMP_HEADER )
 
+//"Server", "58.67.161.109", 9068);
+#define  SERVER_IP_ADDRESS QString("58.67.161.109")
+#define  SERVER_PORT 9068 
 //视频种类
  
 enum videoKinds
@@ -95,7 +98,7 @@ public:
 	static Network *mcsNetClient;
 	//**********控制台网络客户端接口*********//
 
-
+	 
 	//全局缓冲区
 	static CCycleBuffer* S_CCycleBuffer;
 
@@ -113,7 +116,9 @@ public:
 
 
 	static bool pauseDataIdentifyTag;//识别标识符
+	// 服务器ip地址，端口号
 
+	
 
 	/***********比赛数据***********/
 	static qint32 raceId;//比赛唯一识别ID，服务端获得
@@ -123,6 +128,10 @@ public:
 	static qint32 timerCount; //计时
 	static qint32 countRaceTime; //从当前场开始的时候计时 
 
+
+	//是不是历史视频 标记 
+
+	static bool isHistoryVideo;
 	// 计算 一场比赛视频的帧数
 
 	static qint32 historyFrameCount;
@@ -130,6 +139,9 @@ public:
 	//通过识别场次号，请求 服务器 全局场次号
 
 	static qint32 requestRaceId; 
+	//提交失败
+
+	static bool serverSubmitFailed;
 	// //比赛已经开始了 标志位
 	static qint32 raceHasStarted; 
 	

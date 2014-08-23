@@ -485,19 +485,23 @@ void OcrControl::on_startAcqBtn_clicked()
 
 	if (text == "亚洲台")
 	{
+		Global::isHistoryVideo = true;
 		videoType =YAZHOUTAI;
 	}
 	else if (text == "香港18台")
 	{
+		Global::isHistoryVideo = true;
 		videoType = HK18TAI;
 	}
 	else if (text == "香港18台D14")
 	{
+		Global::isHistoryVideo = true;
 		videoType = HK18D14;
 	}
 
 	else if (text == "直播")
 	{
+		Global::isHistoryVideo = false;
 		videoType = LIVE ;
 	}
 
@@ -787,11 +791,7 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 
 void OcrControl::updateUiData(DataOutput output, QByteArray array)
 {
-	//场次号，发生变化，重新获取 马名 以及id 
-	if (output.sessionChangedFlag)
-	{
-		getHorseNameFromDataFile();
-	}
+	 
 
 	ui.userInputLabel->setText(QString(" O R "));
 	//更新马信息
@@ -823,6 +823,19 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 			indexLabelList[i]->setText(QString("0"));
 		}
 	}
+	//如果马匹数量小于14 ，那么 剩下的地方显示 0
+	for (int i = horseNameEditList.size() - 1; i < HORSENUMBER;i ++)
+	{
+		 
+
+		if (i < output.horseNum)
+			horseNameEditList[i]->setText(QString(""));
+		else
+		{
+			indexLabelList[i]->setText(QString(" "));
+		}
+	}
+
 	for (int i = 0; i < winLableList.size(); i++)
 	{
 

@@ -10,15 +10,6 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	//Mat img = imread("pp.jpg");
-	//if (img.empty())
-	//{
-	//	cout << "error";
-	//	return -1;
-	//}
-	//imshow("pp的靓照", img);
-	//waitKey();
-
 
 
 	Global global;

@@ -1,12 +1,10 @@
 #include "HK18DataIdentify.h"
 #include <QDebug>
 #include<fstream>
-
-
-//#define  CALLBACK_MODE
+ 
 using namespace std;
 
-
+ 
 HK18DataIdentify::HK18DataIdentify()
 {
 	dataLength = 0;
@@ -160,17 +158,13 @@ void  HK18DataIdentify::isReady()
 }
 
 
-// ===========================================================
-// private function
-// ===========================================================
-
-// DataIdentify the current frame has or not has any data
+/**
+* @brief 检查是比赛画面，而不是广告
+*/
 void HK18DataIdentify::haveData()
 {
 	Mat image_temp = image;
-	//imshow("a", image_temp);
-	//waitKey();
-
+ 
 	cvtColor(image, image_temp, CV_RGB2BGR);
 	 
 	// in region 1
@@ -183,6 +177,7 @@ void HK18DataIdentify::haveData()
 
 	for (int i = 0; i < HAVEDATA_PIXELNUMBER; i++)
 	{
+
 		bgr[i] = image_temp.at<Vec3b>(HAVEDATA_YINDEX * (i + 1), HAVEDATA_XINDEX);
 		bluePixel[i] = bgr[i][0];
 		greenPixel[i] = bgr[i][1];
@@ -243,6 +238,7 @@ void HK18DataIdentify::haveData()
 
 	if (haveDataFlag == true)
 	{
+		//检测QPL 区域
 		if (region2_blueMean > 40 && region2_greenMean<30 && region2_redMean > 50)
 		{
 			haveDataFlag = true;
@@ -250,7 +246,7 @@ void HK18DataIdentify::haveData()
 			//运行状态初始化为成功
 			algorithmState = EXEC_SUCCESS;
 		}
-		else
+		else //没有数据退出此次识别
 		{
 			algorithmState = EXIT_THIS_OCR;
 			haveDataFlag = false;
@@ -263,23 +259,19 @@ void HK18DataIdentify::haveData()
 	 
 }
 
-
-// get the origin position
-// return the coodinate of the origin
+/**
+* @brief 计算原点 一次作为基点，来修正画面偏移的情况
+*/
 void HK18DataIdentify::originPosition()
 {
 	int regionWidth = ORIGINPOSITION_REGIONWIDTH, regionHeight = ORIGINPOSITION_REGIONHEIGHT;
-	// 
-	// 	imshow("a",image);
-	// 	waitKey();
-	// regionWidth regionHeight 没有用上。
+ 
 	Mat region(image, Rect(0, 0, regionWidth, regionHeight));
 	Mat regionGray(regionHeight, regionWidth, CV_8UC1, Scalar::all(0));
 
 	cvtColor(image, regionGray, CV_BGR2GRAY);
 
-//	imshow("a", regionGray);
-//	waitKey();
+ 
 
 	int* colSum = new int[regionHeight+1];
 	int* rowSum = new int[regionWidth+1];
@@ -293,8 +285,7 @@ void HK18DataIdentify::originPosition()
 
 		rowSum[i] = rowSum[i] / regionWidth;
 	}
-	cout << endl;
-
+	 
 	// calculate the col sum
 	for (int i = 0; i < regionWidth; i++)
 	{
@@ -323,10 +314,10 @@ void HK18DataIdentify::originPosition()
 			break;
 		}
 	}
- 
-
+#ifdef QDEBUG_OUTPUT
 	qDebug("the originPosition Func : x =%d, y=%d",originX,originY);
-	if (colSum != NULL)
+#endif // QDEBUG_OUTPUT
+ 	if (colSum != NULL)
 	{
 		delete[] colSum;
 		colSum = NULL;
@@ -343,6 +334,12 @@ void HK18DataIdentify::originPosition()
  
  
 
+/**
+* @brief
+ 识别函数
+
+*/
+
 int HK18DataIdentify::identify()
 {
 
@@ -351,9 +348,7 @@ int HK18DataIdentify::identify()
 	haveData();
 	if (haveDataFlag == false || algorithmState == EXIT_THIS_OCR)						// the frame has not any data, return 1
 		return EXIT_THIS_OCR;
-	
-
-
+	 
 	//设置马名位置
 
 	setHorseNameRectPos();
@@ -425,7 +420,6 @@ int HK18DataIdentify::identify()
 	return EXEC_SUCCESS;
 }
 
-
 /*
 	设置 马名的rect区间
 */
@@ -454,7 +448,11 @@ int HK18DataIdentify::setHorseNameRectPos()
  
 	//同时获取马的数目
 	calculateGraySumXForSetHorseNameRect(edge, y, dataOutput.horseNum);
-  
+   //如果 函数执行失败，那么退出此时识别
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR;
+	}
 	for (int r = 0; r < dataOutput.horseNum; r++)
 	{
 		horseNamePosStruct.rect[r].x = HORSENAME_REGION_RECT.x;
@@ -471,20 +469,7 @@ int HK18DataIdentify::setHorseNameRectPos()
 		}
 		else
 			horseNamePosStruct.rect[r].height = y[r + 1] - y[r];
-		/* 
-		//写样本图片
-		QString fileName;
-		fileName.prepend(QString(".bmp"));
-		fileName.prepend(QString::number(r));
-		fileName.prepend(QString("horInfo4Rect"));
-		Mat horseNameRect;
-		horseNameRect = Mat(image, horseNamePosStruct.rect[r]);
-		cvtColor(horseNameRect, horseNameRect, CV_RGB2GRAY);
-		//imshow("1", horseNameRect);
-		imwrite(fileName.toStdString(), horseNameRect);
-		//waitKey();
-
-		*/
+	  
 	}
 
 
@@ -496,7 +481,13 @@ int HK18DataIdentify::setHorseNameRectPos()
 	return EXEC_SUCCESS;
 }
  
-// 设置 WIN PLA 位置
+/**
+* @brief
+//// 设置 WIN PLA 位置
+
+*/
+
+
 
 int HK18DataIdentify::setWINPLARectPos()
 {
@@ -519,13 +510,13 @@ int HK18DataIdentify::setWINPLARectPos()
 	Mat winRegion(imageGray, WIN_POS_RECT);
 	Mat plaRegion(imageGray, PLA_POS_RECT);
 
-
+#ifdef WIRTE_TEMP_DEBUG_FILES
 	imwrite("WIN_Region.bmp", winRegion);
 	imwrite("PLA_Region.bmp", plaRegion);
-	//转灰度图像
-//	cvtColor(winRegion, winRegion, CV_RGB2GRAY);
-//	cvtColor(plaRegion, plaRegion, CV_RGB2GRAY);
+#endif
 
+	//转灰度图像
+  
 	Mat edgePla;
 	Mat edgeWin;
 
@@ -535,6 +526,7 @@ int HK18DataIdentify::setWINPLARectPos()
 	int *yPla = new int[HORSENUMBER + 1];
 	
 	int x0, x1;
+	//计算 两侧X值
 	if (calculateGraySumXForSetWINPLARect(winRegion, yWin, dataOutput.horseNum) == EXIT_THIS_OCR )
 	{
 		algorithmState = EXIT_THIS_OCR;
@@ -546,12 +538,8 @@ int HK18DataIdentify::setWINPLARectPos()
 		algorithmState = EXIT_THIS_OCR;
 		return EXIT_THIS_OCR;
 	}
-	// get the relativ
-	// get the relative position of the three vertex in the first row, relative to the origin 
-	//
-
-
-	//计算 识别区域的两侧X值
+  
+	//计算 识别区域的 Y值间隔
 	if (calculateGraySumYForTrim(edgeWin, x0, x1, dataOutput.horseNum) == EXIT_THIS_OCR)
 	{
 		algorithmState = EXIT_THIS_OCR;
@@ -672,7 +660,12 @@ int HK18DataIdentify::setWINPLARectPos()
 }
  
 
-// 设置 QIN QPL  同时设置QIN QPL标记位置 
+/**
+* @brief
+//// 设置 QIN QPL  同时设置QIN QPL标记位置 
+
+*/
+
  
 int HK18DataIdentify::setQINQPLRectPos()
 {
@@ -722,13 +715,7 @@ int HK18DataIdentify::setQINQPLRectPos()
 
 	Mat qinQPLPosStructRegionSub1(image_temp, QINQPL_POS_RECT );
 
-	/*
-	//Canny(roi, edge, 450, 400, 3, true);
-	Mat lbRegionSub1(qinQPLPosStructRegionSub1, cvRect(0, 17, 43, 114) );
-	Mat lbRegionSub1_edge;
-	Canny(lbRegionSub1, lbRegionSub1_edge, 450, 400, 3, true);
-	CvRect numberRect[7];
-	*/
+ 
 	colorThreshold(image_temp, image_temp, 150);
 	cvtColor(image_temp, image_temp, CV_RGB2GRAY);
 
@@ -745,9 +732,9 @@ int HK18DataIdentify::setQINQPLRectPos()
 		}
 	}
 
-
+#ifdef WIRTE_TEMP_DEBUG_FILES
 	imwrite("ori.bmp", image_temp);
-
+#endif
 	int deltaNum = HORSENUMBER - dataOutput.horseNum;
 	for (int i = 0; i < 19 - deltaNum; i++)
 	{
@@ -756,11 +743,11 @@ int HK18DataIdentify::setQINQPLRectPos()
 
 		Mat qinQPLPosStructRoi(image_temp, qinQplSubRect[i]);
 		//Canny(qinQPLPosStructRoi, qinQPLPosStructRoiEdge, 200, 150, 3, true);
-
+#ifdef WIRTE_TEMP_DEBUG_FILES
 		fileName.prepend(".bmp");
 		fileName.prepend(QString::number(i));
 		imwrite(fileName.toStdString(), qinQPLPosStructRoi);
-
+#endif
 		if (setEveryQINQPLPos(qinQPLPosStructRoi, i) == EXIT_THIS_OCR)
 		{
 			
@@ -772,14 +759,18 @@ int HK18DataIdentify::setQINQPLRectPos()
 
 	}
 
-
-
+	 
 	return EXEC_SUCCESS;
 
 	 
 }
 
-//输入canny 处理后图像
+/**
+* @brief
+//输入canny 处理后图像 设置每一个qin qpl数字位置
+
+*/
+
 int  HK18DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 {
 #ifdef QDEBUG_OUTPUT
@@ -1005,7 +996,14 @@ int  HK18DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 	return EXEC_SUCCESS;
 
 }
+
+
+/**
+* @brief
 //  设置场次号位置
+
+*/
+
 
 int HK18DataIdentify::setSessionRectPos()
 {
@@ -1018,7 +1016,12 @@ int HK18DataIdentify::setSessionRectPos()
  
 }
 
-//设置 倒计时位置 
+/**
+* @brief
+//设置 倒计时位置
+
+*/
+
 int HK18DataIdentify::setCountDownRectPos()
 {
 	if (algorithmState == EXIT_THIS_OCR)
@@ -1032,25 +1035,41 @@ int HK18DataIdentify::setCountDownRectPos()
 
 	
 }
-//识别马名 
+/**
+* @brief
+//识别马名
+
+*/
+
 int HK18DataIdentify::getHorseNameIdentify()
 {
 	//通过计算灰度值和，来确定是否发生了马名字的变化，马名字发生了变化，说明
 	// 场次号发生了变化。
-
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR;
+	}
 	isHorseNameChanged();
 	//暂时不识别
 	int temp = 0 ;
 	return EXIT_SUCCESS;
 }
-
+/**
+* @brief
 //通过计算灰度值和，来确定是否发生了马名字的变化，马名字发生了变化，说明
+
+*/
+
+
 int HK18DataIdentify::isHorseNameChanged()
 {
 
 	//清空上一次的 
 	 
-
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		return EXIT_THIS_OCR;
+	}
 	//存储马名的灰度和
 	int *graySum ;
 	graySum = new int  [dataOutput.horseNum + 1];
@@ -1124,7 +1143,14 @@ int HK18DataIdentify::isHorseNameChanged()
 
 
 }
+
+
+/**
+* @brief
 //计算灰度值和，返回值即为灰度值和 同时做阈值
+
+*/
+
 int HK18DataIdentify::calculateGraySum(Mat srcMat,int &length)
 {
 	int graySum = 0 ;
@@ -1166,8 +1192,12 @@ int HK18DataIdentify::calculateGraySum(Mat srcMat,int &length)
 
 
 }
+
+/**
+* @brief
 // 识别 WIN PLA
 
+*/
 int HK18DataIdentify::getWINPLAIdentify()
 {
 	if (algorithmState == EXIT_THIS_OCR)
@@ -1201,15 +1231,17 @@ int HK18DataIdentify::getWINPLAIdentify()
 			}
 		}
 	}
-
+#ifdef WIRTE_TEMP_DEBUG_FILES
 	imwrite("WINPLA_ROI.bmp", imageGrayThreshold);
-
+#endif
 	// svm DataIdentify each number
 	Mat edge;
 	for (int i = 0; i < dataOutput.horseNum; i++)
 	{
 		for (int j = 0; j < 2; j++)
 		{
+
+
 			Mat roi(image, winPlaPosStruct.rect[i][j]);
 
 			Mat roiColor(image, winPlaPosStruct.rect[i][j]);
@@ -1229,8 +1261,7 @@ int HK18DataIdentify::getWINPLAIdentify()
 
 			Mat roiThresholdEdge;
 			cvtColor(roi, roi, CV_RGB2GRAY);
-			//Canny(roi, edge, 150, 100, 3, true);
-
+			 
 			//专门用于 小数点检测
 			cvtColor(roiThreshold, roiThreshold, CV_RGB2GRAY);
 
@@ -1240,18 +1271,19 @@ int HK18DataIdentify::getWINPLAIdentify()
 			Mat roiForDotJudge;
 
 			trimRoiBlankPart(roiThreshold, roiForDotJudge, roiNewSize);
+
+			if (algorithmState == EXIT_THIS_OCR )
+			{
+				return EXIT_THIS_OCR;
+			}
+			//检测是否越界
+			if (roi.cols < roiNewSize.x + roiNewSize.width | 
+				roi.rows < roiNewSize.y+roiNewSize.height)
+			{
+				algorithmState = EXIT_THIS_OCR;
+				return EXIT_THIS_OCR;
+			}
 			roiNew = Mat(roi, roiNewSize);
-			/*
-
-			colorThreshold(roi, roiThreshold, 160);
-
-
-			cvtColor(roi, roi, CV_RGB2GRAY);
-			cvtColor(roiThreshold, roiThreshold, CV_RGB2GRAY);
-			//	Canny(roi, edge, 450, 400, 3, true);
-
-		
-			*/
 			 
 			for (int i = 0; i < 3; i++)			// set the rect for single number in number region
 			{
@@ -1300,14 +1332,15 @@ int HK18DataIdentify::getWINPLAIdentify()
  
 			if (i == 1 && j == 0 )
 			{
-
-				int temp = 0;
+ 
 #ifdef QDEBUG_OUTPUT
+				int temp = 0;
 				qDebug("getwinPlaPosStruct_live:Mark");
 #endif // QDEBUG_OUTPUT
 
 			}
 			bool dotFlag = judgeWINPLADot(1, roiThreshold, roiThresholdEdge);
+
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
 			writeSamples(i, j, 6, roi);
 #endif
@@ -1332,29 +1365,32 @@ int HK18DataIdentify::getWINPLAIdentify()
 				for (int k = 0; k < 3; k++)					// segment each single number and svm
 				{
 				 
-					Mat singleNum(roi, rectDot[k]);									// the single number image
 
-			 
+					//检测是否越界
+					if (roi.cols < rectDot[k].x + rectDot[k].width |
+						roi.rows < rectDot[k].y + rectDot[k].height )
+					{
+						algorithmState = EXIT_THIS_OCR;
+						return EXIT_THIS_OCR;
+					}
+					Mat singleNum(roi, rectDot[k]);									// the single number image
+ 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
 					writeSamples(i, j, k, singleNum);
 
 #endif
 
-					resize(singleNum, singleNum, cvSize(10, 20));
+					resize(singleNum, singleNum, hog.winSize );
 					hog.compute(singleNum, descriptorVector, winStride, padding);
 					for (int m = 0; m < HOGFEATURENUMBER; m++)
 						hogMat.at<float>(0, m) = descriptorVector[m];
 
 					float result = numSVM.predict(hogMat);
-
-				 
-
+					 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
 					createClassifySamples(result, singleNum);
 
-#endif
-
-
+#endif 
 					tempSum += result * factor[0][k];
 				}
 			}
@@ -1363,6 +1399,13 @@ int HK18DataIdentify::getWINPLAIdentify()
 				for (int k = 0; k < 3; k++)
 				{ 
 					 
+					//检测是否越界
+					if (roi.cols < rectNoDot[k].x + rectNoDot[k].width |
+						roi.rows < rectNoDot[k].y + rectNoDot[k].height)
+					{
+						algorithmState = EXIT_THIS_OCR;
+						return EXIT_THIS_OCR;
+					}
 					Mat singleNum(roi, rectNoDot[k]);
 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
@@ -1371,7 +1414,7 @@ int HK18DataIdentify::getWINPLAIdentify()
 					
 #endif
 
-					resize(singleNum, singleNum, cvSize(10, 20));
+					resize(singleNum, singleNum, hog.winSize);
 
 					hog.compute(singleNum, descriptorVector, winStride, padding);
 					for (int m = 0; m < HOGFEATURENUMBER; m++)
@@ -1379,7 +1422,7 @@ int HK18DataIdentify::getWINPLAIdentify()
 
 					float result = numSVM.predict(hogMat);
 
-					createClassifySamples(result, singleNum);
+					 
 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
 					createClassifySamples(result, singleNum);
@@ -1402,8 +1445,13 @@ int HK18DataIdentify::getWINPLAIdentify()
 	return EXEC_SUCCESS;
 }
 
+/**
+* @brief
+
 //检测数字底下是否有 绿色底色
 // srcMat彩色原图
+*/
+
 bool HK18DataIdentify::haveGroundColor(Mat srcMat ,int flag )
 {
 	//转为灰度图像
@@ -1439,7 +1487,16 @@ bool HK18DataIdentify::haveGroundColor(Mat srcMat ,int flag )
 	 
 
 }
+
+/**
+* @brief
+
+
 //识别 QIN QPL   同时识别ＱＩＮ　ＱＰＬ
+
+*/
+
+
 int HK18DataIdentify::getQINQPLIdentify()
 {
 
@@ -1535,7 +1592,7 @@ int HK18DataIdentify::getQINQPLIdentify()
 
 			if (i == 4 & j == 10 )
 			{
-				qDebug("Mark \n");
+				
 #ifdef  QDEBUG_OUTPUT
 				qDebug("Mark \n");
 #endif //  QDEBUG_OUTPUT
@@ -1546,8 +1603,7 @@ int HK18DataIdentify::getQINQPLIdentify()
 		 
 
 			colorThreshold(roi, roiThreshold, 140);
-
-
+			 
 			cvtColor(roi, roi, CV_RGB2GRAY);
 			cvtColor(roiThreshold, roiThreshold, CV_RGB2GRAY);
 			//	Canny(roi, edge, 450, 400, 3, true);
@@ -1559,6 +1615,10 @@ int HK18DataIdentify::getQINQPLIdentify()
 			
 			trimRoiBlankPart(roiThreshold, roiForDotJudge, roiNewSize);
 
+			if (algorithmState == EXIT_THIS_OCR)
+			{
+				return EXIT_THIS_OCR;
+			}
 		 
 			// 将阈值后的图像增强 roiThreshold 进行小数点判断
 			for (int c = 0; c < roiForDotJudge.cols; c++)
@@ -1576,40 +1636,27 @@ int HK18DataIdentify::getQINQPLIdentify()
 				}
 			}
 
-			
+			//检测是否越界
+			if (roi.cols < roiNewSize.x + roiNewSize.width |
+				roi.rows < roiNewSize.y + roiNewSize.height )
+			{
+				algorithmState = EXIT_THIS_OCR;
+				return EXIT_THIS_OCR;
+			}
 
 			roiNew = Mat(roi, roiNewSize);
-
-
-
+			 
 			int *x = new int[3 + 1];
 			memset(x, 0, 4);
 
-
-
-			/*		imwrite("error.bmp", roi);
-			imshow("roi", roi);
-			waitKey(1000);*/
-			//Mat roiNew(roi, roiNewSize);
+ 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
 			writeSamples(i, j, 6, roiForDotJudge);
 #endif // WRITE_ROI_SMAPLES_CLASS
 
 			Mat edge;
 			dotFlag = judgeQINQPLDot(roiForDotJudge, edge, x);
-			if (i == 0 & j == 5)
-			{
-
-				QString fileNameTemp;
-				fileNameTemp.prepend(QString(".bmp"));
-				fileNameTemp.prepend(QString::number(i));
-				fileNameTemp.prepend(QString("i_j"));
-				fileNameTemp.prepend(QString::number(j));
-				imwrite(fileNameTemp.toStdString(), edge);
-				//imshow("roi", roi);
-				//waitKey();
-			}
-
+			 
 			if (dotFlag == EXIT_THIS_OCR)
 			{
 				algorithmState = EXIT_THIS_OCR;
@@ -1642,11 +1689,7 @@ int HK18DataIdentify::getQINQPLIdentify()
 				}
 			}
  
-			if (dotFlag == -1)
-				qDebug("DataIdentifyImageInfor2_Dot_live_yp is wrong ! \n");
-			//			imshow("edge", edge);
-			//			waitKey();
-
+		 
 			float tempSum = 0.0;
 			if (dotFlag == 0)				 		// two number with dot
 			{
@@ -1667,11 +1710,18 @@ int HK18DataIdentify::getQINQPLIdentify()
 					}
 					rect[0][k].height = roiNew.rows;
 
+					//检测是否越界
+					if (roiNew.cols < rect[0][k].x + rect[0][k].width |
+						roiNew.rows < rect[0][k].y + rect[0][k].height)
+					{
+						algorithmState = EXIT_THIS_OCR;
+						return EXIT_THIS_OCR;
+					}
 					Mat singleNum(roiNew, rect[0][k]);								// the single number image
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
 					writeSamples(i, j, k, singleNum);
 #endif
-					resize(singleNum, singleNum, cvSize(10, 20));
+					resize(singleNum, singleNum, hog.winSize);
 					hog.compute(singleNum, descriptorVector, winStride, padding);
 					for (int m = 0; m < HOGFEATURENUMBER; m++)
 						hogMat.at<float>(0, m) = descriptorVector[m];
@@ -1692,9 +1742,7 @@ int HK18DataIdentify::getQINQPLIdentify()
 				for (int k = 0; k < 2; k++)										// segment each single number and svm
 				{
 
-				//	if (k == 1 && rect[1][k].x + rect[1][k].width >= roiNew.cols)	// cross the boarder
-				//		rect[1][k].width = roiNew.cols - rect[1][k].x;
-
+			 
 					// x[k]此时为 两个数字中间
 					if (k == 1)
 					{
@@ -1710,11 +1758,20 @@ int HK18DataIdentify::getQINQPLIdentify()
 					}
 					rect[1][k].y = 0;
 					rect[1][k].height = roiNew.rows;
+
+					//检测是否越界
+					if (roiNew.cols < rect[1][k].x + rect[1][k].width |
+						roiNew.rows < rect[1][k].y + rect[1][k].height)
+					{
+						algorithmState = EXIT_THIS_OCR;
+						return EXIT_THIS_OCR;
+					}
+
 					Mat singleNum(roiNew, rect[1][k]);								// the single number image
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
 					writeSamples(i, j, k, singleNum);
 #endif
-					resize(singleNum, singleNum, cvSize(10, 20));
+					resize(singleNum, singleNum, hog.winSize);
 					hog.compute(singleNum, descriptorVector, winStride, padding);
 					for (int m = 0; m < HOGFEATURENUMBER; m++)
 						hogMat.at<float>(0, m) = descriptorVector[m];
@@ -1748,6 +1805,15 @@ int HK18DataIdentify::getQINQPLIdentify()
 					}
 
 					rect[2][k].height = roiNew.rows;
+
+					//检测是否越界
+					if (roiNew.cols < rect[2][k].x + rect[2][k].width |
+						roiNew.rows < rect[2][k].y + rect[2][k].height)
+					{
+						algorithmState = EXIT_THIS_OCR;
+						return EXIT_THIS_OCR;
+					}
+
 					Mat singleNum(roiNew, rect[2][k]);								// the single number image
 
 #ifdef  WRITE_ROI_SMAPLES_CLASS_INFO2
@@ -1791,12 +1857,9 @@ int HK18DataIdentify::getSessionIdentify()
 		return EXIT_THIS_OCR;
 	}
 	Mat roi(image, sessionPosStruct.rect[0]);
-	//Mat grayROI;
-
-	//imwrite("session.bmp", roi);
-	//cvtColor(roi, grayROI, CV_RGB2GRAY);
+	 
 	cvtColor(roi, roi, CV_RGB2GRAY);
-	resize(roi, roi, cvSize(10, 20));
+	resize(roi, roi, hog.winSize );
 	hog.compute(roi, descriptorVector, winStride, padding);
 	for (int m = 0; m < HOGFEATURENUMBER; m++)
 		hogMat.at<float>(0, m) = descriptorVector[m];
@@ -1816,7 +1879,13 @@ int HK18DataIdentify::getSessionIdentify()
 }
  
 
-//识别倒计时 
+/**
+* @brief
+
+//识别倒计时
+
+*/
+
 int HK18DataIdentify::getCountDownIdentify()
 {
 
@@ -1826,11 +1895,9 @@ int HK18DataIdentify::getCountDownIdentify()
 	//个位数
 	Mat minuteRoi2(image, countDownMinutePosStruct.rect[1]);
 
-
-	//	imwrite("miniteRoi1.bmp", minuteRoi1);
-	//	imwrite("minuteRoi2.bmp", minuteRoi2);
+ 
 	cvtColor(minuteRoi1, minuteRoi1, CV_RGB2GRAY);
-	resize(minuteRoi1, minuteRoi1, cvSize(10, 20));
+	resize(minuteRoi1, minuteRoi1, hog.winSize);
 	hog.compute(minuteRoi1, descriptorVector, winStride, padding);
 	for (int m = 0; m < HOGFEATURENUMBER; m++)
 		hogMat.at<float>(0, m) = descriptorVector[m];
@@ -1838,7 +1905,7 @@ int HK18DataIdentify::getCountDownIdentify()
 	float result1 = raceTimeSvm.predict(hogMat);
 
 	cvtColor(minuteRoi2, minuteRoi2, CV_RGB2GRAY);
-	resize(minuteRoi2, minuteRoi2, cvSize(10, 20));
+	resize(minuteRoi2, minuteRoi2, hog.winSize);
 	hog.compute(minuteRoi2, descriptorVector, winStride, padding);
 	for (int m = 0; m < HOGFEATURENUMBER; m++)
 		hogMat.at<float>(0, m) = descriptorVector[m];
@@ -1889,16 +1956,19 @@ int HK18DataIdentify::getCountDownIdentify()
 			dataOutput.raceTime = (int)(result1);  //倒计时为分钟数
 		}
 	}
-
-
-	//	result1 += result1 * 10 + result2;
-	//	dataOutput.raceTime = (int)(result1); //倒计时为分钟数
+	 
 
 }
  
 
+/**
+* @brief
+
 // 通过计算 灰度在 X方向上的投影 之间的间隔Y坐标，得到 WIN PLA 各个数字区域
 // 输入图像为灰度 canny变换后图像
+
+*/
+
 
 int HK18DataIdentify::calculateGraySumXForSetWINPLARect(Mat &mat, int *y, int &horseNum)
 {
@@ -1976,12 +2046,23 @@ int HK18DataIdentify::calculateGraySumXForSetWINPLARect(Mat &mat, int *y, int &h
 	return EXEC_SUCCESS;
 
 }
-// 通过计算 灰度在 X方向上的投影 之间的间隔Y坐标，得到 马名字的区间 
+
+/**
+* @brief
+
+// 通过计算 灰度在 X方向上的投影 之间的间隔Y坐标，得到 马名字的区间
 // 输入图像为灰度 canny变换后图像
+
+*/
+
 
 int HK18DataIdentify::calculateGraySumXForSetHorseNameRect(Mat &mat, int *y, int &horseNum)
 {
 
+	if (algorithmState == EXIT_THIS_OCR )
+	{
+		return EXIT_THIS_OCR;
+	}
 	if (mat.empty())
 	{
 		//Global::AppendLogString(QString("Error:calculateGraySumX :mat is empty "), true);
@@ -2057,27 +2138,27 @@ int HK18DataIdentify::calculateGraySumXForSetHorseNameRect(Mat &mat, int *y, int
  
 }
 
-/*
 
+/**
+* @brief
 通过检测 数字图片上半部分 空白区域的大小以及 位置来决定是否包含小数点
 */
 
+ 
 bool HK18DataIdentify::judgeWINPLADot(int i, Mat &edge, Mat &roiThresholdEdge)
 {
  
+	if (algorithmState == EXIT_THIS_OCR )
+	{
+		return EXIT_THIS_OCR;
+	}
 	Mat halfEdge;
 	halfEdge = Mat(edge, cvRect(0,0,edge.cols,edge.rows/2)) ;
-	/*
-	Mat halfEdgeBelow;
-	halfEdgeBelow = Mat(edge, cvRect(0, edge.rows / 2, edge.cols, edge.rows / 2));
-	int* graySumBelow = new int[halfEdgeBelow.cols];
-	*/
+	 
 	//去除底色边缘条纹
 	int* graySum = new int[halfEdge.cols+1];
 	
-
-	//imshow("halfEdge", halfEdgeBelow);
-	//waitKey();
+	 
 	memset(graySum, 0, sizeof(int)*halfEdge.cols);
 	
 
@@ -2105,14 +2186,7 @@ bool HK18DataIdentify::judgeWINPLADot(int i, Mat &edge, Mat &roiThresholdEdge)
 	int maxLengthAdd = 0; //右移
 	int maxLengthMinus = 0; // 左移
 	int maxLength = 0;
-	/*
-	//检测下半区 ，因为部分三位数字，中间的间距较大被误识别了。
-	int  maxLengthPosBelow = 0;
-	int maxLengthAddBelow = 0; //右移
-	int maxLengthMinusBelow = 0; // 左移
-	int maxLengthBelow = 0;
-
-	*/
+	 
 	for (int c = 0; c < halfEdge.cols;c++)
 	{
 		if (graySum[c] <= 150 )
@@ -2185,6 +2259,12 @@ bool HK18DataIdentify::judgeWINPLADot(int i, Mat &edge, Mat &roiThresholdEdge)
 	
 	 
 }
+
+/**
+* @brief
+ 判断 QIN QPL 数据 是否有小数点
+*/
+
 
 int  HK18DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 {
@@ -2394,7 +2474,14 @@ int  HK18DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 	
 }
 
- 
+
+/**
+* @brief
+
+ 通过识别qin qpl 标签，判断此时为 何种数据类型
+*/
+
+
 
 int HK18DataIdentify::judgeQINQPL()
 {
@@ -2424,9 +2511,13 @@ int HK18DataIdentify::judgeQINQPL()
 }
 
 
-/*
+/**
+* @brief
+
 裁剪ROI区域多余的空白像素
 */
+
+ 
 int  HK18DataIdentify::trimRoiBlankPart(Mat &oriMat, Mat &newRoiMat, CvRect &roiNewSize)
 {
 	if (algorithmState == EXIT_THIS_OCR)
@@ -2503,12 +2594,21 @@ int  HK18DataIdentify::trimRoiBlankPart(Mat &oriMat, Mat &newRoiMat, CvRect &roi
 
 }
 
+/**
+* @brief
 
-
-//对彩色图像 3个RGB颜色通道进行阈值操作 低于 thereshold的值 置 0 
+//对彩色图像 3个RGB颜色通道进行阈值操作 低于 thereshold的值 置 0
 // 为了更好地进行阈值操作，计算平均值，然后利用平均值进行阈值
+*/
+
+
 int HK18DataIdentify::colorThreshold(Mat &src,Mat &dst, int thereshold)
 {
+
+	if (algorithmState == EXIT_THIS_OCR )
+	{
+		return EXIT_THIS_OCR;
+	}
 	//对彩色图像做阈值 取舍
 
 	int rgbSum[3] = { 0 };
@@ -2560,18 +2660,21 @@ int HK18DataIdentify::colorThreshold(Mat &src,Mat &dst, int thereshold)
  
 
 
+/**
+* @brief
 //横向投影calculateGraySumX(Mat &mat, int *y, int roiNum);
 //输入图像为canny图像
 // reverseY为统计 Y向投影 获取 y 值 。
+*/
+
 int  HK18DataIdentify::calculateXBewttenNumber(Mat &mat, int  *x )
 {
-	if (mat.empty())
+	if (mat.empty() | algorithmState == EXIT_THIS_OCR )
 	{
 #ifdef  QDEBUG_OUTPUT
 		qDebug("ERROR : calculateGraySumX :mat is empty \n");
 #endif //  QDEBUG_OUTPUT
-
-
+		 
 		return EXIT_THIS_OCR;
 
 	}
@@ -2653,129 +2756,17 @@ int  HK18DataIdentify::calculateXBewttenNumber(Mat &mat, int  *x )
 		return EXEC_SUCCESS;
 	}
 }
-
-/*
-//横向投影calculateGraySumX(Mat &mat, int *y, int roiNum);
-//输入图像为canny图像
  
-int  HK18DataIdentify::calculateGraySumX(Mat &mat, int  *y, int roiNum  )
-{
-	if (mat.empty())
-	{
-		//Global::AppendLogString(QString("ERROR : calculateGraySumX :mat is empty \n"),true) ;
-#ifdef  QDEBUG_OUTPUT
-		qDebug("ERROR : calculateGraySumX :mat is empty \n");
-#endif //  QDEBUG_OUTPUT
-
-		
-		return EXIT_THIS_OCR ;
-
-	}
-	 
-	//	横向投影
-	int dimension = 0;
- 
-	dimension = mat.rows;
-
-
-//	float * m = new float[5];
-	int * graySumX = 0;
-	graySumX = new int[dimension];	
-	memset(graySumX, 0, sizeof(int)*dimension);
-
-	for (int pixelY = 0; pixelY < dimension ; pixelY++)
-	{
-		for (int pixelX = 0; pixelX <  mat.cols; pixelX++)
-		{
-			
-			graySumX[pixelY] +=  mat.at<uchar>(pixelY, pixelX);
-		}
-
-#ifdef QDEBUG_OUTPUT
-		qDebug("graySumX %d = %d \n", pixelY, graySumX[pixelY]);
-#endif
-	}
-	int j = 0;
-	int THEREHOLD =  300;
-	for (int i = 0; (i + 2) < dimension; i++)
-	{
-		//防止第一个像素就是 数字部分
-		if (i == 0 && (graySumX[0] >= THEREHOLD || graySumX[0] < THEREHOLD &&
-			graySumX[i + 1] > THEREHOLD && graySumX[i + 2] > THEREHOLD))
-		{	
-			y[j] = 0;
-			j++;
-			//跳过1，防止附近有小于 300的。 
-			i += 2;
-		
-		}
-		//设置为 300 过滤掉 部分数字的底色
-		else if (i != 0 && (graySumX[i] < 300 && graySumX[i + 1] > 300 
-			&& graySumX[i + 2] > 300 ))
-		{
-			y[j] = i;
-#ifdef QDEBUG_OUTPUT
-			qDebug(" graySumX : The  y %d is  %d", j, i);
-#endif
-			j++;
-		
-
-			if (j>  roiNum)
-			{
-				//Global::AppendLogString(QString("Error:calculategraySumX :Func error j>roiNum \n "),true) ;
-#ifdef QDEBUG_OUTPUT
-				qDebug("calculategraySumX :Func error j>roiNum \n ");
-#endif		
-				algorithmState = EXIT_THIS_OCR;
-				if (graySumX != NULL)
-				{
-					
-				//	delete[] graySumX;
-				//	graySumX = NULL;
-					
-				}
-				return EXIT_THIS_OCR ;
-			}
-		}
-	}
-	if (j !=roiNum)
-	{
-		//Global::AppendLogString(QString("Error:calculategraySumX :Func error  j != roiNum\n "), true);
-#ifdef QDEBUG_OUTPUT
-		qDebug("calculategraySumX :Func error  j != roiNum \n ");
-#endif
-		algorithmState = EXIT_THIS_OCR;
-		if (graySumX != NULL )
-		{
-			
-			//delete[] graySumX;
-			//graySumX = NULL;
-			
-		}
-		
-		return EXIT_THIS_OCR ;
-	}
-
-	if (graySumX != NULL)
-	{
-		
-		//delete[] graySumX;
-		//graySumX = NULL;
-		
-	}
-
-	return EXEC_SUCCESS;
-
-
-}
+/**
+* @brief 横向投影calculateGraySumX(Mat &mat, int *y, int roiNum);
+输入图像为canny图像
 */
 
-//横向投影calculateGraySumX(Mat &mat, int *y, int roiNum);
-//输入图像为canny图像
+
  
 int  HK18DataIdentify::calculateGraySumYForQINDotJudge(Mat &mat, int  *x, int roiNum )
 {
-	if (mat.empty())
+	if (mat.empty() |algorithmState == EXIT_THIS_OCR )
 	{
 		//Global::AppendLogString(QString("ERROR : calculateGraySumX :mat is empty \n"),true) ;
 #ifdef  QDEBUG_OUTPUT
@@ -2885,11 +2876,13 @@ int  HK18DataIdentify::calculateGraySumYForQINDotJudge(Mat &mat, int  *x, int ro
 
 }
 
-
-//计算纵向投影
+/**
+* @brief  计算纵向投影
+*/
+ 
 int  HK18DataIdentify::calculateGraySumYForTrim(Mat &mat, int &x0, int &x1, int roiNum)
 {
-	if (mat.empty())
+	if (mat.empty() | algorithmState == EXIT_THIS_OCR )
 	{
 		//Global::AppendLogString(QString("Error:calculateGraySumY:mat is empty "), true);
 #ifdef QDEBUG_OUTPUT
@@ -2964,19 +2957,22 @@ int  HK18DataIdentify::calculateGraySumYForTrim(Mat &mat, int &x0, int &x1, int 
 		graySumY = NULL;
 	}
 
-	//delete[] graySumY;
-	//graySumY = NULL;
+ 
 	return EXEC_SUCCESS;
 }
 
 
-//横向投影calculateGraySumXForSetRect2(Mat &mat, int *y, int roiNum);
-//输入图像为canny图像
 
+/**
+* @brief  横向投影calculateGraySumXForSetRect2(Mat &mat, int *y, int roiNum);
+		输入图像为canny图像
+*/
+
+ 
 int  HK18DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int roiNum )
 {
 
-	if (mat.empty())
+	if (mat.empty() | algorithmState == EXIT_THIS_OCR )
 	{
 		//Global::AppendLogString(QString("Error:calculateGraySumX :mat is empty "), true);
 #ifdef  QDEBUG_OUTPUT
@@ -3067,15 +3063,12 @@ int  HK18DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int 
 #ifdef QDEBUG_OUTPUT
 		qDebug("calculateGraySumXForSetRect2 :Func error  j != roiNum \n ");
 #endif
-		//delete[] graySumX;
-		//graySumX = NULL;
+		 
 		algorithmState = EXIT_THIS_OCR;
 		return EXIT_THIS_OCR;
 	}
 	
-	//delete[] graySumX;
-	//graySumX = NULL;
-
+ 
 	return EXEC_SUCCESS;
 	//提取 两边y坐标
 }
@@ -3083,22 +3076,11 @@ int  HK18DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int 
 
 
 /*
-将识别的结果按类写入 相应目录 主要为数字
+ &brief 将识别的结果按类写入 相应目录 主要为数字
 */
 void HK18DataIdentify::createClassifySamples(float result, Mat &singleNum)
 {
-
-	//QString curPath = QDir::currentPath();
-
-	/*char fileName[200];
-
-	memset(fileName, 0, sizeof(fileName));
-	int j = 0;
-
-	j = sprintf_s(fileName, 200, "%s", ".//acqSamples//");
-	j += sprintf_s(fileName + j, 200 - j, "%d", (int)result);
-	j += sprintf_s(fileName + j, 200 - j, "%s", "//");
-	j += sprintf_s(fileName + j, 200 - j, "%d", sampleCount[(int) result]);*/
+ 
 
 	QString fileNameStr = QString(".//acqSamples//");
 
@@ -3132,25 +3114,15 @@ void HK18DataIdentify::createClassifySamples(float result, Mat &singleNum)
 
 }
 
-
+/**
+* @brief  写样本，就是将采集到的图片写到本地文件夹
+*/
 void HK18DataIdentify::writeSamples(int i, int j, int k, Mat &roi)
 {
 
-	//QString curPath = QDir::currentPath();
-
-	/*char fileName[200];
-
-	memset(fileName, 0, sizeof(fileName));
-	int j = 0;
-
-	j = sprintf_s(fileName, 200, "%s", ".//acqSamples//");
-	j += sprintf_s(fileName + j, 200 - j, "%d", (int)result);
-	j += sprintf_s(fileName + j, 200 - j, "%s", "//");
-	j += sprintf_s(fileName + j, 200 - j, "%d", sampleCount[(int) result]);*/
-
+ 
 	QString fileNameStr = QString(".//roiSamples//");
-
-
+	 
 	//QString curPath = QDir::currentPath();
 	QDir::setCurrent(fileNameStr);
 	QString curPath = QDir::currentPath();
@@ -3168,10 +3140,6 @@ void HK18DataIdentify::writeSamples(int i, int j, int k, Mat &roi)
 
 	//退到上一层目录
 	QDir::setCurrent("../");
-
-
-	//curPath = QDir::currentPath();
-	//qDebug("curPath = %s \n", qPrintable(curPath));
 
  
 }

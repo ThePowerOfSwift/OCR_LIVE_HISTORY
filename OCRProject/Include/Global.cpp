@@ -45,6 +45,10 @@ bool Global::stopDataIdentifyTag = false;//模拟采集标志符,开始模拟:fa
 bool Global::pauseDataIdentifyTag = false;//识别标识符
 
 
+// 标记，是否为 实时直播
+
+bool Global::isHistoryVideo = false;
+
 //历史视频起始帧位置
 qint32 Global::videoStartPos = 0;
 //识别视频类型
@@ -63,6 +67,10 @@ qint32 Global::raceTime;//比赛时间
 
 // 请求到的全局场次号id
 qint32 Global::requestRaceId = 0;
+
+//提交失败 标志位
+
+bool Global::serverSubmitFailed = false;
 
 //本场场次号的全局id 已经请求 标志位
 
@@ -122,7 +130,7 @@ void Global::init()
 	initQss();
 
 	//服务器网络通讯接口
-	mcsNetClient = new Network("Server", "58.67.161.109", 9068);	
+	mcsNetClient = new Network("Server", SERVER_IP_ADDRESS, SERVER_PORT );
 	S_CCycleBuffer = new CCycleBuffer();
 	//写入系统日志
 	systemLog->append(QString(tr("服务器网络通讯接口初始完毕")), tr("连接打开成功."), SystemLog::INFO_TYPE);

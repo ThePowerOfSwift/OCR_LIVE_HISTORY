@@ -92,6 +92,8 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 
 	horseNameIdDataFile.close();
 
+	videoFileDate = QString("");
+
 }
 
 BllDataIdentify::~BllDataIdentify()
@@ -163,8 +165,12 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 		// 日期发生了变化
 		if (videoFileDate != Global::historyVideoDate)
 		{
-
-			initGlobal();
+			//第一次不要初始化，以后文件名发生变化的时候在进行初始化
+			if (videoFileDate.size() > 2 )
+			{
+				initGlobal();
+			}
+		
 
 			Global::historyIdentifyDataFile.close();
 
@@ -357,6 +363,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 		}
 	}
 	//排除掉 0 的情况  raceSessionCount 当天比赛场次计数 ，这种情况发生在刚开始检测到了比赛数据。
+	/* 
 	if (Global::session == 0 & raceSessionCount == 0 )
 	{
 		Global::session = 1;
@@ -366,6 +373,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 	{
 		Global::session = 1 ;
 	}
+	*/
 	//此时没有检测到倒计时 输出 0 
 	if (Global::raceTime == -1 )
 	{
@@ -632,19 +640,25 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 		outputStruct.changeStatus = 0;
 	}
 	
-	if (sessionChangedCountDown == 0 )
-	{
-		priDataOutput = outputStruct;
 
-	}
 	
 	// 选择正确场次号，倒计时
 	chooseRightRaceTimeRaceSession(outputStruct);
 
 	if (outputStruct.changeStatus > 0 )
 	{
+		// 只有 数据发生了变化，才将数据送入 priDataOutput
+		if (sessionChangedCountDown == 0)
+		{
+			priDataOutput = outputStruct;
 
-		writeDataFile(outputStruct);
+		}
+		//如果是历史视频，那么才写入数据到文件里面 否则 
+		if (Global::isHistoryVideo)
+		{
+			writeDataFile(outputStruct);
+		}
+	
 	}
 		
 	return 1;
@@ -1459,6 +1473,11 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 			TagWPDataInfo WPData;
 
 			WPData.HorseID = dataOutput.mHorseInfo.horseID[i];
+
+			if (WPData.HorseID > 10558  | WPData.HorseID < 0 )
+			{
+				qDebug("HorseId > 10558 ");
+			}
 			//从1 到14 
 			WPData.HorseNO = i+ 1; 
 
@@ -1488,13 +1507,22 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 
 		 )
 	{
+		if (dataOutput.isQPL)
+		{
+			dataType = QPLTYPE;
+		}
+		else
+			dataType = QINTYPE;
+
 		for (int i = 1; i <= dataOutput.horseNum; i++)
 		{
+			
 			for (int j = 1; j < i; j++)
 			{
-				//封装一个WIN
+				 
+				//封装一个 QIN QPL
 				TagQDataInfo QDataInfo;
-				QDataInfo.RaceID = Global::requestRaceId;//所属赛事ID
+				QDataInfo.RaceID = Global::raceId;//所属赛事ID
 				QDataInfo.HorseID = dataOutput.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
 				QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
 				QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
@@ -1524,7 +1552,7 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 
 				//封装一个WIN
 				TagQDataInfo QDataInfo;
-				QDataInfo.RaceID = Global::requestRaceId;//所属赛事ID
+				QDataInfo.RaceID = Global::raceId;//所属赛事ID
 				QDataInfo.HorseID = dataOutput.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
 				QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
 				QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
@@ -1554,104 +1582,7 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 
 		}
 
-		/*
-		for (int i = 1; i <= dataOutput.horseNum;  i++)
-		{
-			for (int j = i + 1; j <= dataOutput.horseNum;  j++)
-			{
-				if (dataOutput.isQPL)
-				{
-					dataType = QPLTYPE;
-				}
-				else
-					dataType = QINTYPE;
-
-				//封装一个WIN
-				TagQDataInfo QDataInfo;
-				QDataInfo.RaceID = Global::raceId;//所属赛事ID
-				QDataInfo.HorseID = dataOutput.mHorseInfo.horseID[i-1] ;//马的唯一编号可关联马信息表
-				//从1 到14 
-				QDataInfo.HorseNO = i   ;//本场比赛中马的序号，比如第3号，1-13 
-				QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
-				QDataInfo.AtTime = Global::countRaceTime ;
-				if (i <= 7) // 正表
-				{					 
-					QDataInfo.QinValue = dataOutput.QPL_QIN[i - 1][j];
-				}
-				else //补充图表
-				{ 
-					QDataInfo.QinValue = dataOutput.QPL_QIN[j - 8][i - 8];
-				}
-
-				if (QDataInfo.YNO >= 14 )
-				{
-					qDebug("QDataInfo  YNO = 0 ");
-				}
-				//写文件
-				Global::historyIdentifyDataWS << dataType << QDataInfo.RaceID << QDataInfo.HorseID
-					<< QDataInfo.HorseNO << QDataInfo.YNO<<QDataInfo.QinValue<< QDataInfo.AtTime;
-
-				logContentOut <<QString("Type")<< QString::number(dataType) << QString::number(QDataInfo.RaceID) <<
-					QString::number(QDataInfo.HorseID) << QString::number(QDataInfo.HorseNO) <<
-					QString::number(QDataInfo.YNO)
-					<< QString::number(QDataInfo.QinValue)
-					<< QString::number(QDataInfo.AtTime);
-
-
-			}
-		}
-		*/
-		/*
-			// 发送另外一半数据
-			for (int i = 1; i <= dataOutput.horseNum;   i++)
-			{
-				for (int j = i + 1; j <= dataOutput.horseNum;  j++)
-				{
-					if (dataOutput.isQPL)
-					{
-						dataType = QPLTYPE;
-					}
-					else
-						dataType = QINTYPE;
-
-					//封装一个WIN
-					TagQDataInfo QDataInfo;
-					QDataInfo.RaceID = Global::requestRaceId;//所属赛事ID
-					QDataInfo.HorseID = dataOutput.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
-					//从1到14 。
-					QDataInfo.HorseNO = j  ;//本场比赛中马的序号，比如第3号，1-13
-					QDataInfo.YNO = i;//在Y轴上的第几号，跟它组合得出的数据 2-14
-					QDataInfo.AtTime = Global::countRaceTime;
-
-					if (i <= 7) // 正表
-					{
-						QDataInfo.QinValue = dataOutput.QPL_QIN[i - 1][j];
-					}
-					else //补充图表
-					{
-
-						QDataInfo.QinValue = dataOutput.QPL_QIN[j - 8][i - 8];
-
-					}
-					 
-					if (dataType == 0)
-					{
-						qDebug("dataType = 0 ");
-					}
-					//写文件
-					Global::historyIdentifyDataWS << dataType << QDataInfo.RaceID << QDataInfo.HorseID
-						<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
- 
-					logContentOut << QString("Type") << QString::number(dataType) << QString::number(QDataInfo.RaceID) <<
-						QString::number(QDataInfo.HorseID) << QString::number(QDataInfo.HorseNO) <<
-						QString::number(QDataInfo.YNO) 
-						<< QString::number(QDataInfo.QinValue)
-						<< QString::number(QDataInfo.AtTime);
-
-
-				}
-			}
-		*/
+		
 	}
 	
 	
