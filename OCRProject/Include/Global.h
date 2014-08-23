@@ -129,6 +129,9 @@ public:
 	static qint32 countRaceTime; //从当前场开始的时候计时 
 
 
+	//标记 是否正在进行 历史视频 识别
+
+	static bool isHistoryVideoIdentifyRuning;
 	//是不是历史视频 标记 
 
 	static bool isHistoryVideo;
@@ -180,6 +183,9 @@ public:
 
 	static qint32 frameAccValue;
 
+	//标记暂停时候如果请求快进也是可以允许的
+
+	static bool requestAdvanceDuringPause;
 	///系统日志线程
 	static SystemLogThread * systemLogThread;
 	///系统日志接口类

@@ -161,6 +161,14 @@ public slots:
 
 	void is63TAICheckBoxStateChanged( bool);
 
+	/*
+		写入数据文件
+	*/
+	void  writeHistoryData(DataOutput &dataOutput) ;
+
+
+	int  isDataOutputNew(DataOutput &outputStruct);
+
 signals:
 	void connect(QString,qint32);
 	void disconnect();
@@ -186,6 +194,14 @@ private:
 	ThreadRealTime* threadRealTime;//实时采集线程
 	BllDataIdentify* bllDataIdentify;//数据识别
 	ThreadDataIdentify* threadDataIdentify;//数据识别线程
+
+	//识别的数据
+
+	DataOutput mDataOutput;
+	DataOutput priDataOutput;
+
+
+	QString videoFileDate;
 
 	//***马信息**//
 	QList<QLineEdit*> indexLabelList;

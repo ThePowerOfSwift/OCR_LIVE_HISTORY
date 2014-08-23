@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_OcrControl_t {
-    QByteArrayData data[58];
-    char stringdata[992];
+    QByteArrayData data[63];
+    char stringdata[1061];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -86,7 +86,12 @@ QT_MOC_LITERAL(53, 867, 27),
 QT_MOC_LITERAL(54, 895, 22),
 QT_MOC_LITERAL(55, 918, 20),
 QT_MOC_LITERAL(56, 939, 24),
-QT_MOC_LITERAL(57, 964, 27)
+QT_MOC_LITERAL(57, 964, 27),
+QT_MOC_LITERAL(58, 992, 16),
+QT_MOC_LITERAL(59, 1009, 11),
+QT_MOC_LITERAL(60, 1021, 10),
+QT_MOC_LITERAL(61, 1032, 15),
+QT_MOC_LITERAL(62, 1048, 12)
     },
     "OcrControl\0connect\0\0disconnect\0login\0"
     "requestHorseInfo\0requestRaceId\0raceNO\0"
@@ -116,7 +121,9 @@ QT_MOC_LITERAL(57, 964, 27)
     "on_inputUserDataBtn_clicked\0"
     "on_continueBtn_clicked\0updateAfterUserInput\0"
     "getHorseNameFromDataFile\0"
-    "is63TAICheckBoxStateChanged"
+    "is63TAICheckBoxStateChanged\0"
+    "writeHistoryData\0DataOutput&\0dataOutput\0"
+    "isDataOutputNew\0outputStruct"
 };
 #undef QT_MOC_LITERAL
 
@@ -126,7 +133,7 @@ static const uint qt_meta_data_OcrControl[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      46,   14, // methods
+      48,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -134,54 +141,56 @@ static const uint qt_meta_data_OcrControl[] = {
       12,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    2,  244,    2, 0x06 /* Public */,
-       3,    0,  249,    2, 0x06 /* Public */,
-       4,    0,  250,    2, 0x06 /* Public */,
-       5,    0,  251,    2, 0x06 /* Public */,
-       6,    1,  252,    2, 0x06 /* Public */,
-       8,    1,  255,    2, 0x06 /* Public */,
-      10,    0,  258,    2, 0x06 /* Public */,
-      11,    0,  259,    2, 0x06 /* Public */,
-      12,    0,  260,    2, 0x06 /* Public */,
-      13,    2,  261,    2, 0x06 /* Public */,
-      16,    0,  266,    2, 0x06 /* Public */,
-      17,    0,  267,    2, 0x06 /* Public */,
+       1,    2,  254,    2, 0x06 /* Public */,
+       3,    0,  259,    2, 0x06 /* Public */,
+       4,    0,  260,    2, 0x06 /* Public */,
+       5,    0,  261,    2, 0x06 /* Public */,
+       6,    1,  262,    2, 0x06 /* Public */,
+       8,    1,  265,    2, 0x06 /* Public */,
+      10,    0,  268,    2, 0x06 /* Public */,
+      11,    0,  269,    2, 0x06 /* Public */,
+      12,    0,  270,    2, 0x06 /* Public */,
+      13,    2,  271,    2, 0x06 /* Public */,
+      16,    0,  276,    2, 0x06 /* Public */,
+      17,    0,  277,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      18,    0,  268,    2, 0x0a /* Public */,
-      19,    0,  269,    2, 0x0a /* Public */,
-      20,    0,  270,    2, 0x0a /* Public */,
-      21,    0,  271,    2, 0x0a /* Public */,
-      22,    0,  272,    2, 0x0a /* Public */,
-      23,    0,  273,    2, 0x0a /* Public */,
-      24,    0,  274,    2, 0x0a /* Public */,
-      25,    1,  275,    2, 0x0a /* Public */,
-      27,    0,  278,    2, 0x0a /* Public */,
-      28,    0,  279,    2, 0x0a /* Public */,
-      29,    4,  280,    2, 0x0a /* Public */,
-      35,    4,  289,    2, 0x0a /* Public */,
-      36,    2,  298,    2, 0x0a /* Public */,
-      37,    2,  303,    2, 0x0a /* Public */,
-      38,    0,  308,    2, 0x0a /* Public */,
-      39,    0,  309,    2, 0x0a /* Public */,
-      40,    0,  310,    2, 0x0a /* Public */,
-      41,    0,  311,    2, 0x0a /* Public */,
-      42,    1,  312,    2, 0x0a /* Public */,
-      43,    1,  315,    2, 0x0a /* Public */,
-      43,    0,  318,    2, 0x2a /* Public | MethodCloned */,
-      45,    0,  319,    2, 0x0a /* Public */,
-      46,    0,  320,    2, 0x0a /* Public */,
-      47,    0,  321,    2, 0x0a /* Public */,
-      48,    0,  322,    2, 0x0a /* Public */,
-      49,    0,  323,    2, 0x0a /* Public */,
-      50,    0,  324,    2, 0x0a /* Public */,
-      51,    0,  325,    2, 0x0a /* Public */,
-      52,    0,  326,    2, 0x0a /* Public */,
-      53,    0,  327,    2, 0x0a /* Public */,
-      54,    0,  328,    2, 0x0a /* Public */,
-      55,    1,  329,    2, 0x0a /* Public */,
-      56,    0,  332,    2, 0x0a /* Public */,
-      57,    1,  333,    2, 0x0a /* Public */,
+      18,    0,  278,    2, 0x0a /* Public */,
+      19,    0,  279,    2, 0x0a /* Public */,
+      20,    0,  280,    2, 0x0a /* Public */,
+      21,    0,  281,    2, 0x0a /* Public */,
+      22,    0,  282,    2, 0x0a /* Public */,
+      23,    0,  283,    2, 0x0a /* Public */,
+      24,    0,  284,    2, 0x0a /* Public */,
+      25,    1,  285,    2, 0x0a /* Public */,
+      27,    0,  288,    2, 0x0a /* Public */,
+      28,    0,  289,    2, 0x0a /* Public */,
+      29,    4,  290,    2, 0x0a /* Public */,
+      35,    4,  299,    2, 0x0a /* Public */,
+      36,    2,  308,    2, 0x0a /* Public */,
+      37,    2,  313,    2, 0x0a /* Public */,
+      38,    0,  318,    2, 0x0a /* Public */,
+      39,    0,  319,    2, 0x0a /* Public */,
+      40,    0,  320,    2, 0x0a /* Public */,
+      41,    0,  321,    2, 0x0a /* Public */,
+      42,    1,  322,    2, 0x0a /* Public */,
+      43,    1,  325,    2, 0x0a /* Public */,
+      43,    0,  328,    2, 0x2a /* Public | MethodCloned */,
+      45,    0,  329,    2, 0x0a /* Public */,
+      46,    0,  330,    2, 0x0a /* Public */,
+      47,    0,  331,    2, 0x0a /* Public */,
+      48,    0,  332,    2, 0x0a /* Public */,
+      49,    0,  333,    2, 0x0a /* Public */,
+      50,    0,  334,    2, 0x0a /* Public */,
+      51,    0,  335,    2, 0x0a /* Public */,
+      52,    0,  336,    2, 0x0a /* Public */,
+      53,    0,  337,    2, 0x0a /* Public */,
+      54,    0,  338,    2, 0x0a /* Public */,
+      55,    1,  339,    2, 0x0a /* Public */,
+      56,    0,  342,    2, 0x0a /* Public */,
+      57,    1,  343,    2, 0x0a /* Public */,
+      58,    1,  346,    2, 0x0a /* Public */,
+      61,    1,  349,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString, QMetaType::Int,    2,    2,
@@ -232,6 +241,8 @@ static const uint qt_meta_data_OcrControl[] = {
     QMetaType::Void, 0x80000000 | 30,   31,
     QMetaType::Void,
     QMetaType::Void, QMetaType::Bool,    2,
+    QMetaType::Void, 0x80000000 | 59,   60,
+    QMetaType::Int, 0x80000000 | 59,   62,
 
        0        // eod
 };
@@ -289,6 +300,9 @@ void OcrControl::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 43: _t->updateAfterUserInput((*reinterpret_cast< DataOutput(*)>(_a[1]))); break;
         case 44: _t->getHorseNameFromDataFile(); break;
         case 45: _t->is63TAICheckBoxStateChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 46: _t->writeHistoryData((*reinterpret_cast< DataOutput(*)>(_a[1]))); break;
+        case 47: { int _r = _t->isDataOutputNew((*reinterpret_cast< DataOutput(*)>(_a[1])));
+            if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -394,13 +408,13 @@ int OcrControl::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 46)
+        if (_id < 48)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 46;
+        _id -= 48;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 46)
+        if (_id < 48)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 46;
+        _id -= 48;
     }
     return _id;
 }

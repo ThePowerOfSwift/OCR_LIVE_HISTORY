@@ -199,12 +199,19 @@ void BllRealTimeTrans::requestRaceID( )
 		int descriptor;
 		Global::mcsNetClient->readAllMessage(result, descriptor);//读取数据
 		handleRequestRaceID(result, descriptor);//处理login返回数据
+		//将 场次号请求raceid 标志位 清空
+		Global::isSessionRaceIdRequested = true;
 	}
 	else
+	{
+		//请求失败
+		Global::serverSubmitFailed = true;
 		emit statuChanged("识别端：错误，请求RaceID指令失败。");
 
-	//将 场次号请求raceid 标志位 清空
-	Global::isSessionRaceIdRequested = true ;
+	}
+		
+
+	
 }
 
 /**

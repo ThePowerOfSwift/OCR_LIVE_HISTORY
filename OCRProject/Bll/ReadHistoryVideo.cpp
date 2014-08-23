@@ -5,7 +5,7 @@
 ReadHistoryVideo::ReadHistoryVideo()
 {
 
-	initD14SDK();
+//	initD14SDK();
 
 }
 
@@ -19,18 +19,19 @@ void ReadHistoryVideo::initD14SDK()
 }
 int ReadHistoryVideo::close()
 {
-
-	return 1;
+	DWORD errorCode;
+//	return 1;
 	if (fileType == "d14" | fileType == "h64" | fileType == "D14" | fileType == "H64")
 	{
 		bool rtValue = false;
-		rtValue = Player_Pause(1);
+		//rtValue = Player_Pause(1);
 
-		rtValue = Player_Stop(1);
+		//rtValue = Player_Stop(1);
 		if (rtValue == false )
 		{
 			qDebug("ReadHistoryVideo:colse Player_Stop Function exec error !");
 		}
+		errorCode = Player_GetLastError(1);
 		rtValue = Player_CloseFile(1);
 		if (rtValue == false)
 		{
@@ -46,6 +47,7 @@ int ReadHistoryVideo::close()
 		{
 			qDebug("ReadHistoryVideo:colse Player_ReleaseDirectDraw Function exec error !");
 		}
+		errorCode = Player_GetLastError(1);
 
 	}
 	else
@@ -62,10 +64,10 @@ ReadHistoryVideo::~ReadHistoryVideo()
 	if (fileType == "d14" | fileType == "h64" | fileType == "D14" | fileType == "H64")
 	{
 	//	Player_Stop(1);
-		Player_CloseFile(1);
+	//	Player_CloseFile(1);
 	//	Player_CloseStream(1);
 		Player_ReleaseDirectDraw();
-
+		DWORD errorCode = Player_GetLastError(1);
 	}
 	else
 	{
@@ -76,7 +78,7 @@ ReadHistoryVideo::~ReadHistoryVideo()
 int ReadHistoryVideo::open(QString fileName,double &totalFrames,double &fps )
 {
 	 
-//	initD14SDK();
+	initD14SDK();
 	char*  fileNameCharPtr;
 
 	QByteArray ba = fileName.toLatin1();
@@ -113,6 +115,7 @@ int ReadHistoryVideo::open(QString fileName,double &totalFrames,double &fps )
 
 	}
 	
+	DWORD errorCode = Player_GetLastError(1);
 	return 1;
 }
 int ReadHistoryVideo::read(int framePos,Mat &frame )

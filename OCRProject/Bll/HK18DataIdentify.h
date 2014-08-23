@@ -17,8 +17,7 @@ using namespace cv;
 //#define  QDEBUG_OUTPUT
 //#define		WRITE_ROI_SMAPLES_CLASS_INFO1
 //#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
-
-#define WIRTE_TEMP_DEBUG_FILES
+//#define WRITE_ROI_SMAPLES_TEMP
 
 class HK18DataIdentify
 {
@@ -144,7 +143,7 @@ private:
 
 	//≤‚ ‘”√¥˙¬Î
 	void createClassifySamples(float result, Mat &singleNum);
-	void writeSamples(int i,int j, int k,Mat &roi );
+	void writeSamples(QString fileName, Mat &roi, QString path);
 	
 	int sampleCount[10];
  

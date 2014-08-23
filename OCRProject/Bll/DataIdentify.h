@@ -146,7 +146,7 @@ private:
 
 	//²âÊÔÓÃ´úÂë
 	void createClassifySamples(float result, Mat &singleNum);
-	void writeSamples(int i, int j, int k, Mat &roi);
+	void writeSamples(QString fileName, Mat &roi, QString path);
 
 	int sampleCount[10];
 

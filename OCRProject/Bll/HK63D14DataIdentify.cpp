@@ -1381,7 +1381,7 @@ int HK63D14DataIdentify::getWINPLAIdentify()
 #endif
 
 
-					resize(singleNum, singleNum, cvSize(10, 20));
+					resize(singleNum, singleNum, hog.winSize);
 					hog.compute(singleNum, descriptorVector, winStride, padding);
 					for (int m = 0; m < HOGFEATURENUMBER; m++)
 						hogMat.at<float>(0, m) = descriptorVector[m];
@@ -1423,7 +1423,7 @@ int HK63D14DataIdentify::getWINPLAIdentify()
 					writeSamples(fileNameStr, singleNum, path);
 #endif
 
-					resize(singleNum, singleNum, cvSize(10, 20));
+					resize(singleNum, singleNum, hog.winSize);
 
 					hog.compute(singleNum, descriptorVector, winStride, padding);
 					for (int m = 0; m < HOGFEATURENUMBER; m++)
@@ -1753,7 +1753,7 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 					writeSamples(fileNameStr, singleNum, path);
  
 #endif
-					resize(singleNum, singleNum, cvSize(10, 20));
+					resize(singleNum, singleNum, hog.winSize);
 					hog.compute(singleNum, descriptorVector, winStride, padding);
 					for (int m = 0; m < HOGFEATURENUMBER; m++)
 						hogMat.at<float>(0, m) = descriptorVector[m];
@@ -1809,7 +1809,7 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 
 #endif
  
-					resize(singleNum, singleNum, cvSize(10, 20));
+					resize(singleNum, singleNum, hog.winSize);
 					hog.compute(singleNum, descriptorVector, winStride, padding);
 					for (int m = 0; m < HOGFEATURENUMBER; m++)
 						hogMat.at<float>(0, m) = descriptorVector[m];
@@ -1862,7 +1862,7 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 
  
 #endif
-					resize(singleNum, singleNum, cvSize(10, 20));
+					resize(singleNum, singleNum, hog.winSize);
 					hog.compute(singleNum, descriptorVector, winStride, padding);
 					for (int m = 0; m < HOGFEATURENUMBER; m++)
 						hogMat.at<float>(0, m) = descriptorVector[m];
@@ -1905,7 +1905,7 @@ int HK63D14DataIdentify::getSessionIdentify()
 	//imwrite("session.bmp", roi);
 	//cvtColor(roi, grayROI, CV_RGB2GRAY);
 	cvtColor(roi, roi, CV_RGB2GRAY);
-	resize(roi, roi, cvSize(10, 20));
+	resize(roi, roi, hog.winSize);
 	hog.compute(roi, descriptorVector, winStride, padding);
 	for (int m = 0; m < HOGFEATURENUMBER; m++)
 		hogMat.at<float>(0, m) = descriptorVector[m];
@@ -1939,7 +1939,7 @@ int HK63D14DataIdentify::getCountDownIdentify()
 	//	imwrite("miniteRoi1.bmp", minuteRoi1);
 	//	imwrite("minuteRoi2.bmp", minuteRoi2);
 	cvtColor(minuteRoi1, minuteRoi1, CV_RGB2GRAY);
-	resize(minuteRoi1, minuteRoi1, cvSize(10, 20));
+	resize(minuteRoi1, minuteRoi1, hog.winSize);
 	hog.compute(minuteRoi1, descriptorVector, winStride, padding);
 	for (int m = 0; m < HOGFEATURENUMBER; m++)
 		hogMat.at<float>(0, m) = descriptorVector[m];
@@ -1947,7 +1947,7 @@ int HK63D14DataIdentify::getCountDownIdentify()
 	float result1 = raceTimeSvm.predict(hogMat);
 
 	cvtColor(minuteRoi2, minuteRoi2, CV_RGB2GRAY);
-	resize(minuteRoi2, minuteRoi2, cvSize(10, 20));
+	resize(minuteRoi2, minuteRoi2, hog.winSize);
 	hog.compute(minuteRoi2, descriptorVector, winStride, padding);
 	for (int m = 0; m < HOGFEATURENUMBER; m++)
 		hogMat.at<float>(0, m) = descriptorVector[m];
@@ -2449,7 +2449,7 @@ int HK63D14DataIdentify::judgeQINQPL()
 #endif
 	cvtColor(roi, roi, CV_RGB2GRAY);
 
-	resize(roi, roi, cvSize(10, 20), 0, 0, INTER_CUBIC);
+	resize(roi, roi, hog.winSize, 0, 0, INTER_CUBIC);
 	hog.compute(roi, descriptorVector, winStride, padding);
 	for (int m = 0; m < HOGFEATURENUMBER; m++)
 		hogMat.at<float>(0, m) = descriptorVector[m];

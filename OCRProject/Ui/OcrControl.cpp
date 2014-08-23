@@ -464,6 +464,10 @@ void OcrControl::appendStatus(QString status)
 void OcrControl::on_startAcqBtn_clicked()
 {
 
+	if (Global::isHistoryVideoIdentifyRuning == true )
+	{
+		return;
+	}
 	Global::stopDataIdentifyTag = false;//开始模拟标示符
 	//Global::threadAcq->start();//采集启动
 	//emit startAcq();//开始采集
@@ -548,6 +552,7 @@ void OcrControl::startProcessHistoryVideo()
 		Sleep(1);
 	}
 	threadDataIdentify->start();//开始识别 
+
 	//如果处理掉的文件
 	if (historyVideoFileNum > 0)
 	{
@@ -707,7 +712,9 @@ void OcrControl::updateADData(DataOutput  output, QByteArray  array,int imageWid
 void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, int imageHeight)
 {
 
-	
+	//获取当前 输出结果
+	mDataOutput = output;
+
 	int imageLength = imageWidth*imageHeight * 3;
 
 	if (SHOW_ADBMP | output.haveDataFlag )
@@ -1072,6 +1079,9 @@ void OcrControl::on_advance3MinBtn_clicked()
 	Global::frameAccValue = 60*3 ;
 
 	preVideoAdvanceValue = Global::frameAccValue;
+	
+	Global::requestAdvanceDuringPause = true;
+
 }
 
 /*
@@ -1081,6 +1091,7 @@ void OcrControl::on_advance1MinBtn_clicked()
 {
 	Global::frameAccValue = 60;
 	preVideoAdvanceValue = Global::frameAccValue;
+	Global::requestAdvanceDuringPause = true;
 }
 /*
 历史视频快进 30s
@@ -1089,6 +1100,7 @@ void OcrControl::on_advance30SecBtn_clicked()
 {
 	Global::frameAccValue = 30;
 	preVideoAdvanceValue = Global::frameAccValue;
+	Global::requestAdvanceDuringPause = true;
 }
 /*
 历史视频快进 10s
@@ -1097,6 +1109,7 @@ void OcrControl::on_advance10SecBtn_clicked()
 {
 	Global::frameAccValue = 10;
 	preVideoAdvanceValue = Global::frameAccValue;
+	Global::requestAdvanceDuringPause = true;
 }
 
 void OcrControl::on_pullBackBtn_clicked()
@@ -1104,10 +1117,17 @@ void OcrControl::on_pullBackBtn_clicked()
 	
 	Global::frameAccValue = Global::frameAccValue - preVideoAdvanceValue;
 
-	if (Global::frameAccValue <= 1)
+
+	preVideoAdvanceValue = 30;
+
+	Global::requestAdvanceDuringPause = true;
+	
+	/*
+	if (preVideoAdvanceValue <= 1)
 	{
-		Global::frameAccValue = 1;
+		Global::frameAccValue = 1 ;
 	}
+	*/
 }
 void OcrControl::on_pauseCaliBtn_clicked()
 {
@@ -1124,28 +1144,40 @@ void OcrControl::on_continueBtn_clicked()
 void OcrControl::on_inputUserDataBtn_clicked()
 {
 	
-	DataOutput resultData;
+ 
 
 	//更新马信息
- 
+	/*
 	for (int i = 0; i < horseNameEditList.size(); i++)
 	{
 		QString horseName;
 		horseName = horseNameEditList[i]->text();
 
+	 
+		
+		wchar_t *horseNameChar = new wchar_t[6];
+		memset(horseNameChar, 0, 6 * sizeof(wchar_t));
+		horseName.toWCharArray(horseNameChar);
+		 
+		memcpy(resultData.mHorseInfo.horseName[i], horseNameChar, 4 * sizeof(wchar_t));
+
+		horseName = horseName.fromWCharArray(horseNameChar);
+
+		resultData.mHorseInfo.horseName[i] = horseName;
 		if (horseName == "0")
 		{
 			break;
 		}
 
 	}
+	*/
 	for (int i = 0; i < winLableList.size(); i++)
 	{
 
 		QString win;
 		win = winLableList[i]->text();
 
-		resultData.WIN[i] = win.toFloat();
+		mDataOutput.WIN[i] = win.toFloat();
 		 
 	}
 	for (int i = 0; i < plaLableList.size(); i++)
@@ -1154,7 +1186,7 @@ void OcrControl::on_inputUserDataBtn_clicked()
 		QString pla;
 		pla = plaLableList[i]->text();
 
-		resultData.PLA[i] = pla.toFloat();
+		mDataOutput.PLA[i] = pla.toFloat();
 	  
 	}
 
@@ -1168,29 +1200,405 @@ void OcrControl::on_inputUserDataBtn_clicked()
 			 
 			qplQin = label->text();
 
-			resultData.QPL_QIN[i][j] = qplQin.toFloat();
+			mDataOutput.QPL_QIN[i][j] = qplQin.toFloat();
 			 
 		}
 	}	 
 	//更新界面 不更新图片，
-	updateAfterUserInput(resultData);
+	updateAfterUserInput(mDataOutput);
 
 	//写入数据
+	writeHistoryData(mDataOutput);
+
 }
 
+
+
+/*
+写入历史数据文件
+*/
+
+void OcrControl::writeHistoryData(DataOutput &dataOutput)
+{
+
+	if (videoFileDate != Global::historyVideoDate)
+	{
+
+
+		Global::historyIdentifyDataFile.close();
+		//
+		QString runPath = QCoreApplication::applicationDirPath();
+	
+		QDir::setCurrent(runPath);
+		//退到上一层目录
+		QDir::setCurrent("../");
+
+		QDir::setCurrent("../");
+
+
+		QDir::setCurrent(".//OCRProject//");
+		// 写数据文件
+		Global::historyIdentifyDataFile.setFileName(QString(".//historyIdentifyData//") + Global::historyVideoDate + QString(".txt"));
+
+		QString curPath = QDir::currentPath();
+
+		if (!Global::historyIdentifyDataFile.exists())
+		{
+
+			if (!Global::historyIdentifyDataFile.open(QIODevice::WriteOnly))
+				qDebug("historyIdentifyDataFile open Failed");
+
+			Global::historyIdentifyDataWS.setFloatingPointPrecision(QDataStream::SinglePrecision);
+			Global::historyIdentifyDataWS.setDevice(&Global::historyIdentifyDataFile);
+
+		}
+		else
+		{
+			Global::historyIdentifyDataFile.remove();
+			if (!Global::historyIdentifyDataFile.open(QIODevice::WriteOnly))
+				qDebug("historyIdentifyDataFile open Failed");
+
+			Global::historyIdentifyDataWS.setFloatingPointPrecision(QDataStream::SinglePrecision);
+			Global::historyIdentifyDataWS.setDevice(&Global::historyIdentifyDataFile);
+
+		}
+		videoFileDate = Global::historyVideoDate;
+
+	}
+ 
+
+	//
+
+//	QString logStr;
+
+//	QTextStream logContentOut(&logFile);
+	//
+	int dataType = 0;
+	QString raceIdStr;
+	if (Global::session < 10)
+	{
+		raceIdStr = Global::historyVideoDate + QString("0") + QString::number(Global::session);
+	}
+	else
+	{
+		raceIdStr = Global::historyVideoDate + QString::number(Global::session);
+	}
+
+	//检测数据是否发生了变化
+	isDataOutputNew(mDataOutput);
+
+
+	Global::raceId = raceIdStr.toInt();
+
+	//写入win
+	if (dataOutput.changeStatus == WIN_CHANGED | dataOutput.changeStatus == WIN_PLA_CHANGED
+		| dataOutput.changeStatus == WIN_QIN_QPL_CHANGED | dataOutput.changeStatus == WIN_PLA_QIN_QPL_CHANGED)
+	{
+
+		for (int i = 0; i < dataOutput.horseNum; i++)
+		{
+			dataType = WINTYPE;
+
+			//封装一个WIN
+			TagWPDataInfo WPData;
+
+			WPData.HorseID = dataOutput.mHorseInfo.horseID[i];
+			// from 1 to 14 .
+			WPData.HorseNO = i + 1;
+
+			WPData.WinValue = dataOutput.WIN[i];
+
+			WPData.RaceID = Global::raceId;
+			//顺计时
+			WPData.AtTime = Global::countRaceTime;
+
+
+			if (dataType == 0)
+			{
+				qDebug("dataType = 0 ");
+			}
+			//写文件
+			Global::historyIdentifyDataWS << dataType << WPData.RaceID << WPData.HorseID << WPData.HorseNO
+				<< WPData.WinValue << WPData.AtTime;
+
+			/*
+			logContentOut << QString("Type") << QString::number(dataType) << QString::number(WPData.RaceID) <<
+				QString::number(WPData.HorseID) << QString::number(WPData.HorseNO) << QString::number(WPData.WinValue)
+				<< QString::number(WPData.AtTime);
+			*/
+		}
+
+
+	}
+	// 写入pla
+	if (dataOutput.changeStatus == WIN_PLA_CHANGED | dataOutput.changeStatus == PLA_CHANGED
+		| dataOutput.changeStatus == PLA_QIN_QPL_CHANGED | dataOutput.changeStatus == WIN_PLA_QIN_QPL_CHANGED
+		)
+	{
+		for (int i = 0; i < dataOutput.horseNum; i++)
+		{
+			dataType = PLATYPE;
+			//封装一个PLA
+			TagWPDataInfo WPData;
+
+			WPData.HorseID = dataOutput.mHorseInfo.horseID[i];
+
+			if (WPData.HorseID > 10558 | WPData.HorseID < 0)
+			{
+				qDebug("HorseId > 10558 ");
+			}
+			//从1 到14 
+			WPData.HorseNO = i + 1;
+
+			WPData.WinValue = dataOutput.PLA[i];
+
+			WPData.RaceID = Global::raceId;
+			WPData.AtTime = Global::countRaceTime;
+
+			if (dataType == 0)
+			{
+				qDebug("dataType = 0 ");
+			}
+			//写文件
+			Global::historyIdentifyDataWS << dataType << WPData.RaceID << WPData.HorseID
+				<< WPData.HorseNO << WPData.WinValue << WPData.AtTime;
+
+			/*
+			logContentOut << QString("Type") << QString::number(dataType) << QString::number(WPData.RaceID) <<
+				QString::number(WPData.HorseID) << QString::number(WPData.HorseNO) << QString::number(WPData.WinValue)
+				<< QString::number(WPData.AtTime);
+			*/
+		}
+
+	}
+	// 写入qin qpl
+	if (dataOutput.changeStatus == QIN_QPL_CHANGED | dataOutput.changeStatus == WIN_QIN_QPL_CHANGED
+		| dataOutput.changeStatus == PLA_QIN_QPL_CHANGED | dataOutput.changeStatus == WIN_PLA_QIN_QPL_CHANGED
+
+		)
+	{
+		if (dataOutput.isQPL)
+		{
+			dataType = QPLTYPE;
+		}
+		else
+			dataType = QINTYPE;
+
+		for (int i = 1; i <= dataOutput.horseNum; i++)
+		{
+
+			for (int j = 1; j < i; j++)
+			{
+
+				//封装一个 QIN QPL
+				TagQDataInfo QDataInfo;
+				QDataInfo.RaceID = Global::raceId;//所属赛事ID
+				QDataInfo.HorseID = dataOutput.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
+				QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
+				QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
+				QDataInfo.AtTime = Global::countRaceTime;
+				if (j <= 7) // 正表
+				{
+					QDataInfo.QinValue = dataOutput.QPL_QIN[j - 1][i];
+				}
+				else //补充图表
+				{
+					QDataInfo.QinValue = dataOutput.QPL_QIN[i - 8][j - 8];
+				}
+
+				//写文件
+				Global::historyIdentifyDataWS << dataType << QDataInfo.RaceID << QDataInfo.HorseID
+					<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
+				/*
+				logContentOut << QString("Type") << QString::number(dataType) << QString::number(QDataInfo.RaceID) <<
+					QString::number(QDataInfo.HorseID) << QString::number(QDataInfo.HorseNO) <<
+					QString::number(QDataInfo.YNO)
+					<< QString::number(QDataInfo.QinValue)
+					<< QString::number(QDataInfo.AtTime);
+				*/
+			}
+
+			for (int j = i + 1; j <= dataOutput.horseNum; /* HORSENUMBER_1; */ j++)
+			{
+
+				//封装一个WIN
+				TagQDataInfo QDataInfo;
+				QDataInfo.RaceID = Global::raceId;//所属赛事ID
+				QDataInfo.HorseID = dataOutput.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
+				QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
+				QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
+				QDataInfo.AtTime = Global::countRaceTime;
+				if (i <= 7) // 正表
+				{
+					QDataInfo.QinValue = dataOutput.QPL_QIN[i - 1][j];
+				}
+				else //补充图表
+				{
+					QDataInfo.QinValue = dataOutput.QPL_QIN[j - 8][i - 8];
+				}
+
+				//写文件
+				Global::historyIdentifyDataWS << dataType << QDataInfo.RaceID << QDataInfo.HorseID
+					<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
+				/*
+				logContentOut << QString("Type") << QString::number(dataType) << QString::number(QDataInfo.RaceID) <<
+					QString::number(QDataInfo.HorseID) << QString::number(QDataInfo.HorseNO) <<
+					QString::number(QDataInfo.YNO)
+					<< QString::number(QDataInfo.QinValue)
+					<< QString::number(QDataInfo.AtTime);
+				 */
+
+			}
+
+
+		}
+
+
+	}
+	
+	if (mDataOutput.changeStatus > 0 )
+	{
+		//更新 前一个结果
+		priDataOutput = mDataOutput;
+
+	}
+	
+}
+
+
+/**
+* @brief 判断数据是否为新数据 同时判断数据是否过大 如果变化范围超过此数值的原值的2/1
+则认为是错误，丢弃。采用原有 识别结果。
+*/
+int OcrControl::isDataOutputNew(DataOutput &outputStruct)
+{
+
+	 
+
+ 
+	int  WINChangedNum = 0;
+	int  PLAChangedNum = 0;
+	int  QINQPLCHangedNum = 0;
+	// 判断WIN数据是否变化
+	outputStruct.changeStatus = 0;
+
+
+ 
+	for (int i = 0; i < outputStruct.horseNum; i++)
+	{
+		if (abs(outputStruct.WIN[i] - priDataOutput.WIN[i]) > 0.05)
+		{
+			//qDebug("WIN : i=%d , new is %f pri is %f ", i,  outputStruct.WIN[i], priDataOutput.WIN[i]);
+			//outputStruct.changeStatus = WIN_CHANGED;
+			WINChangedNum++;
+
+		}
+		 
+	}
+
+
+	for (int i = 0; i < outputStruct.horseNum; i++)
+	{
+		if (outputStruct.PLA[i] == 0.0)
+		{
+			continue;
+		}
+		if (abs(outputStruct.PLA[i] - priDataOutput.PLA[i]) >  0.05)
+		{
+			//qDebug("PLA:i=%d ,new is %f pri is %f ", i,  outputStruct.PLA[i], priDataOutput.PLA[i]);
+			//outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
+			PLAChangedNum++;
+		}
+			 
+	}
+	 
+	for (int i = 0; i < 7; i++)
+	{
+
+		for (int j = 0; j < outputStruct.horseNum; j++)
+		{
+			if (i == j || i == (j + 1))
+				continue;
+			//排除掉 退赛的马匹
+			if (j> i + 1)
+			{
+				if (outputStruct.mHorseInfo.isSCR[i] == true)
+				{
+
+					continue;
+				}
+				if (outputStruct.mHorseInfo.isSCR[j - 1] == true)
+				{
+
+					continue;
+				}
+			}
+			if (j < i)
+			{
+
+				if (outputStruct.mHorseInfo.isSCR[j + 7] == true)
+				{
+					continue;
+				}
+			}
+
+			if (abs(outputStruct.QPL_QIN[i][j] - priDataOutput.QPL_QIN[i][j]) > 0.05)
+			{
+				//qDebug("QIN_QPL:i=%d ,j=%d new is %f pri is %f ", i, j, outputStruct.QPL_QIN[i][j], priDataOutput.QPL_QIN[i][j]);
+				//outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
+				QINQPLCHangedNum++;
+			}
+				 
+		}
+	}
+	 
+
+  
+	//数据超出本应有的范围，那么就不会发送此时的数据， 此时应该避免掉 比赛刚开始，有数据的时候，此时应该发送数据。
+	//添加 Global::raceHasStarted 来控制 第一次，即 比赛未开始，那么可以发送的。
+	// 如果场次号发生了变化
+	 
+		if (WINChangedNum > 0)
+		{
+			 
+				outputStruct.changeStatus = WIN_CHANGED;
+		}
+		if (PLAChangedNum > 0)
+		{
+			 
+				outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
+		}
+		if (QINQPLCHangedNum > 0)
+		{
+			 
+				outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
+		}
+ 
+ 
+	return 1;
+}
 void OcrControl::updateAfterUserInput(DataOutput  output)
 {
 	//更新马信息
-	 
+	/*
 	for (int i = 0; i < horseNameEditList.size(); i++)
 	{
+		QString horseName;
+		wchar_t *horseNameChar = new wchar_t[6];
+		memset(horseNameChar, 0, 6 * sizeof(wchar_t));
+		memcpy(horseNameChar, output.mHorseInfo.horseName[i], 4 * sizeof(wchar_t));
+
+		horseName = horseName.fromWCharArray(horseNameChar);
+
 		if (i < output.horseNum)
-			horseNameEditList[i]->setText(QString("马名%1").arg(i));
+			horseNameEditList[i]->setText(horseName);
 		else
 		{
 			indexLabelList[i]->setText(QString("0"));
 		}
+	 
 	}
+	*/
 	for (int i = 0; i < winLableList.size(); i++)
 	{
 
