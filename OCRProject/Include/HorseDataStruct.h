@@ -184,12 +184,22 @@ struct DataOutput
 
 	float WIN[HORSENUMBER];
 	float PLA[HORSENUMBER];
+
+	//标记改变
+	bool winChangedFlag[HORSENUMBER];
+	bool plaChangedFlag[HORSENUMBER];
+
+
 	//用于标记是否该位置的WIN  PLA 有底色。
 	bool  isWinPlaHasGroundColor[HORSENUMBER][2];
  
 	// image region 2
 	bool isQPL;		 	// true: QPL, false: QIN
 	float QPL_QIN[QIN_QPL_ROW][QIN_QPL_COL];
+
+	//标记改变
+	bool qplQinChangedFlag[QIN_QPL_ROW][QIN_QPL_COL];
+
 	//用于标记是否该位置的qpl qin 有底色。
 	bool  isQplQinHasGroundColor[QIN_QPL_ROW][QIN_QPL_COL];
 	// image region 3

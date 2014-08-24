@@ -5,6 +5,7 @@
 #include "Include/Global.h"
 #include "Include/HorseDataStruct.h"
 
+#define  HISTORY_SUBMIT 
 
 class BllRealTimeTrans : public QObject
 {

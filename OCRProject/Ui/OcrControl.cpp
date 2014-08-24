@@ -733,6 +733,11 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 			writeHistoryData(mDataOutput);
 		}
 	}
+	//else
+	//比较是否发生变化 无论直播，还是历史
+	{
+		isDataOutputNew(mDataOutput);
+	}
 
 	int imageLength = imageWidth*imageHeight * 3;
 
@@ -788,16 +793,17 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 		ui.sessionLineEdit->setText(QString::number(Global::session));//更新全局场次号
 		ui.raceTimeLineEdit->setText(QString::number(Global::raceTime));//更新全局比赛时间 倒计时
 		 
-		updateUiData(output, array);//更新马信息
+
+		updateUiData(mDataOutput, array);//更新马信息
 		if (output.isQPL)
 		{
 			 
-			updateQINQPLData(output, array);//更新QPL信息
+			updateQINQPLData(mDataOutput, array);//更新QPL信息
 		}
 		else
 		{
 		 
-			updateQINQPLData(output, array);//更新QIn信息
+			updateQINQPLData(mDataOutput, array);//更新QIn信息
 		}
 			
 	}
@@ -819,7 +825,7 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 {
 	 
 
-	ui.userInputLabel->setText(QString(" O R "));
+	ui.userInputLabel->setText(QString("原始"));
 	//更新马信息
 	for (int i = 0; i < indexLabelList.size(); i++)
 	{
@@ -843,7 +849,11 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 		horseName = horseName.fromWCharArray(horseNameChar) ;
 
 		if (i < output.horseNum)
+		{
 			horseNameEditList[i]->setText(horseName);
+			horseNameEditList[i]->setStyleSheet("QLineEdit{background:rgb(62,120,56);color: rgb(255,255,255)}");
+		}
+			
 		else
 		{
 			indexLabelList[i]->setText(QString("0"));
@@ -868,9 +878,20 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 		winLableList[i]->setText(QString::number(output.WIN[i]));
 
 
-		if (output.isWinPlaHasGroundColor[i][0] == true)
+		if (output.isWinPlaHasGroundColor[i][0] )
 		{
-			winLableList[i]->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
+		//	winLableList[i]->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
+		}
+
+		if (output.winChangedFlag[i]  )
+		{
+			winLableList[i]->setStyleSheet("QLineEdit{background: rgb(0,0,0);color: rgb(255,255,255)}");
+		}
+		else
+		{
+			 
+			winLableList[i]->setStyleSheet("QLineEdit{background:rgb(62,120,56);color: rgb(255,255,255)}");
+	
 		}
 
 	}
@@ -878,12 +899,32 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 	{
 
 		plaLableList[i]->setText(QString::number(output.PLA[i]));
-		if (output.isWinPlaHasGroundColor[i][1] == true)
+	
+		if (output.plaChangedFlag[i] )
 		{
-			plaLableList[i]->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
+			plaLableList[i]->setStyleSheet("QLineEdit{background: rgb(0,0,0);color: rgb(255,255,255)}");
+		}
+		else
+		{
+
+			plaLableList[i]->setStyleSheet("QLineEdit{background: rgb(62,120,56);color: rgb(255,255,255)}");
+		}
+		if (output.isWinPlaHasGroundColor[i][1] )
+		{
+	//		plaLableList[i]->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
 		}
 
 	}
+
+	//赋值 
+	if (mDataOutput.changeStatus > 0)
+	{
+		//更新 前一个结果
+		priDataOutput = mDataOutput;
+
+	}
+
+
 }
 
 /**
@@ -913,11 +954,27 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 			QLineEdit * label = list.at(j);
 			label->setText(QString::number(output.QPL_QIN[i][j]));
 
-			if (output.isQplQinHasGroundColor[i][j] == true )
-			{
-				label->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
-			}
 			
+
+			if (output.qplQinChangedFlag[i][j])
+			{
+				label->setStyleSheet("QLineEdit{background:rgb(0,0,0);color: rgb(255,255,255)}");
+			}
+			else
+			{
+				
+				label->setStyleSheet("QLineEdit{background: rgb(62,120,56);color: rgb(255,255,255)}");
+			}
+			//如果是0 ，那么 使用黑底白色
+			if (output.QPL_QIN[i][i] == 0)
+			{
+				label->setStyleSheet("QLineEdit{background:rgb(0,0,0);color: rgb(255,255,255)}");
+			}
+
+			if (output.isQplQinHasGroundColor[i][j])
+			{
+			//	label->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
+			}
 
 		}
 	}
@@ -1150,7 +1207,18 @@ void OcrControl::on_pullBackBtn_clicked()
 }
 void OcrControl::on_pauseCaliBtn_clicked()
 {
-	Global::pauseDataIdentifyTag = true;//停止模拟标示符
+	if (!Global::pauseDataIdentifyTag)
+	{
+		Global::pauseDataIdentifyTag = true;//停止模拟标示符
+
+		ui.pauseCaliBtn->setText(QString("继续"));
+	}
+	else
+	{
+		Global::pauseDataIdentifyTag = false;
+		ui.pauseCaliBtn->setText(QString("暂停"));
+	}
+	
 }
 
 
@@ -1624,7 +1692,12 @@ int OcrControl::isDataOutputNew(DataOutput &outputStruct)
 			//qDebug("WIN : i=%d , new is %f pri is %f ", i,  outputStruct.WIN[i], priDataOutput.WIN[i]);
 			//outputStruct.changeStatus = WIN_CHANGED;
 			WINChangedNum++;
+			outputStruct.winChangedFlag[i] = true;
 
+		}
+		else
+		{
+			outputStruct.winChangedFlag[i] = false;
 		}
 		 
 	}
@@ -1641,6 +1714,11 @@ int OcrControl::isDataOutputNew(DataOutput &outputStruct)
 			//qDebug("PLA:i=%d ,new is %f pri is %f ", i,  outputStruct.PLA[i], priDataOutput.PLA[i]);
 			//outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
 			PLAChangedNum++;
+			outputStruct.plaChangedFlag[i] = true;
+		}
+		else
+		{
+			outputStruct.plaChangedFlag[i] = false;
 		}
 			 
 	}
@@ -1648,9 +1726,9 @@ int OcrControl::isDataOutputNew(DataOutput &outputStruct)
 	for (int i = 0; i < 7; i++)
 	{
 
-		for (int j = 0; j < outputStruct.horseNum; j++)
+		for (int j = 0; j <= outputStruct.horseNum; j++)
 		{
-			if (i == j || i == (j + 1))
+			if (i == j || j == (i + 1))
 				continue;
 			//排除掉 退赛的马匹
 			if (j> i + 1)
@@ -1680,6 +1758,11 @@ int OcrControl::isDataOutputNew(DataOutput &outputStruct)
 				//qDebug("QIN_QPL:i=%d ,j=%d new is %f pri is %f ", i, j, outputStruct.QPL_QIN[i][j], priDataOutput.QPL_QIN[i][j]);
 				//outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
 				QINQPLCHangedNum++;
+				outputStruct.qplQinChangedFlag[i][j] = true;
+			}
+			else
+			{
+				outputStruct.qplQinChangedFlag[i][j] = false;
 			}
 				 
 		}
@@ -1801,7 +1884,7 @@ void OcrControl::updateAfterUserInput(DataOutput  output)
 	}
 
 
-	ui.userInputLabel->setText(QString(" X G "));
+	ui.userInputLabel->setText(QString("修改"));
 
 
 }

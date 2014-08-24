@@ -527,9 +527,9 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 		for (int i = 0; i < 7; i++)
 		{
 
-			for (int j = 0; j < outputStruct.horseNum; j++)
+			for (int j = 0; j <= outputStruct.horseNum; j++)
 			{
-				if (i == j || i == (j + 1))
+				if (i == j || j == (i + 1))
 					continue;
 				//排除掉 退赛的马匹
 				if (j> i + 1)
@@ -1271,8 +1271,11 @@ void BllDataIdentify::getHorseNameFromDataFile(QString fileName,DataOutput &outp
 
 		Global::historyVideoDate = fileName.mid(labelPos + 3, 8);
 	}
-	
-
+	//如果直播，那么日期值小于 4 
+	if (Global::historyVideoDate.size() < 4 )
+	{
+		return;
+	}
 
 	QString searchLabel;
 	searchLabel = Global::historyVideoDate + QString("Start one Session \t ");
@@ -1343,10 +1346,12 @@ void BllDataIdentify::getHorseNameFromDataFile(QString fileName,DataOutput &outp
 					{
 						
 						horseId = oneNum.toInt();
-						if (horseId == 0)
+
+						if (horseId > 10558 | horseId < 0)
 						{
-							qDebug("ERROR : BllDataIdentify:horseId = 0 \n");
+							qDebug("ERROR:HorseId > 10558 ");
 						}
+						 
 						outputStruct.mHorseInfo.horseID[horseCount] = horseId;
 						//	horseIdList.append(horseId);
 						break;

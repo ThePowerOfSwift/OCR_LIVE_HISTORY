@@ -175,10 +175,12 @@ void BllRealTimeTrans::handleRequestHorse(QByteArray result, int descriptor)
 */
 void BllRealTimeTrans::requestRaceID( )
 {
+#ifndef HISTORY_SUBMIT
 	if (Global::isHistoryVideo)
 	{
 		return;
 	}
+#endif
 	TagProtocolMsg msg;
 	msg.MsgID = 6;
 	msg.nDataSize = Global::session;
@@ -245,12 +247,13 @@ void BllRealTimeTrans::handleRequestRaceID(QByteArray result, int descriptor)
 */
 void BllRealTimeTrans::submitRaceTime(qint32 raceTime)
 {
-	 
+#ifndef HISTORY_SUBMIT
 	if (Global::isHistoryVideo)
 	{
 		return;
 	}
 
+#endif
 	TagProtocolMsg msg;
 	msg.MsgID = 7;
 	msg.nDataSize = 0;
@@ -307,10 +310,15 @@ void BllRealTimeTrans::handleSubmitRaceTime(QByteArray result, int descriptor)
 */
 void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array, int imageWidth, int imageHeight)
 {
+#ifndef HISTORY_SUBMIT
+	//如果是历史视频那么，则不提交
 	if (Global::isHistoryVideo)
 	{
+
 		return;
+
 	}
+#endif
 
 	 //网络中断了 则重连服务器
 	if (Global::serverSubmitFailed == true )
