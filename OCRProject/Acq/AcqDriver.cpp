@@ -20,7 +20,7 @@ AcqDriver::AcqDriver(QObject *parent)
 	timerCount = 0;
 #ifdef OFFLINE_DEBUG
 		
-	count =2000;
+	count =2030;
 #endif
 
  

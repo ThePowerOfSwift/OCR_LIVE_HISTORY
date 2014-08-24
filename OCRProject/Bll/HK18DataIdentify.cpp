@@ -1827,7 +1827,14 @@ int HK18DataIdentify::getQINQPLIdentify()
 					}
 					Mat singleNum(roiNew, rect[0][k]);								// the single number image
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+					QString fileNameTemp;
+					fileNameTemp.prepend(QString(".bmp"));
+					fileNameTemp.prepend(QString::number(i));
+					fileNameTemp.prepend(QString("i_j"));
+					fileNameTemp.prepend(QString::number(j));
+					fileNameTemp.prepend(QString("_k"));
+					fileNameTemp.prepend(QString::number(k));
+					writeSamples(fileNameTemp, singleNum,path );
 #endif
 					resize(singleNum, singleNum, hog.winSize);
 					hog.compute(singleNum, descriptorVector, winStride, padding);
@@ -1877,7 +1884,14 @@ int HK18DataIdentify::getQINQPLIdentify()
 
 					Mat singleNum(roiNew, rect[1][k]);								// the single number image
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+					QString fileNameTemp;
+					fileNameTemp.prepend(QString(".bmp"));
+					fileNameTemp.prepend(QString::number(i));
+					fileNameTemp.prepend(QString("i_j"));
+					fileNameTemp.prepend(QString::number(j));
+					fileNameTemp.prepend(QString("_k"));
+					fileNameTemp.prepend(QString::number(k));
+					writeSamples(fileNameTemp, singleNum,path);
 #endif
 					resize(singleNum, singleNum, hog.winSize);
 					hog.compute(singleNum, descriptorVector, winStride, padding);
@@ -1925,7 +1939,14 @@ int HK18DataIdentify::getQINQPLIdentify()
 					Mat singleNum(roiNew, rect[2][k]);								// the single number image
 
 #ifdef  WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+					QString fileNameTemp;
+					fileNameTemp.prepend(QString(".bmp"));
+					fileNameTemp.prepend(QString::number(i));
+					fileNameTemp.prepend(QString("i_j"));
+					fileNameTemp.prepend(QString::number(j));
+					fileNameTemp.prepend(QString("_k"));
+					fileNameTemp.prepend(QString::number(k));
+					writeSamples(fileNameTemp, singleNum,path);
 #endif
 					resize(singleNum, singleNum, hog.winSize);
 					hog.compute(singleNum, descriptorVector, winStride, padding);
@@ -3189,6 +3210,17 @@ int  HK18DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int 
 void HK18DataIdentify::createClassifySamples(float result, Mat &singleNum)
 {
  
+	//
+	QString runPath = QCoreApplication::applicationDirPath();
+
+	QDir::setCurrent(runPath);
+	//退到上一层目录
+	QDir::setCurrent("../");
+
+	QDir::setCurrent("../");
+
+
+	QDir::setCurrent(".//OCRProject//");
 
 	QString fileNameStr = QString(".//acqSamples//");
 

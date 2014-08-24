@@ -233,8 +233,16 @@ private:
 	//历史文件 名称
 	QString fileName;
 	
+	// 实时数据备份文件被创立
+	bool liveBackupDataFileCreated;
+
+	//实时直播的时候当前日期
+
+	QString liveCurDate;
 
 
+	QFile liveBackupFile;
+	QDataStream liveBackupDataStream;
 };
 
 #endif // OCRCONTROL_H

@@ -365,6 +365,8 @@ OcrControl::OcrControl(QWidget *parent)
 	// 连接 63台checkbox
 	QObject::connect(ui.is63TAICheckBox, SIGNAL(clicked(bool)), this, SLOT(is63TAICheckBoxStateChanged(bool)));
 
+
+	liveBackupDataFileCreated = false;
 	
 	 
 }
@@ -398,6 +400,12 @@ OcrControl::~OcrControl()
 	{
 		delete Global::S_CCycleBuffer;
 	}
+
+
+	Global::historyIdentifyDataFile.close();
+
+	liveBackupFile.close();
+
 }
 /**
 * @brief 连接服务器
@@ -714,6 +722,17 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 
 	//获取当前 输出结果
 	mDataOutput = output;
+
+
+	//如果此时 网络中断 那么开启 写入本地文件模式
+	//直播
+	if (!Global::isHistoryVideo )
+	{
+		if (Global::serverSubmitFailed)
+		{
+			writeHistoryData(mDataOutput);
+		}
+	}
 
 	int imageLength = imageWidth*imageHeight * 3;
 
@@ -1221,7 +1240,55 @@ void OcrControl::on_inputUserDataBtn_clicked()
 void OcrControl::writeHistoryData(DataOutput &dataOutput)
 {
 
-	if (videoFileDate != Global::historyVideoDate)
+
+	//如果是直播则 
+	if (!Global::isHistoryVideo  & liveBackupDataFileCreated == false )
+	{
+		liveBackupDataFileCreated = true;
+		//获取exe路径
+		QString runPath = QCoreApplication::applicationDirPath();
+
+		QDir::setCurrent(runPath);
+		//退到上一层目录
+		QDir::setCurrent("../");
+
+		QDir::setCurrent("../");
+
+
+		QDir::setCurrent(".//OCRProject//liveBackupData//");
+		// 写数据文件
+		//如果是直播的时候中断 ，那么将数据写入本地文档，做备份，待比赛结束，将数据导入服务器
+		
+		liveCurDate = QDate::currentDate().toString("yyyyMMdd");
+		liveBackupFile.setFileName(liveCurDate + QString(".txt"));
+
+		QString curPath = QDir::currentPath();
+
+		if (!liveBackupFile.exists())
+		{
+
+			if (!liveBackupFile.open(QIODevice::WriteOnly))
+				qDebug("liveBackupFile open Failed");
+
+			liveBackupDataStream.setFloatingPointPrecision(QDataStream::SinglePrecision);
+			liveBackupDataStream.setDevice(&liveBackupFile);
+
+		}
+		else
+		{
+			liveBackupFile.remove();
+			if (!liveBackupFile.open(QIODevice::WriteOnly))
+				qDebug("liveBackupFile open Failed");
+
+			liveBackupDataStream.setFloatingPointPrecision(QDataStream::SinglePrecision);
+			liveBackupDataStream.setDevice(&liveBackupFile);
+
+		}
+
+
+	}
+
+	if (videoFileDate != Global::historyVideoDate & !Global::isHistoryVideo )
 	{
 
 
@@ -1238,8 +1305,14 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 		QDir::setCurrent(".//OCRProject//");
 		// 写数据文件
-		Global::historyIdentifyDataFile.setFileName(QString(".//historyIdentifyData//") + Global::historyVideoDate + QString(".txt"));
+		//如果是直播的时候中断 ，那么将数据写入本地文档，做备份，待比赛结束，将数据导入服务器
+		if (Global::isHistoryVideo)
+		{
+			Global::historyIdentifyDataFile.setFileName(QString(".//historyIdentifyData//") + Global::historyVideoDate + QString(".txt"));
 
+		}
+	 
+		
 		QString curPath = QDir::currentPath();
 
 		if (!Global::historyIdentifyDataFile.exists())
@@ -1277,11 +1350,30 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 	QString raceIdStr;
 	if (Global::session < 10)
 	{
-		raceIdStr = Global::historyVideoDate + QString("0") + QString::number(Global::session);
+		if (Global::isHistoryVideo)
+		{
+			raceIdStr = Global::historyVideoDate + QString("0") + QString::number(Global::session);
+
+		}
+		else
+		{
+			raceIdStr = liveCurDate  + QString("0") + QString::number(Global::session);
+
+		}
 	}
 	else
 	{
-		raceIdStr = Global::historyVideoDate + QString::number(Global::session);
+		if (Global::isHistoryVideo)
+		{
+			raceIdStr = Global::historyVideoDate  + QString::number(Global::session);
+
+		}
+		else
+		{
+			raceIdStr = liveCurDate  + QString::number(Global::session);
+
+		}
+	 
 	}
 
 	//检测数据是否发生了变化
@@ -1317,9 +1409,19 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 			{
 				qDebug("dataType = 0 ");
 			}
-			//写文件
-			Global::historyIdentifyDataWS << dataType << WPData.RaceID << WPData.HorseID << WPData.HorseNO
-				<< WPData.WinValue << WPData.AtTime;
+			if (Global::isHistoryVideo)
+			{
+				//写文件
+				Global::historyIdentifyDataWS << dataType << WPData.RaceID << WPData.HorseID << WPData.HorseNO
+					<< WPData.WinValue << WPData.AtTime;
+			}
+			else
+			{
+				//写文件
+				liveBackupDataStream<< dataType << WPData.RaceID << WPData.HorseID << WPData.HorseNO
+					<< WPData.WinValue << WPData.AtTime;
+			}
+			
 
 			/*
 			logContentOut << QString("Type") << QString::number(dataType) << QString::number(WPData.RaceID) <<
@@ -1359,9 +1461,18 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 			{
 				qDebug("dataType = 0 ");
 			}
-			//写文件
-			Global::historyIdentifyDataWS << dataType << WPData.RaceID << WPData.HorseID
-				<< WPData.HorseNO << WPData.WinValue << WPData.AtTime;
+
+			if (Global::isHistoryVideo)
+			{
+				//写文件
+				Global::historyIdentifyDataWS << dataType << WPData.RaceID << WPData.HorseID
+					<< WPData.HorseNO << WPData.WinValue << WPData.AtTime;
+			}
+			else
+			{
+				liveBackupDataStream << dataType << WPData.RaceID << WPData.HorseID
+					<< WPData.HorseNO << WPData.WinValue << WPData.AtTime;
+			}
 
 			/*
 			logContentOut << QString("Type") << QString::number(dataType) << QString::number(WPData.RaceID) <<
@@ -1406,9 +1517,18 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 					QDataInfo.QinValue = dataOutput.QPL_QIN[i - 8][j - 8];
 				}
 
-				//写文件
-				Global::historyIdentifyDataWS << dataType << QDataInfo.RaceID << QDataInfo.HorseID
-					<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
+				if (Global::isHistoryVideo)
+				{
+					//写文件
+					Global::historyIdentifyDataWS << dataType << QDataInfo.RaceID << QDataInfo.HorseID
+						<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
+				}
+				else
+				{
+					liveBackupDataStream << dataType << QDataInfo.RaceID << QDataInfo.HorseID
+						<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
+				}
+			
 				/*
 				logContentOut << QString("Type") << QString::number(dataType) << QString::number(QDataInfo.RaceID) <<
 					QString::number(QDataInfo.HorseID) << QString::number(QDataInfo.HorseNO) <<
@@ -1437,9 +1557,17 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 					QDataInfo.QinValue = dataOutput.QPL_QIN[j - 8][i - 8];
 				}
 
-				//写文件
-				Global::historyIdentifyDataWS << dataType << QDataInfo.RaceID << QDataInfo.HorseID
-					<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
+				if (Global::isHistoryVideo)
+				{
+					//写文件
+					Global::historyIdentifyDataWS << dataType << QDataInfo.RaceID << QDataInfo.HorseID
+						<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
+				}
+				else
+				{
+					liveBackupDataStream << dataType << QDataInfo.RaceID << QDataInfo.HorseID
+						<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
+				}
 				/*
 				logContentOut << QString("Type") << QString::number(dataType) << QString::number(QDataInfo.RaceID) <<
 					QString::number(QDataInfo.HorseID) << QString::number(QDataInfo.HorseNO) <<
@@ -1462,7 +1590,12 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 		priDataOutput = mDataOutput;
 
 	}
+
+	 
 	
+	//退回上一目录
+	QDir::setCurrent("../");
+
 }
 
 

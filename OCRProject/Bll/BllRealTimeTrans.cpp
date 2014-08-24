@@ -175,6 +175,10 @@ void BllRealTimeTrans::handleRequestHorse(QByteArray result, int descriptor)
 */
 void BllRealTimeTrans::requestRaceID( )
 {
+	if (Global::isHistoryVideo)
+	{
+		return;
+	}
 	TagProtocolMsg msg;
 	msg.MsgID = 6;
 	msg.nDataSize = Global::session;
@@ -242,6 +246,11 @@ void BllRealTimeTrans::handleRequestRaceID(QByteArray result, int descriptor)
 void BllRealTimeTrans::submitRaceTime(qint32 raceTime)
 {
 	 
+	if (Global::isHistoryVideo)
+	{
+		return;
+	}
+
 	TagProtocolMsg msg;
 	msg.MsgID = 7;
 	msg.nDataSize = 0;
@@ -298,6 +307,11 @@ void BllRealTimeTrans::handleSubmitRaceTime(QByteArray result, int descriptor)
 */
 void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array, int imageWidth, int imageHeight)
 {
+	if (Global::isHistoryVideo)
+	{
+		return;
+	}
+
 	 //网络中断了 则重连服务器
 	if (Global::serverSubmitFailed == true )
 	{		 
