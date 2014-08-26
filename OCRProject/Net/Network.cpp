@@ -18,7 +18,7 @@
 #include "TcpSocket.h"
 #include "NetServerThread.h"
 #include <QtNetwork>
-
+//#include <QMetaType>
 /**
 *函数介绍：构造函数
 *输入参数：客户端名称:name,默认参数服务端ip:127.0.0.1,默认参数服务端端口:6666默认参数QObject *parent = 0
@@ -55,6 +55,7 @@ void Network::initClient()
 	//写入系统日志
 	//Global::systemLog->append(QString(tr("初始化网络客户端:%1.....")).arg(clientName), clientName + tr("客户端初始化."), SystemLog::LOG);
 
+	//qRegisterMetatType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
 
 	//新建一个客户端socket
 	clientSocket = new TcpSocket();
@@ -75,6 +76,7 @@ void Network::initClient()
 
 	//写入系统日志
 	//Global::systemLog->append(QString(tr("初始化网络客户端:%1结束.")).arg(clientName), clientName + tr("客户端初始化结束."), SystemLog::LOG);
+	
 }
 
 void Network::disconnectSlot()

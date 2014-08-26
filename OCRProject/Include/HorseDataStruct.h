@@ -14,6 +14,17 @@
 
 
 
+
+enum  DATATYPE
+{
+	WINTYPE = 1,
+	PLATYPE = 2,
+	QINTYPE = 3,
+	QPLTYPE = 4
+
+};
+
+
 typedef struct TagProtocolMsg
 {
 	int	MsgID;			//消息类型

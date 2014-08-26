@@ -99,8 +99,12 @@ public:
 	//**********控制台网络客户端接口*********//
 
 	 
-	//全局缓冲区
+	//全局缓冲区 10 幅图像大小 12.4MB
 	static CCycleBuffer* S_CCycleBuffer;
+
+	//  发送数据缓存区 
+
+	static CCycleBuffer * sendDataCCycleBuffer;
 
 	//获取计算机设备名称，参数ComputerId枚举型
 	static QString getComputerDeviceName(Global::ComputerId);

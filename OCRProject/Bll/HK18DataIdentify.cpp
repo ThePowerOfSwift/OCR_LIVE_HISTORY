@@ -1386,18 +1386,18 @@ int HK18DataIdentify::getWINPLAIdentify()
 				}
 			}
  
-			if (i == 1 && j == 0 )
+			if (i == 1 && j == 1 )
 			{
  
 #ifdef QDEBUG_OUTPUT
-				int temp = 0;
+			 
 				qDebug("getwinPlaPosStruct_live:Mark");
 #endif // QDEBUG_OUTPUT
 
 			}
 			bool dotFlag = judgeWINPLADot(1, roiThreshold, roiThresholdEdge);
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
-				QString fileNameStr;
+			QString fileNameStr;
 			
 			fileNameStr = QString("");
 			fileNameStr.append(QString("i_"));
@@ -1600,6 +1600,13 @@ int HK18DataIdentify::getQINQPLIdentify()
 	}
 
 
+#ifdef WRITE_ROI_SMAPLES_TEMP
+	QString path = QString(".//temp//");
+	writeSamples(QString("srcMat.bmp"), image, path);
+
+#endif
+
+
 	//判断识别标签是否为QIN or QPL
 	judgeQINQPL();
 
@@ -1607,13 +1614,6 @@ int HK18DataIdentify::getQINQPLIdentify()
 
 
 
-#ifdef WRITE_ROI_SMAPLES_TEMP
-	QString path = QString(".//temp//");
-
-	writeSamples(QString("GetQinQpl.bmp"), image, path);
-
-
-#endif
 	float factor[3][3] = { { 1, 0.1, 0 }, { 10, 1, 0 }, { 100, 10, 1 } };							// the first line for dot, the second line for no dat
 
 	// svm DataIdentify each number
@@ -1713,9 +1713,11 @@ int HK18DataIdentify::getQINQPLIdentify()
 			
 			trimRoiBlankPart(roiThreshold, roiForDotJudge, roiNewSize);
 
+
+
 			if (algorithmState == EXIT_THIS_OCR)
 			{
-				return EXIT_THIS_OCR;
+				return EXIT_THIS_OCR ;
 			}
 		 
 			// 将阈值后的图像增强 roiThreshold 进行小数点判断
@@ -1734,6 +1736,10 @@ int HK18DataIdentify::getQINQPLIdentify()
 				}
 			}
 
+			if (i == 0 & j == 2 )
+			{
+				int temp = 0;
+			}
 			//检测是否越界
 			if (roi.cols < roiNewSize.x + roiNewSize.width |
 				roi.rows < roiNewSize.y + roiNewSize.height )
@@ -1753,11 +1759,14 @@ int HK18DataIdentify::getQINQPLIdentify()
 			dotFlag = judgeQINQPLDot(roiForDotJudge, edge, x);
 			
 #ifdef WRITE_ROI_SMAPLES_TEMP
-				QString fileNameTemp;
-				fileNameTemp.prepend(QString(".bmp"));
-				fileNameTemp.prepend(QString::number(i));
-				fileNameTemp.prepend(QString("i_j"));
+				QString fileNameTemp;				
+				fileNameTemp.prepend(QString(".bmp"));				
+				fileNameTemp.prepend(QString("_6"));
 				fileNameTemp.prepend(QString::number(j));
+				fileNameTemp.prepend(QString("j_"));
+				fileNameTemp.prepend(QString::number(i));
+				fileNameTemp.prepend(QString("i_"));
+				
 			//	QString path = QString(".//temp//");
 
 				writeSamples(fileNameTemp, edge, path);
@@ -1829,11 +1838,12 @@ int HK18DataIdentify::getQINQPLIdentify()
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
 					QString fileNameTemp;
 					fileNameTemp.prepend(QString(".bmp"));
-					fileNameTemp.prepend(QString::number(i));
-					fileNameTemp.prepend(QString("i_j"));
-					fileNameTemp.prepend(QString::number(j));
-					fileNameTemp.prepend(QString("_k"));
 					fileNameTemp.prepend(QString::number(k));
+					fileNameTemp.prepend(QString("k_"));
+					fileNameTemp.prepend(QString::number(j));
+					fileNameTemp.prepend(QString("j_"));
+					fileNameTemp.prepend(QString::number(i));
+					fileNameTemp.prepend(QString("i_"));
 					writeSamples(fileNameTemp, singleNum,path );
 #endif
 					resize(singleNum, singleNum, hog.winSize);
@@ -1886,11 +1896,12 @@ int HK18DataIdentify::getQINQPLIdentify()
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
 					QString fileNameTemp;
 					fileNameTemp.prepend(QString(".bmp"));
-					fileNameTemp.prepend(QString::number(i));
-					fileNameTemp.prepend(QString("i_j"));
-					fileNameTemp.prepend(QString::number(j));
-					fileNameTemp.prepend(QString("_k"));
 					fileNameTemp.prepend(QString::number(k));
+					fileNameTemp.prepend(QString("k_"));
+					fileNameTemp.prepend(QString::number(j));
+					fileNameTemp.prepend(QString("j_"));
+					fileNameTemp.prepend(QString::number(i));
+					fileNameTemp.prepend(QString("i_"));
 					writeSamples(fileNameTemp, singleNum,path);
 #endif
 					resize(singleNum, singleNum, hog.winSize);
@@ -1941,11 +1952,14 @@ int HK18DataIdentify::getQINQPLIdentify()
 #ifdef  WRITE_ROI_SMAPLES_CLASS_INFO2
 					QString fileNameTemp;
 					fileNameTemp.prepend(QString(".bmp"));
-					fileNameTemp.prepend(QString::number(i));
-					fileNameTemp.prepend(QString("i_j"));
-					fileNameTemp.prepend(QString::number(j));
-					fileNameTemp.prepend(QString("_k"));
 					fileNameTemp.prepend(QString::number(k));
+					fileNameTemp.prepend(QString("k_"));
+					fileNameTemp.prepend(QString::number(j));
+					fileNameTemp.prepend(QString("j_"));
+					fileNameTemp.prepend(QString::number(i));
+					fileNameTemp.prepend(QString("i_"));					
+					
+				
 					writeSamples(fileNameTemp, singleNum,path);
 #endif
 					resize(singleNum, singleNum, hog.winSize);
@@ -2358,7 +2372,7 @@ bool HK18DataIdentify::judgeWINPLADot(int i, Mat &edge, Mat &roiThresholdEdge)
 			maxLengthMinus--;
 
 		}
-		if (maxLength < maxLengthAdd + maxLengthMinus )
+		if (maxLength < maxLengthAdd + maxLengthMinus +1 )
 		{
 			maxLengthPos = c;
 			maxLength	 = maxLengthAdd + maxLengthMinus + 1 ; // +1 将本身所在的位置加上

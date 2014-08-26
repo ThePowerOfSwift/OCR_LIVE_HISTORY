@@ -35,6 +35,8 @@ ClientCmdStatus Global::client_cmd_status;
 //全局缓冲区
 CCycleBuffer* Global::S_CCycleBuffer = 0;
 
+//发送数据缓存区
+CCycleBuffer * Global::sendDataCCycleBuffer = 0;
 
 //初始化采集
 IAcq* Global::myIAcq = 0;
@@ -138,6 +140,7 @@ void Global::init()
 	//服务器网络通讯接口
 	mcsNetClient = new Network("Server", SERVER_IP_ADDRESS, SERVER_PORT );
 	S_CCycleBuffer = new CCycleBuffer();
+	sendDataCCycleBuffer = new CCycleBuffer();
 	//写入系统日志
 	systemLog->append(QString(tr("服务器网络通讯接口初始完毕")), tr("连接打开成功."), SystemLog::INFO_TYPE);
 

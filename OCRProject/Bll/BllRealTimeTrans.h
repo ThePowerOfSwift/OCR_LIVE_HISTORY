@@ -94,6 +94,12 @@ public slots:
 	*/
 	void handleDisConnect();
 
+
+	/**
+	* @brief 发送缓存区数据,缓存区数据为发送失败缓存的数据
+	*/
+
+	void sendBufferDataToServer();
 	
 signals:
 	void statuChanged(QString status);

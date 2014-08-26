@@ -20,14 +20,6 @@
 
 
 
-enum  DATATYPE
-{
-	WINTYPE = 1,
-	PLATYPE = 2,
-	QINTYPE = 3,
-	QPLTYPE = 4
-
-};
 /*
 算法色彩说明 
 进入DataIdentify read函数的时候，色彩为反色。
@@ -76,7 +68,13 @@ signals:
 	// 场次号发生了变化，请求服务器 本场次号对应的raceID
 	void requestRaceIdSig();
 
+
+	// 提交比赛时长 
+	void submitRaceTimeSig(qint32 raceTime);
 	 
+	// 发送 缓存区数据 信号量
+	void sendBufferDataSig();
+
 private:
 	//DataIdentify DataIdentify;//识别算法
 	/**
@@ -215,6 +213,8 @@ private:
 	QString videoFileDate;
 	
 
+	//标记 QIN QPL 发生改变。
+	bool isQINQPLTransformed;
 };
 
 #endif // BllDataIdentify_H

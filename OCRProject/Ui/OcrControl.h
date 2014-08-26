@@ -14,7 +14,7 @@
 
 #include "HorseNameTrain/HorseNameTrain.h"
 
-#define  VERSION_NUM "版本:1.0 2014/07/10 21:45 YP " //
+#define  VERSION_NUM "版本:1.0 2014/08/25 yp " //
 #define  SHOW_ADBMP 1
 
 class OcrControl : public QWidget
@@ -31,20 +31,7 @@ public slots:
 	void on_disconnectBtn_clicked();
 	//登陆服务器
 	void on_loginBtn_clicked();
-	//请求马信息
-	void on_requestHorseInfoBtn_clicked();
-	/**
-	* @brief 请求RaceId
-	*/
-	void on_requestRaceIdBtn_clicked();
-	/**
-	* @brief 提交比赛时长
-	*/
-	void on_submitRaceTimeBtn_clicked();
-	/**
-	* @brief 提交实时数据
-	*/
-	void on_submitRealBtn_clicked();
+ 
 	//追加网络状态
 	void appendStatus(QString status);
 
@@ -122,6 +109,11 @@ public slots:
 	*/
 	void on_advance10SecBtn_clicked();
 	/*
+	历史视频快进 1s
+	*/
+	void on_advance1SecBtn_clicked();
+
+	/*
 		视频回撤
 	*/
 	void on_pullBackBtn_clicked();
@@ -135,17 +127,12 @@ public slots:
 	*/
 	void on_inputUserDataBtn_clicked();
 
-
-	/*
-		继续采集
-	*/
-
-	void on_continueBtn_clicked();
+ 
 	/*
 	用户输入完毕后，进行更新界面，主要是 马名，场次号 ，win pla qin qpl数据
 	*/
 
-	void updateAfterUserInput(DataOutput  output);
+	void updateAfterUserInput(DataOutput  &output);
 
 
 	/*
@@ -167,7 +154,7 @@ public slots:
 	void  writeHistoryData(DataOutput &dataOutput) ;
 
 
-	int  isDataOutputNew(DataOutput &outputStruct);
+	int  isDataOutputNew(DataOutput &outputStruct,DataOutput &priOutputStruct);
 
 signals:
 	void connect(QString,qint32);
@@ -198,7 +185,8 @@ private:
 	//识别的数据
 
 	DataOutput mDataOutput;
-	DataOutput priDataOutput;
+	DataOutput priDataOutputForShow;
+	DataOutput priDataOutputForWrite;
 
 
 	QString videoFileDate;

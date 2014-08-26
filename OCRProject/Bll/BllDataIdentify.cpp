@@ -132,9 +132,7 @@ void BllDataIdentify::sessionCountDownTextChanged()
 LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 {
 	 // 场次号改变标记为 false
- //	outputStruct.sessionChangedFlag = false ;
-
-	 
+   
 	//利用马的名字灰度变化检测 场次号变化，从而计算场次号。 
 	// 第一次检测到的场次号必须是正确的，否则所有场次号都是错误的。
 	// 如果每次都从1开始，那么可以保证 所有场次号正确。
@@ -145,6 +143,19 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 		
 		 if (Global::isSessionChanged)
 		 {
+			//清空
+			for (int i = 0; i < 20; i++)
+				{
+					myRaceNumberStruct[i].content = 0;
+					myRaceNumberStruct[i].contentCount = 0;
+				}
+
+			for (int i = 0; i < 30; i++)
+			{
+				myRaceTimeStruct[i].content = 0;
+				myRaceTimeStruct[i].contentCount = 0;
+			}
+			
 		 
 			 isRightRaceTimeCountDownDetected = false;
 			 raceTimeCountDownNear9 = false;
@@ -154,7 +165,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 		//获取马名 由于outputStruct 每次都会清空，所以需要每次都要获取
 		getHorseNameFromDataFile(videoFileName, outputStruct);
 
-		// 日期发生了变化
+		// 日期发生了变化，那么清空一下 
 		if (videoFileDate != Global::historyVideoDate)
 		{
 			//第一次不要初始化，以后文件名发生变化的时候在进行初始化
@@ -163,209 +174,173 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 				initGlobal();
 			}
 		
-			/*
-
-			Global::historyIdentifyDataFile.close();
-
-			// 写数据文件
-			Global::historyIdentifyDataFile.setFileName( QString(".//historyIdentifyData//") + Global::historyVideoDate + QString(".txt"));
-
-			if (!Global::historyIdentifyDataFile.exists())
-			{
-				
-				if (!Global::historyIdentifyDataFile.open(QIODevice::WriteOnly))
-					return -1;
-
-				Global::historyIdentifyDataWS.setFloatingPointPrecision(QDataStream::SinglePrecision);
-				Global::historyIdentifyDataWS.setDevice(&Global::historyIdentifyDataFile);
-
-			}
-			else
-			{
-				Global::historyIdentifyDataFile.remove();
-				if (!Global::historyIdentifyDataFile.open(QIODevice::WriteOnly))
-					return -1;
-
-				Global::historyIdentifyDataWS.setFloatingPointPrecision(QDataStream::SinglePrecision);
-				Global::historyIdentifyDataWS.setDevice(&Global::historyIdentifyDataFile);
-
-			}
-			*/
 		}
+		//日期赋值
 		videoFileDate = Global::historyVideoDate;
-		
-	 
+		 
 	}
+	//如果场次号被校正了
 	if (Global::isSessioncalibrated)
 	{
 		//获取马名
 		getHorseNameFromDataFile(videoFileName, outputStruct);
 
+		// 标志位清零
 		Global::isSessioncalibrated = false;
-
-
+		
 		isRightRaceTimeCountDownDetected = false;
 	 
-
 		raceTimeCountDownNear9 = false;
 
 	}
   
+	
+	// 统计15次， 然后寻找出现次数最多的
+
+	if (dataNewCount <= 15 )
 	{
-		// 利用15次用于快速更新   替换原有的30
-		if (dataNewCount <= 15 )
+		if (dataNewCount == 0)
 		{
-			if (dataNewCount == 0)
+			for (int i = 0; i < 20; i++)
 			{
-				for (int i = 0; i < 20; i++)
-				{
-					myRaceNumberStruct[i].content = 0;
-					myRaceNumberStruct[i].contentCount = 0;
-				}
-
-				for (int i = 0; i < 30; i++)
-				{
-					myRaceTimeStruct[i].content = 0;
-					myRaceTimeStruct[i].contentCount = 0;
-				}
+				myRaceNumberStruct[i].content = 0;
+				myRaceNumberStruct[i].contentCount = 0;
 			}
-			else
+
+			for (int i = 0; i < 30; i++)
 			{
-
-				myRaceNumberStruct[outputStruct.session].content = outputStruct.session;
-				myRaceNumberStruct[outputStruct.session].contentCount++;
-
-				myRaceTimeStruct[outputStruct.raceTime].content = outputStruct.raceTime;
-				myRaceTimeStruct[outputStruct.raceTime].contentCount++;
-
+				myRaceTimeStruct[i].content = 0;
+				myRaceTimeStruct[i].contentCount = 0;
 			}
-			dataNewCount++;
 		}
 		else
 		{
-			//最大内容出现计数次数
-			int maxContentCount;
-			int maxContent;
-			maxContentCount = myRaceNumberStruct[0].contentCount;
-			maxContent = myRaceNumberStruct[0].content;
-			//判决输出
-			for (int i = 0; i < 20; i++)
+
+			myRaceNumberStruct[outputStruct.session].content = outputStruct.session;
+			myRaceNumberStruct[outputStruct.session].contentCount++;
+
+			myRaceTimeStruct[outputStruct.raceTime].content = outputStruct.raceTime;
+			myRaceTimeStruct[outputStruct.raceTime].contentCount++;
+
+		}
+		dataNewCount++;
+	}
+	else
+	{
+		//最大内容出现计数次数
+		int maxContentCount;
+		int maxContent;
+		maxContentCount = myRaceNumberStruct[0].contentCount;
+		maxContent = myRaceNumberStruct[0].content;
+		//判决输出
+		for (int i = 0; i < 20; i++)
+		{
+
+			if (maxContentCount < myRaceNumberStruct[i].contentCount)
 			{
-
-				if (maxContentCount < myRaceNumberStruct[i].contentCount)
-				{
-					maxContentCount = myRaceNumberStruct[i].contentCount;
-					maxContent = myRaceNumberStruct[i].content;
-				}
-
-
+				maxContentCount = myRaceNumberStruct[i].contentCount;
+				maxContent = myRaceNumberStruct[i].content;
 			}
-		 
-			//如果某个时候，场次号被检测出的次数超过一定限值，可以认为，这个时候这个值为正确的
-
-			if (maxContentCount > 8 & isRaceSessionDetected == false )
-			{
-				//Global::session = maxContent;
-				// 场次号发生了变化，请求新的场次号
-				//emit requestRaceIdSig();
-			//	Global::isSessionRaceIdRequested = false;
-
-				//获取第一次检测到了场次号。
-				firstRaceSessionDetected = maxContent;
-				//当前场次正确的倒计时没有被检测到。
-				isRightRaceTimeCountDownDetected = false;
-				isRaceSessionDetected = true;
-				raceSessionCount++;
-				Global::timerCount = 0;
-			}
-			
-			//挑出来 应该输出的  倒计时时间 
-			maxContentCount = myRaceTimeStruct[0].contentCount;
-			maxContent = myRaceTimeStruct[0].content;
-			for (int i = 0; i < 30; i++)
-			{
-
-				if (maxContentCount < myRaceTimeStruct[i].contentCount)
-				{
-					maxContentCount = myRaceTimeStruct[i].contentCount;
-					maxContent = myRaceTimeStruct[i].content;
-				}
-
-
-			}
-			dataNewCount = 0;
- 
-			{
-				if (maxContent >= 10 & isRightRaceTimeCountDownDetected == false )
-				{
-					isRightRaceTimeCountDownDetected = true;
-					Global::raceTime = maxContent;
-				}
-
-				if (isRightRaceTimeCountDownDetected == true)
-				{
-					//取个位数 倒计时
-					if (raceTimeCountDownNear9 == true)
-					{
-						if (Global::raceTime - maxContent % 10 <= 3 & Global::raceTime - maxContent % 10 >= 0)
-						{
-							Global::raceTime = maxContent % 10;
-						}
-						//如果出现次数很多，强行赋值
-						if (maxContentCount >= 10 )
-						{
-						 
-							Global::raceTime = maxContent % 10;
-							 
-						}
-
-					}
-					else
-					{
-						if (Global::raceTime - maxContent <= 3 & Global::raceTime - maxContent >= 0)
-						{
-							Global::raceTime = maxContent;
-						}
-						//如果出现次数很多，强行赋值
-						if (maxContentCount >= 10)
-						{
-							 
-							Global::raceTime = maxContent;
-						 
-						}
-					}
-				}
-			}
-			
-				
-			
-
-			 //检测到 比赛时间 到10min 了，这时 
-			if (maxContent == 10 )
-			{
-				raceTimeCountDownNear9 = true;
-			}
-		
-
-			memset(myRaceNumberStruct, 0, sizeof(raceNumTimeStruct));
-			memset(myRaceTimeStruct, 0, sizeof(raceNumTimeStruct));
-
 
 
 		}
+		 
+		//如果某个时候，场次号被检测出的次数超过一定限值，可以认为，这个时候这个值为正确的
+
+		if (maxContentCount > 8 & isRaceSessionDetected == false )
+		{
+			 
+			//获取第一次检测到了场次号。
+			firstRaceSessionDetected = maxContent;
+			//当前场次正确的倒计时没有被检测到。
+			isRightRaceTimeCountDownDetected = false;
+			isRaceSessionDetected = true;
+			raceSessionCount++;
+			Global::timerCount = 0;
+		}
+			
+		//挑出来 应该输出的  倒计时时间 
+		maxContentCount = myRaceTimeStruct[0].contentCount;
+		maxContent = myRaceTimeStruct[0].content;
+		for (int i = 0; i < 30; i++)
+		{
+
+			if (maxContentCount < myRaceTimeStruct[i].contentCount)
+			{
+				maxContentCount = myRaceTimeStruct[i].contentCount;
+				maxContent = myRaceTimeStruct[i].content;
+			}
+
+
+		}
+		dataNewCount = 0;
+ 
+		{
+			if (maxContent >= 10 & isRightRaceTimeCountDownDetected == false )
+			{
+				isRightRaceTimeCountDownDetected = true;
+				Global::raceTime = maxContent;
+			}
+
+			if (isRightRaceTimeCountDownDetected == true)
+			{
+				//取个位数 倒计时
+				if (raceTimeCountDownNear9 == true)
+				{
+					if (Global::raceTime - maxContent % 10 <= 3 & Global::raceTime - maxContent % 10 >= 0)
+					{
+						Global::raceTime = maxContent % 10;
+
+						//总时长
+						emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+					}
+					//如果出现次数很多，强行赋值
+					if (maxContentCount >= 10 )
+					{
+						 
+						Global::raceTime = maxContent % 10;
+							 
+						//总时长
+						emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+					}
+
+				}
+				else
+				{
+					if (Global::raceTime - maxContent <= 3 & Global::raceTime - maxContent >= 0)
+					{
+						Global::raceTime = maxContent;
+						//总时长
+						emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+					}
+					//如果出现次数很多，强行赋值
+					if (maxContentCount >= 10)
+					{
+							 
+						Global::raceTime = maxContent;
+						//总时长
+						emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+						 
+					}
+				}
+			}
+		}
+		 
+			//检测到 比赛时间 到10min 了，这时 
+		if (maxContent == 10 )
+		{
+			raceTimeCountDownNear9 = true;
+		}
+		
+
+		memset(myRaceNumberStruct, 0, sizeof(raceNumTimeStruct));
+		memset(myRaceTimeStruct, 0, sizeof(raceNumTimeStruct));
+
+
+
 	}
-	//排除掉 0 的情况  raceSessionCount 当天比赛场次计数 ，这种情况发生在刚开始检测到了比赛数据。
-	/* 
-	if (Global::session == 0 & raceSessionCount == 0 )
-	{
-		Global::session = 1;
-		Global::timerCount = 0;
-	}
-	if (Global::session == -1)
-	{
-		Global::session = 1 ;
-	}
-	*/
+	
+ 
 	//此时没有检测到倒计时 输出 0 
 	if (Global::raceTime == -1 )
 	{
@@ -449,7 +424,7 @@ LONG BllDataIdentify::winPlaDivTen(DataOutput &outputStruct)
 LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 {
 
-	// 数据除以10
+	// 数据除以10 
 	if (Global::videoType != YAZHOUTAI )
 	{
 		winPlaDivTen(outputStruct);
@@ -461,21 +436,25 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 	int  WINChangedNum = 0;
 	int  PLAChangedNum = 0;
 	int  QINQPLCHangedNum = 0;
+
 	// 判断WIN数据是否变化
 	outputStruct.changeStatus = 0 ;
-
-
+	
 
 	//当QIN QPL发生切换时候 ，等待3个定时器周期，在发送新的数据，保持数据稳定。
 	//if ((outputStruct.horseNameChangedNum - Global::session != 1)
 	//	& (priDataOutput.isQPL != outputStruct.isQPL) )
-	if (priDataOutput.isQPL != outputStruct.isQPL)	 
+	if (priDataOutput.isQPL != outputStruct.isQPL & QINQPLTransformed == false)
 	{
 		if (sessionChanged == false)
 		{
-			QINQPLTransformedCountDown = 3;
+			QINQPLTransformedCountDown =4;
 			QINQPLTransformed = true;
+
 		}
+
+		//标记QIN QPL 发生了转变
+		isQINQPLTransformed = true;
 
 	}
 
@@ -585,9 +564,9 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 	//WIN改变数目过多 等待3个周期在发送新数据，并且有2个以上数据 超出了改变那范围 ，此时场次号发生了改变
 	//如果场次号发生了变化，那么立刻发送
 
-	if ( WINChangedNum >= HORSENUMBER / 2 & PLAChangedNum >= HORSENUMBER / 2 & (dataOutOfRangeCount > 10 ))
+	if (Global::isSessionChanged)
 	{
-		sessionChangedCountDown = 3;
+		sessionChangedCountDown = 4 ;
 		sessionChanged = true;
 
 	}
@@ -596,65 +575,74 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 	//数据超出本应有的范围，那么就不会发送此时的数据， 此时应该避免掉 比赛刚开始，有数据的时候，此时应该发送数据。
 	//添加 Global::raceHasStarted 来控制 第一次，即 比赛未开始，那么可以发送的。
 	// 如果场次号发生了变化
-	if (dataOutOfRange == false | Global::raceHasStarted == 0   | 
+	if (dataOutOfRange == false | Global::raceHasStarted == 0 | QINQPLTransformed |
 		Global::isSessionChanged )
 	{
 		Global::raceHasStarted = 1;
-		if (sessionChangedCountDown == 0 )
+		if (sessionChangedCountDown == 1 )
 		{
 			sessionChanged = false;
 		}
-		if (QINQPLTransformedCountDown == 0 )
+		if (QINQPLTransformedCountDown == 1)
 		{
 			QINQPLTransformed = false;
 		}
-		if (sessionChangedCountDown > 0)
-		{
-			sessionChangedCountDown--;
-		}
-		if (QINQPLTransformedCountDown > 0)
-		{
-			QINQPLTransformedCountDown--;
-		}
+		
 
 		if (WINChangedNum > 0)
 		{
-			if (sessionChangedCountDown == 0)
-				outputStruct.changeStatus = WIN_CHANGED;
+		//	if (sessionChangedCountDown == 0)
+ 				outputStruct.changeStatus = WIN_CHANGED;
 		}
 		if (PLAChangedNum > 0)
 		{
-			if (sessionChangedCountDown == 0)
+		//	if (sessionChangedCountDown == 0)
 				outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
 		}
 		if (QINQPLCHangedNum > 0)
 		{
 			if (QINQPLTransformedCountDown == 0)
 				outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
+
+			if (QINQPLTransformedCountDown == 1 )
+			{
+				outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
+			}
+		}
+		//如果场次号发生了变化，那么所有数据都要发送
+		if (sessionChangedCountDown == 1 )
+		{
+			outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
+			outputStruct.changeStatus = outputStruct.changeStatus | WIN_CHANGED;
+			outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
 		}
 	}
 	else
 	{
 		outputStruct.changeStatus = 0;
+ 
+
 	}
-	
+
+	//用于控制等待的计数器，开始自减
+	if (sessionChangedCountDown > 0)
+	{
+		sessionChangedCountDown--;
+	}
+	if (QINQPLTransformedCountDown > 0)
+	{
+		QINQPLTransformedCountDown--;
+	}
+
 	// 选择正确场次号，倒计时
 	chooseRightRaceTimeRaceSession(outputStruct);
 
 	
-	//发现是否场次号发生变化，如果变化了，标志位
-	if (Global::isSessionChanged)
-	{
-		Global::isSessionChanged = false;
 
-		Global::isSessionRaceIdRequested == false;
-		//请求新场次号
-		emit requestRaceIdSig();
-		 
-	}
-	 
+	 //如果场次号发生了变化，那么要对priDataOutput赋值，如果qinqpl发生了变化，
+	// 同样也要赋值的
 
-	if (outputStruct.changeStatus > 0 )
+	if (outputStruct.changeStatus > 0 | Global::isSessionChanged | QINQPLTransformed )
 	{
 		// 只有 数据发生了变化，才将数据送入 priDataOutput
 		if (sessionChangedCountDown == 0)
@@ -669,6 +657,18 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 		}
 	
 	}
+
+	//发现是否场次号发生变化，如果变化了，标志位
+	if (Global::isSessionChanged)
+	{
+		Global::isSessionChanged = false;
+
+		Global::isSessionRaceIdRequested == false;
+		//请求新场次号
+		emit requestRaceIdSig();
+
+	}
+
 		
 	return 1;
 }
@@ -754,7 +754,7 @@ int BllDataIdentify::startHistoryDataIdentify(QString fileName, int videoType)
 		qDebug("frame count = %d",f);
 		progressPercent = 100 * f / (totalFrames/ videoFps);
 
-		imwrite("frameMat.bmp", frameMat);
+		imwrite("ReadframeMat.bmp", frameMat);
 	 
 		algorithmExecHistory(videoType, NULL, frameMat, progressPercent);
 
@@ -873,6 +873,13 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 
 				emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
 			}
+			else //如果没有改变，那么此时可以发送缓存未发送的数据
+			{
+				if (Global::sendDataCCycleBuffer->getBufSize() > 0)
+				{
+					emit sendBufferDataSig();
+				}
+			}
 
 			qDebug() << "【BllDataIdentify】一帧图像识别时间：" << endl;
 		}
@@ -945,6 +952,13 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 			{
 
 				emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
+			}
+			else
+			{
+				if (Global::sendDataCCycleBuffer->getBufSize() > 0)
+				{
+					emit sendBufferDataSig();
+				}
 			}
 
 			qDebug() << "【BllDataIdentify】一帧图像识别时间：" << endl;
@@ -1020,6 +1034,13 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 
 					emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
 				}
+				else
+				{
+					if (Global::sendDataCCycleBuffer->getBufSize() > 0)
+					{
+						emit sendBufferDataSig();
+					}
+				}
 
 				qDebug() << "【BllDataIdentify】一帧图像识别时间：" << endl;
 			}
@@ -1091,6 +1112,13 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 
 					emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
 				}
+				else
+				{
+					if (Global::sendDataCCycleBuffer->getBufSize() > 0)
+					{
+						emit sendBufferDataSig();
+					}
+				}
 
 				qDebug() << "【BllDataIdentify】一帧图像识别时间：" << endl;
 			}
@@ -1160,7 +1188,13 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 
 			emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
 		}
-
+		else //如果没有改变，那么此时可以发送缓存未发送的数据
+		{
+			if (Global::sendDataCCycleBuffer->getBufSize() > 0 )
+			{
+				emit sendBufferDataSig();
+			}
+		}
 		qDebug() << "【BllDataIdentify】一帧图像识别时间：" << endl;
 	}
 

@@ -214,7 +214,7 @@
                      <item>
                       <widget class="QLabel" name="imageLbl">
                        <property name="text">
-                        <string>中国人</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -340,13 +340,6 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QPushButton" name="continueBtn">
-                         <property name="text">
-                          <string>继续识别</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
                         <widget class="QPushButton" name="inputUserDataBtn">
                          <property name="text">
                           <string>输入</string>
@@ -385,6 +378,13 @@
                         <widget class="QPushButton" name="advance10SecBtn">
                          <property name="text">
                           <string>快进10秒</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="advance1SecBtn">
+                         <property name="text">
+                          <string>快进1秒</string>
                          </property>
                         </widget>
                        </item>
@@ -436,7 +436,7 @@
              <string notr="true">background-color: rgb(255, 130, 80);</string>
             </property>
             <property name="text">
-             <string>ADTime</string>
+             <string/>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -1129,7 +1129,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_17">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="5,3">
+         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="4,6">
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_5">
             <item>
@@ -1169,24 +1169,6 @@
              </layout>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_14">
-              <item>
-               <widget class="QPushButton" name="submitRaceTimeBtn">
-                <property name="text">
-                 <string>提交比赛时长</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="submitRealBtn">
-                <property name="text">
-                 <string>提交实时数据</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_15">
@@ -1196,20 +1178,6 @@
                    <widget class="QCheckBox" name="is63TAICheckBox">
                     <property name="text">
                      <string>63台</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="requestHorseInfoBtn">
-                    <property name="text">
-                     <string>请求马信息</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="requestRaceIdBtn">
-                    <property name="text">
-                     <string>请求RaceId</string>
                     </property>
                    </widget>
                   </item>
@@ -1246,14 +1214,14 @@
                 <item>
                  <widget class="QPushButton" name="startAcqBtn">
                   <property name="text">
-                   <string>开始实时采集</string>
+                   <string>开始采集</string>
                   </property>
                  </widget>
                 </item>
                 <item>
                  <widget class="QPushButton" name="stopAcqBtn">
                   <property name="text">
-                   <string>停止实时采集</string>
+                   <string>停止采集</string>
                   </property>
                  </widget>
                 </item>

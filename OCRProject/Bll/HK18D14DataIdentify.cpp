@@ -1823,7 +1823,21 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 
 					Mat singleNum(roiNew, rect[0][k]);								// the single number image
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+					
+
+					QString fileNameStr;
+
+					fileNameStr = QString("");
+					fileNameStr.append(QString("i_"));
+					fileNameStr.append(QString::number((int)i, 10));
+					fileNameStr.append(QString("j_"));
+					fileNameStr.append(QString::number((int)j, 10));
+					fileNameStr.append(QString("k_"));
+					fileNameStr.append(QString::number((int)k, 10));
+					fileNameStr.append(QString(".bmp"));
+
+					writeSamples(fileNameStr, roiNew, path);
+
 #endif
 					resize(singleNum, singleNum, hog.winSize);
 					hog.compute(singleNum, descriptorVector, winStride, padding);
@@ -1875,7 +1889,17 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 			 
 					Mat singleNum(roiNew, rect[1][k]);								// the single number image
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+					QString fileNameStr;
+					fileNameStr = QString("");
+					fileNameStr.append(QString("i_"));
+					fileNameStr.append(QString::number((int)i, 10));
+					fileNameStr.append(QString("j_"));
+					fileNameStr.append(QString::number((int)j, 10));
+					fileNameStr.append(QString("k_"));
+					fileNameStr.append(QString::number((int)k, 10));
+					fileNameStr.append(QString(".bmp"));
+
+					writeSamples(fileNameStr, singleNum, path);
 #endif
 					resize(singleNum, singleNum, hog.winSize);
 					hog.compute(singleNum, descriptorVector, winStride, padding);
@@ -1925,7 +1949,18 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 					Mat singleNum(roiNew, rect[2][k]);								// the single number image
 
 #ifdef  WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+				 
+					QString fileNameStr;
+					fileNameStr = QString("");
+					fileNameStr.append(QString("i_"));
+					fileNameStr.append(QString::number((int)i, 10));
+					fileNameStr.append(QString("j_"));
+					fileNameStr.append(QString::number((int)j, 10));
+					fileNameStr.append(QString("k_"));
+					fileNameStr.append(QString::number((int)k, 10));
+					fileNameStr.append(QString(".bmp"));
+
+					writeSamples(fileNameStr, singleNum, path);
 #endif
 					resize(singleNum, singleNum, hog.winSize);
 					hog.compute(singleNum, descriptorVector, winStride, padding);

@@ -81,13 +81,13 @@ public:
     QLabel *label_33;
     QProgressBar *videoProgressBar;
     QPushButton *pauseCaliBtn;
-    QPushButton *continueBtn;
     QPushButton *inputUserDataBtn;
     QPushButton *pullBackBtn;
     QPushButton *advance3MinBtn;
     QPushButton *advance1MinBtn;
     QPushButton *advance30SecBtn;
     QPushButton *advance10SecBtn;
+    QPushButton *advance1SecBtn;
     QSpacerItem *verticalSpacer;
     QFrame *qplFrame;
     QHBoxLayout *horizontalLayout_10;
@@ -144,15 +144,10 @@ public:
     QPushButton *loginBtn;
     QCheckBox *reconnectCheckBox;
     QPushButton *disconnectBtn;
-    QVBoxLayout *verticalLayout_14;
-    QPushButton *submitRaceTimeBtn;
-    QPushButton *submitRealBtn;
     QHBoxLayout *horizontalLayout_4;
     QVBoxLayout *verticalLayout_15;
     QVBoxLayout *verticalLayout_10;
     QCheckBox *is63TAICheckBox;
-    QPushButton *requestHorseInfoBtn;
-    QPushButton *requestRaceIdBtn;
     QVBoxLayout *verticalLayout_9;
     QComboBox *videoTypeComboBox;
     QPushButton *startAcqBtn;
@@ -421,11 +416,6 @@ public:
 
         verticalLayout_23->addWidget(pauseCaliBtn);
 
-        continueBtn = new QPushButton(groupBox);
-        continueBtn->setObjectName(QStringLiteral("continueBtn"));
-
-        verticalLayout_23->addWidget(continueBtn);
-
         inputUserDataBtn = new QPushButton(groupBox);
         inputUserDataBtn->setObjectName(QStringLiteral("inputUserDataBtn"));
 
@@ -455,6 +445,11 @@ public:
         advance10SecBtn->setObjectName(QStringLiteral("advance10SecBtn"));
 
         verticalLayout_23->addWidget(advance10SecBtn);
+
+        advance1SecBtn = new QPushButton(groupBox);
+        advance1SecBtn->setObjectName(QStringLiteral("advance1SecBtn"));
+
+        verticalLayout_23->addWidget(advance1SecBtn);
 
         verticalSpacer = new QSpacerItem(20, 238, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
@@ -867,22 +862,6 @@ public:
 
         horizontalLayout_5->addLayout(verticalLayout_16);
 
-        verticalLayout_14 = new QVBoxLayout();
-        verticalLayout_14->setSpacing(6);
-        verticalLayout_14->setObjectName(QStringLiteral("verticalLayout_14"));
-        submitRaceTimeBtn = new QPushButton(frame_4);
-        submitRaceTimeBtn->setObjectName(QStringLiteral("submitRaceTimeBtn"));
-
-        verticalLayout_14->addWidget(submitRaceTimeBtn);
-
-        submitRealBtn = new QPushButton(frame_4);
-        submitRealBtn->setObjectName(QStringLiteral("submitRealBtn"));
-
-        verticalLayout_14->addWidget(submitRealBtn);
-
-
-        horizontalLayout_5->addLayout(verticalLayout_14);
-
         horizontalLayout_4 = new QHBoxLayout();
         horizontalLayout_4->setSpacing(6);
         horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
@@ -896,16 +875,6 @@ public:
         is63TAICheckBox->setObjectName(QStringLiteral("is63TAICheckBox"));
 
         verticalLayout_10->addWidget(is63TAICheckBox);
-
-        requestHorseInfoBtn = new QPushButton(frame_4);
-        requestHorseInfoBtn->setObjectName(QStringLiteral("requestHorseInfoBtn"));
-
-        verticalLayout_10->addWidget(requestHorseInfoBtn);
-
-        requestRaceIdBtn = new QPushButton(frame_4);
-        requestRaceIdBtn->setObjectName(QStringLiteral("requestRaceIdBtn"));
-
-        verticalLayout_10->addWidget(requestRaceIdBtn);
 
 
         verticalLayout_15->addLayout(verticalLayout_10);
@@ -945,8 +914,8 @@ public:
 
         horizontalLayout_6->addWidget(textBrowser);
 
-        horizontalLayout_6->setStretch(0, 5);
-        horizontalLayout_6->setStretch(1, 3);
+        horizontalLayout_6->setStretch(0, 4);
+        horizontalLayout_6->setStretch(1, 6);
 
         verticalLayout_17->addLayout(horizontalLayout_6);
 
@@ -978,7 +947,7 @@ public:
         label_5->setText(QApplication::translate("OcrControl", "\351\251\254\345\220\215", 0));
         label_3->setText(QApplication::translate("OcrControl", "WIN", 0));
         label_6->setText(QApplication::translate("OcrControl", "PLA", 0));
-        imageLbl->setText(QApplication::translate("OcrControl", "\344\270\255\345\233\275\344\272\272", 0));
+        imageLbl->setText(QString());
         versionNumLabel->setText(QString());
         groupBox->setTitle(QString());
         QTableWidgetItem *___qtablewidgetitem = fileTableWidget->horizontalHeaderItem(0);
@@ -989,14 +958,14 @@ public:
         delFileBtn_2->setText(QApplication::translate("OcrControl", "\350\247\206\351\242\221\350\265\267\345\247\213\345\270\247\346\225\260", 0));
         label_33->setText(QApplication::translate("OcrControl", "\350\247\206\351\242\221\345\244\204\347\220\206\350\277\233\345\272\246", 0));
         pauseCaliBtn->setText(QApplication::translate("OcrControl", "\346\232\202\345\201\234", 0));
-        continueBtn->setText(QApplication::translate("OcrControl", "\347\273\247\347\273\255\350\257\206\345\210\253", 0));
         inputUserDataBtn->setText(QApplication::translate("OcrControl", "\350\276\223\345\205\245", 0));
         pullBackBtn->setText(QApplication::translate("OcrControl", "\350\277\224\345\233\236\345\277\253\350\277\233\345\211\215", 0));
         advance3MinBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\2333\345\210\206\351\222\237", 0));
         advance1MinBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\2331\345\210\206\351\222\237", 0));
         advance30SecBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\23330\347\247\222", 0));
         advance10SecBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\23310\347\247\222", 0));
-        adTimeLbl->setText(QApplication::translate("OcrControl", "ADTime", 0));
+        advance1SecBtn->setText(QApplication::translate("OcrControl", "\345\277\253\350\277\2331\347\247\222", 0));
+        adTimeLbl->setText(QString());
         label_34->setText(QString());
         label_35->setText(QString());
         label_14->setText(QApplication::translate("OcrControl", "9", 0));
@@ -1034,11 +1003,7 @@ public:
         loginBtn->setText(QApplication::translate("OcrControl", "\347\231\273\351\231\206", 0));
         reconnectCheckBox->setText(QApplication::translate("OcrControl", "\350\207\252\345\212\250\351\207\215\350\277\236", 0));
         disconnectBtn->setText(QApplication::translate("OcrControl", "\346\226\255\345\274\200", 0));
-        submitRaceTimeBtn->setText(QApplication::translate("OcrControl", "\346\217\220\344\272\244\346\257\224\350\265\233\346\227\266\351\225\277", 0));
-        submitRealBtn->setText(QApplication::translate("OcrControl", "\346\217\220\344\272\244\345\256\236\346\227\266\346\225\260\346\215\256", 0));
         is63TAICheckBox->setText(QApplication::translate("OcrControl", "63\345\217\260", 0));
-        requestHorseInfoBtn->setText(QApplication::translate("OcrControl", "\350\257\267\346\261\202\351\251\254\344\277\241\346\201\257", 0));
-        requestRaceIdBtn->setText(QApplication::translate("OcrControl", "\350\257\267\346\261\202RaceId", 0));
         videoTypeComboBox->clear();
         videoTypeComboBox->insertItems(0, QStringList()
          << QApplication::translate("OcrControl", "\351\246\231\346\270\25718\345\217\260D14", 0)
@@ -1046,8 +1011,8 @@ public:
          << QApplication::translate("OcrControl", "\344\272\232\346\264\262\345\217\260", 0)
          << QApplication::translate("OcrControl", "\347\233\264\346\222\255", 0)
         );
-        startAcqBtn->setText(QApplication::translate("OcrControl", "\345\274\200\345\247\213\345\256\236\346\227\266\351\207\207\351\233\206", 0));
-        stopAcqBtn->setText(QApplication::translate("OcrControl", "\345\201\234\346\255\242\345\256\236\346\227\266\351\207\207\351\233\206", 0));
+        startAcqBtn->setText(QApplication::translate("OcrControl", "\345\274\200\345\247\213\351\207\207\351\233\206", 0));
+        stopAcqBtn->setText(QApplication::translate("OcrControl", "\345\201\234\346\255\242\351\207\207\351\233\206", 0));
     } // retranslateUi
 
 };

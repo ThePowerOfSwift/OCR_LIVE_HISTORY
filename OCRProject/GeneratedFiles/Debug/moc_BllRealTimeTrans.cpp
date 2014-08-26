@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_BllRealTimeTrans_t {
-    QByteArrayData data[34];
-    char stringdata[439];
+    QByteArrayData data[35];
+    char stringdata[462];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -62,7 +62,8 @@ QT_MOC_LITERAL(29, 354, 14),
 QT_MOC_LITERAL(30, 369, 20),
 QT_MOC_LITERAL(31, 390, 17),
 QT_MOC_LITERAL(32, 408, 13),
-QT_MOC_LITERAL(33, 422, 16)
+QT_MOC_LITERAL(33, 422, 16),
+QT_MOC_LITERAL(34, 439, 22)
     },
     "BllRealTimeTrans\0statuChanged\0\0status\0"
     "connectToHost\0serverIp\0serverPort\0"
@@ -76,7 +77,7 @@ QT_MOC_LITERAL(33, 422, 16)
     "submitWINOrPLA\0DataOutput&\0ouputStruct\0"
     "type\0submitQINOrQPL\0handleSubmitRealData\0"
     "handleReceiveData\0handleConnect\0"
-    "handleDisConnect"
+    "handleDisConnect\0sendBufferDataToServer"
 };
 #undef QT_MOC_LITERAL
 
@@ -86,7 +87,7 @@ static const uint qt_meta_data_BllRealTimeTrans[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      20,   14, // methods
+      21,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -94,28 +95,29 @@ static const uint qt_meta_data_BllRealTimeTrans[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,  114,    2, 0x06 /* Public */,
+       1,    1,  119,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       4,    2,  117,    2, 0x0a /* Public */,
-       7,    0,  122,    2, 0x0a /* Public */,
-       8,    0,  123,    2, 0x0a /* Public */,
-       9,    2,  124,    2, 0x0a /* Public */,
-      12,    0,  129,    2, 0x0a /* Public */,
-      13,    2,  130,    2, 0x0a /* Public */,
-      14,    0,  135,    2, 0x0a /* Public */,
-      15,    2,  136,    2, 0x0a /* Public */,
-      16,    1,  141,    2, 0x0a /* Public */,
-      18,    2,  144,    2, 0x0a /* Public */,
-      19,    4,  149,    2, 0x0a /* Public */,
-      25,    2,  158,    2, 0x0a /* Public */,
-      25,    1,  163,    2, 0x2a /* Public | MethodCloned */,
-      29,    2,  166,    2, 0x0a /* Public */,
-      29,    1,  171,    2, 0x2a /* Public | MethodCloned */,
-      30,    2,  174,    2, 0x0a /* Public */,
-      31,    2,  179,    2, 0x0a /* Public */,
-      32,    0,  184,    2, 0x0a /* Public */,
-      33,    0,  185,    2, 0x0a /* Public */,
+       4,    2,  122,    2, 0x0a /* Public */,
+       7,    0,  127,    2, 0x0a /* Public */,
+       8,    0,  128,    2, 0x0a /* Public */,
+       9,    2,  129,    2, 0x0a /* Public */,
+      12,    0,  134,    2, 0x0a /* Public */,
+      13,    2,  135,    2, 0x0a /* Public */,
+      14,    0,  140,    2, 0x0a /* Public */,
+      15,    2,  141,    2, 0x0a /* Public */,
+      16,    1,  146,    2, 0x0a /* Public */,
+      18,    2,  149,    2, 0x0a /* Public */,
+      19,    4,  154,    2, 0x0a /* Public */,
+      25,    2,  163,    2, 0x0a /* Public */,
+      25,    1,  168,    2, 0x2a /* Public | MethodCloned */,
+      29,    2,  171,    2, 0x0a /* Public */,
+      29,    1,  176,    2, 0x2a /* Public | MethodCloned */,
+      30,    2,  179,    2, 0x0a /* Public */,
+      31,    2,  184,    2, 0x0a /* Public */,
+      32,    0,  189,    2, 0x0a /* Public */,
+      33,    0,  190,    2, 0x0a /* Public */,
+      34,    0,  191,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    3,
@@ -138,6 +140,7 @@ static const uint qt_meta_data_BllRealTimeTrans[] = {
     QMetaType::Void, 0x80000000 | 26,   27,
     QMetaType::Void, QMetaType::QByteArray, QMetaType::Int,   10,   11,
     QMetaType::Void, QMetaType::QByteArray, QMetaType::Int,   10,   11,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -169,6 +172,7 @@ void BllRealTimeTrans::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         case 17: _t->handleReceiveData((*reinterpret_cast< QByteArray(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 18: _t->handleConnect(); break;
         case 19: _t->handleDisConnect(); break;
+        case 20: _t->sendBufferDataToServer(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -208,13 +212,13 @@ int BllRealTimeTrans::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 20)
+        if (_id < 21)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 20;
+        _id -= 21;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 20)
+        if (_id < 21)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 20;
+        _id -= 21;
     }
     return _id;
 }

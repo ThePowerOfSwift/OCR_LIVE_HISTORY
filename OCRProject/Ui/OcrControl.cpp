@@ -20,9 +20,12 @@ OcrControl::OcrControl(QWidget *parent)
 	QObject::connect(this, SIGNAL(connect(QString, qint32)), bllRealTimeTrans, SLOT(connectToHost(QString, qint32)));//连接
 	QObject::connect(this, SIGNAL(disconnect()), bllRealTimeTrans, SLOT(disconnectToHost()));//断开
 	QObject::connect(this, SIGNAL(login()), bllRealTimeTrans, SLOT(clientLogin()));//登录
-	QObject::connect(this, SIGNAL(requestHorseInfo()), bllRealTimeTrans, SLOT(requestHorse()));//请求马信息
-	QObject::connect(this, SIGNAL(requestRaceId(qint32)), bllRealTimeTrans, SLOT(requestRaceID(qint32)));//请求马信息
-	QObject::connect(this, SIGNAL(submitRaceTime(qint32)), bllRealTimeTrans, SLOT(submitRaceTime(qint32)));//请求马信息
+//	QObject::connect(this, SIGNAL(requestHorseInfo()), bllRealTimeTrans, SLOT(requestHorse()));//请求马信息
+//	QObject::connect(this, SIGNAL(requestRaceId()), bllRealTimeTrans, SLOT(requestRaceID( )));//请求马信息
+	
+	//QObject::connect(this, SIGNAL(submitRaceTime(qint32)), bllRealTimeTrans, SLOT(submitRaceTime(qint32)));//发送比赛
+	
+
 	//QObject::connect(this, SIGNAL(submitReal()), bllRealTimeTrans, SLOT(submitRealData(DataOutput)));//请求马信息
 
 
@@ -39,6 +42,12 @@ OcrControl::OcrControl(QWidget *parent)
 	threadDataIdentify = new ThreadDataIdentify();//数据识别线程
 	
 	bllDataIdentify->moveToThread(threadDataIdentify);
+
+
+	//发送比赛时长 当前比赛时间+倒计时 atTime + raceTime  atTime 为CountRaceTime
+	QObject::connect(bllDataIdentify, SIGNAL(submitRaceTimeSig(qint32)), bllRealTimeTrans, SLOT(submitRaceTime(qint32)));
+
+
 
 	QObject::connect(bllDataIdentify, SIGNAL(readyRead(DataOutput, QByteArray, int, int)), bllRealTimeTrans, SLOT(submitRealData(DataOutput, QByteArray,int, int)));//开始发送
 	QObject::connect(bllDataIdentify, SIGNAL(readyRead(DataOutput, QByteArray,int,int)), this, SLOT(updateData(DataOutput, QByteArray,int,int)));//停止计算
@@ -65,9 +74,13 @@ OcrControl::OcrControl(QWidget *parent)
 
 
 	// 历史视频 快进 
+	 
+	//	QObject::connect(this, SIGNAL(setSignal( )), bllDataIdentify, SLOT(testSlot( )));
 
-	
-//	QObject::connect(this, SIGNAL(setSignal( )), bllDataIdentify, SLOT(testSlot( )));
+	// 发送缓存区数据
+	QObject::connect(bllDataIdentify, SIGNAL(sendBufferDataSig()), 
+					 bllRealTimeTrans, SLOT(sendBufferDataToServer()) );
+
 
 
 	int labelHeight = 17;
@@ -423,6 +436,7 @@ void OcrControl::on_disconnectBtn_clicked()
 	
 	emit disconnect();
 }
+
 /**
 * @brief 登陆服务器
 */
@@ -430,35 +444,7 @@ void OcrControl::on_loginBtn_clicked()
 {
 	emit login();
 }
-/**
-* @brief 请求马信息
-*/
-void OcrControl::on_requestHorseInfoBtn_clicked()
-{
-	emit requestHorseInfo();
-}
-
-/**
-* @brief 请求RaceId
-*/
-void OcrControl::on_requestRaceIdBtn_clicked()
-{
-	emit requestRaceId(1);//每次只有1场
-}
-/**
-* @brief 提交比赛时长
-*/
-void OcrControl::on_submitRaceTimeBtn_clicked()
-{
-	emit submitRaceTime(35);
-}
-/**
-* @brief 提交实时数据
-*/
-void OcrControl::on_submitRealBtn_clicked()
-{
-	emit submitReal();
-}
+ 
 /**
 * @brief 追加网络状态
 */
@@ -701,7 +687,7 @@ void OcrControl::updateADData(DataOutput  output, QByteArray  array,int imageWid
 		 
 		QPalette pe;
 		pe.setColor(QPalette::WindowText, Qt::white);
-		ui.adTimeLbl->setText("ADTime");
+		ui.adTimeLbl->setText("广告");
 		ui.adTimeLbl->setPalette(pe);
 		ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
 		
@@ -736,7 +722,7 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 	//else
 	//比较是否发生变化 无论直播，还是历史
 	{
-		isDataOutputNew(mDataOutput);
+		isDataOutputNew(mDataOutput,priDataOutputForShow);
 	}
 
 	int imageLength = imageWidth*imageHeight * 3;
@@ -786,7 +772,7 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 	if (output.haveDataFlag)
 	{
 		
-		ui.adTimeLbl->setText("raceTime");
+		ui.adTimeLbl->setText("比赛");
 		ui.adTimeLbl->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
 		//	ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: Green;"));
 		ui.adTimeLbl->setPalette(pe);
@@ -818,6 +804,17 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 	ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
 
  
+
+	//赋值
+	if (mDataOutput.changeStatus > 0)
+	{
+		//更新 前一个结果
+		priDataOutputForShow = mDataOutput;
+
+	}
+	
+
+
 
 }
 
@@ -860,7 +857,7 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 		}
 	}
 	//如果马匹数量小于14 ，那么 剩下的地方显示 0
-	for (int i = horseNameEditList.size() - 1; i < HORSENUMBER;i ++)
+	for (int i = horseNameEditList.size(); i < HORSENUMBER;i ++)
 	{
 		 
 
@@ -915,7 +912,7 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 		}
 
 	}
-
+	/*
 	//赋值 
 	if (mDataOutput.changeStatus > 0)
 	{
@@ -923,6 +920,7 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 		priDataOutput = mDataOutput;
 
 	}
+	*/
 
 
 }
@@ -966,7 +964,7 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 				label->setStyleSheet("QLineEdit{background: rgb(62,120,56);color: rgb(255,255,255)}");
 			}
 			//如果是0 ，那么 使用黑底白色
-			if (output.QPL_QIN[i][i] == 0)
+			if (output.QPL_QIN[i][j] == 0)
 			{
 				label->setStyleSheet("QLineEdit{background:rgb(0,0,0);color: rgb(255,255,255)}");
 			}
@@ -1014,7 +1012,7 @@ void OcrControl::reConnect()
 	if (ui.reconnectCheckBox->isChecked())
 	{
 		qDebug("识别端：重连服务器 \n");
-		emit connect("58.67.161.109", 9068);
+		emit connect(SERVER_IP_ADDRESS,SERVER_PORT);
 	}
 	else
 	{
@@ -1178,12 +1176,24 @@ void OcrControl::on_advance30SecBtn_clicked()
 	preVideoAdvanceValue = Global::frameAccValue;
 	Global::requestAdvanceDuringPause = true;
 }
+
 /*
 历史视频快进 10s
 */
 void OcrControl::on_advance10SecBtn_clicked()
 {
 	Global::frameAccValue = 10;
+	preVideoAdvanceValue = Global::frameAccValue;
+	Global::requestAdvanceDuringPause = true;
+}
+
+
+/*
+历史视频快进 1 s
+*/
+void OcrControl::on_advance1SecBtn_clicked()
+{
+	Global::frameAccValue = 1;
 	preVideoAdvanceValue = Global::frameAccValue;
 	Global::requestAdvanceDuringPause = true;
 }
@@ -1220,13 +1230,7 @@ void OcrControl::on_pauseCaliBtn_clicked()
 	}
 	
 }
-
-
-void OcrControl::on_continueBtn_clicked()
-{
-	Global::pauseDataIdentifyTag = false;
-}
-
+ 
 //输入用户校正数据，主要是win pla ，qin qpl
 void OcrControl::on_inputUserDataBtn_clicked()
 {
@@ -1356,7 +1360,8 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 	}
 
-	if (videoFileDate != Global::historyVideoDate & !Global::isHistoryVideo )
+	//历史视频
+	if (videoFileDate != Global::historyVideoDate & Global::isHistoryVideo )
 	{
 
 
@@ -1445,8 +1450,17 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 	}
 
 	//检测数据是否发生了变化
-	isDataOutputNew(mDataOutput);
+	isDataOutputNew(dataOutput,priDataOutputForWrite);
 
+	//dataOutput = mDataOutput;
+	
+	if (dataOutput.changeStatus > 0)
+	{
+		//更新 前一个结果
+		priDataOutputForWrite = mDataOutput;
+
+	}
+	
 
 	Global::raceId = raceIdStr.toInt();
 
@@ -1651,16 +1665,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 
 	}
-	
-	if (mDataOutput.changeStatus > 0 )
-	{
-		//更新 前一个结果
-		priDataOutput = mDataOutput;
-
-	}
-
 	 
-	
 	//退回上一目录
 	QDir::setCurrent("../");
 
@@ -1671,7 +1676,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 * @brief 判断数据是否为新数据 同时判断数据是否过大 如果变化范围超过此数值的原值的2/1
 则认为是错误，丢弃。采用原有 识别结果。
 */
-int OcrControl::isDataOutputNew(DataOutput &outputStruct)
+int OcrControl::isDataOutputNew(DataOutput &outputStruct, DataOutput &priOutputStruct)
 {
 
 	 
@@ -1687,7 +1692,7 @@ int OcrControl::isDataOutputNew(DataOutput &outputStruct)
  
 	for (int i = 0; i < outputStruct.horseNum; i++)
 	{
-		if (abs(outputStruct.WIN[i] - priDataOutput.WIN[i]) > 0.05)
+		if (abs(outputStruct.WIN[i] - priOutputStruct.WIN[i]) > 0.05)
 		{
 			//qDebug("WIN : i=%d , new is %f pri is %f ", i,  outputStruct.WIN[i], priDataOutput.WIN[i]);
 			//outputStruct.changeStatus = WIN_CHANGED;
@@ -1709,7 +1714,7 @@ int OcrControl::isDataOutputNew(DataOutput &outputStruct)
 		{
 			continue;
 		}
-		if (abs(outputStruct.PLA[i] - priDataOutput.PLA[i]) >  0.05)
+		if (abs(outputStruct.PLA[i] - priOutputStruct.PLA[i]) >  0.05)
 		{
 			//qDebug("PLA:i=%d ,new is %f pri is %f ", i,  outputStruct.PLA[i], priDataOutput.PLA[i]);
 			//outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
@@ -1753,7 +1758,7 @@ int OcrControl::isDataOutputNew(DataOutput &outputStruct)
 				}
 			}
 
-			if (abs(outputStruct.QPL_QIN[i][j] - priDataOutput.QPL_QIN[i][j]) > 0.05)
+			if (abs(outputStruct.QPL_QIN[i][j] - priOutputStruct.QPL_QIN[i][j]) > 0.05)
 			{
 				//qDebug("QIN_QPL:i=%d ,j=%d new is %f pri is %f ", i, j, outputStruct.QPL_QIN[i][j], priDataOutput.QPL_QIN[i][j]);
 				//outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
@@ -1793,7 +1798,8 @@ int OcrControl::isDataOutputNew(DataOutput &outputStruct)
  
 	return 1;
 }
-void OcrControl::updateAfterUserInput(DataOutput  output)
+
+void OcrControl::updateAfterUserInput(DataOutput  &output)
 {
 	//更新马信息
 	/*
