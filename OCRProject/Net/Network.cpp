@@ -35,7 +35,6 @@ Network::Network(QString name, QString ip, int port, QObject *parent)
 	initClient();
 	//初始化服务端
 	initServer();
-
 	//写入系统日志
 	//Global::systemLog->append(QString(tr("初始化网络客户端:%1完毕.")).arg(clientName), QString(tr("初始化客户端:%1,并完成网络客户端与本地服务端程序相关联.")).arg(clientName), SystemLog::INFO);
 
@@ -62,7 +61,7 @@ void Network::initClient()
 	//初始化它的永久描述符，在断开后，未删除前仍有效
 	clientSocket->setSocketDescriptorEternal(clientSocket->socketDescriptor());
 	//信号槽:跟踪clientSocket状态
-	connect(clientSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(getClientSocketState(QAbstractSocket::SocketState)));
+	connect(clientSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(getClientSocketState(QAbstractSocket::SocketState), Qt::DirectConnection));
 	//信号槽: 客户端接收远程计算机数据
 	connect(clientSocket, SIGNAL(haveReadDataSignal(QByteArray, int)), this, SLOT(clientReceiveData(QByteArray, int)));
 	//信号槽: 客户端连接服务器成功
@@ -291,6 +290,7 @@ void Network::getClientSocketState(QAbstractSocket::SocketState socketState)
 	remoteHostName = clientSocket->peerAddress().toString();
 	remoteHostIp = clientSocket->peerName();
 	remoteHostPort = clientSocket->peerPort();
+	emit clientSocketStateSignal(socketState);
 	switch (socketState)
 	{
 	case QAbstractSocket::UnconnectedState:
@@ -413,4 +413,10 @@ void Network::clientSocketError(QAbstractSocket::SocketError socketError)
 
 	}
 	qDebug() << "network:客户端socket出错";
+}
+
+int Network::clientIsValid()
+{
+	int valid = clientSocket->state();
+	return valid;
 }

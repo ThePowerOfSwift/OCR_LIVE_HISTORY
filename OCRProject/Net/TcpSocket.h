@@ -42,7 +42,7 @@ public:
     {
         socketDescriptorEternal = descriptor;
     }
-
+	
 public slots:
 
     //连接通信服务端

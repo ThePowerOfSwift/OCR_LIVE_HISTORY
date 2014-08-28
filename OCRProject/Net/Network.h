@@ -159,6 +159,7 @@ public slots:
     //客户端socket出错
     void clientSocketError(QAbstractSocket::SocketError);
 	void disconnectSlot();
+	int clientIsValid();
 signals:
    
     //信号: 客户端从服务端得到数据-特例
@@ -183,7 +184,9 @@ signals:
     void stopTcpServerSignal();
 	//断开
 	void disconnected();
-
+	//socket状态
+	void clientSocketStateSignal(QAbstractSocket::SocketState socketState);
+	
 public:
     //全局：本地服务端对象
     static TcpServer *tcpServer;
@@ -214,7 +217,7 @@ private:
 	//********废弃变量*******//
 	
 	//*********废弃变量******//
-
+	
 };
 
 

@@ -382,6 +382,10 @@ OcrControl::OcrControl(QWidget *parent)
 	liveBackupDataFileCreated = false;
 	
 	 
+	// 连接 63台checkbox
+	QObject::connect(Global::mcsNetClient, SIGNAL(clientSocketStateSignal(QAbstractSocket::SocketState socketState)), this, \
+		SLOT(getClientSocketState(QAbstractSocket::SocketState socketState)));
+
 }
 
 OcrControl::~OcrControl()
@@ -420,6 +424,45 @@ OcrControl::~OcrControl()
 	liveBackupFile.close();
 
 }
+void OcrControl::getClientSocketState(QAbstractSocket::SocketState socketState)
+{
+	
+	switch (socketState)
+	{
+	case QAbstractSocket::UnconnectedState:
+		qDebug() << "UnconnectedState:The socket is not connected.";
+		//Global::systemLog->append(QString(tr("%1网络客户端状态：未连上.")).arg(clientName), QString(tr("未连上远程计算机IP:%1,port:%2,UnconnectedState:The socket is not connected.")).arg(remoteHostIp).arg(remoteHostPort), SystemLog::INFO);
+		break;
+	case QAbstractSocket::HostLookupState:
+		qDebug() << "HostLookupState:The socket is performing a host name lookup.";
+		//Global::systemLog->append(QString(tr("%1网络客户端状态：正在查询主机中......")).arg(clientName), QString(tr("正在查询远程计算机IP:%1,port:%2,HostLookupState:The socket is performing a host name lookup.")).arg(remoteHostIp).arg(remoteHostPort), SystemLog::INFO);
+		break;
+	case QAbstractSocket::ConnectingState:
+		qDebug() << "ConnectingState:The socket has started establishing a connection.";
+		//Global::systemLog->append(QString(tr("%1网络客户端状态：正在创建网络连接......")).arg(clientName), QString(tr("正在创建网络连接，远程计算机IP:%1,port:%2,ConnectingState:The socket has started establishing a connection.")).arg(remoteHostIp).arg(remoteHostPort), SystemLog::INFO);
+		break;
+	case QAbstractSocket::ConnectedState:
+		qDebug() << "ConnectedState:A connection is established.";
+		//Global::systemLog->append(QString(tr("%1网络客户端状态：TCP连接创建成功.")).arg(clientName), QString(tr("网络已经连接成功，远程计算机IP:%1,port:%2,ConnectedState:A connection is established.")).arg(remoteHostIp).arg(remoteHostPort), SystemLog::INFO);
+		break;
+	case QAbstractSocket::BoundState:
+		qDebug() << "BoundState:The socket is bound to an address and port (for servers).";
+		//Global::systemLog->append(QString(tr("%1网络客户端状态：服务端已绑定TCP Socket的IP和端口.")).arg(clientName), QString(tr("服务端已经绑定IP和端口，远程计算机IP:%1,port:%2,BoundState:The socket is bound to an address and port (for servers).")).arg(remoteHostIp).arg(remoteHostPort), SystemLog::INFO);
+		break;
+	case QAbstractSocket::ClosingState:
+		qDebug() << "ClosingState:The socket is about to close (data may still be waiting to be written).";
+		//Global::systemLog->append(QString(tr("%1网络客户端状态：即将关闭状态.")).arg(clientName), QString(tr("网络即将关闭,远程计算机IP:%1,port:%2,ClosingState:The socket is about to close (data may still be waiting to be written).")).arg(remoteHostIp).arg(remoteHostPort), SystemLog::INFO);
+		break;
+	case QAbstractSocket::ListeningState:
+		qDebug() << "ListeningState:For internal use only.";
+		//Global::systemLog->append(QString(tr("%1网络客户端状态：侦听状态")).arg(clientName), QString(tr("网络侦听状态,远程计算机IP:%1,port:%2")).arg(remoteHostIp).arg(remoteHostPort), SystemLog::INFO);
+		break;
+	default:
+		qDebug() << "网络其他状态";
+		//Global::systemLog->append(QString(tr("%1网络客户端状态：其他状态.")).arg(clientName), QString(tr("网络其他状态,远程计算机IP:%1,port:%2")).arg(remoteHostIp).arg(remoteHostPort), SystemLog::INFO);
+	}
+}
+
 /**
 * @brief 连接服务器
 */

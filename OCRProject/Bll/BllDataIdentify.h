@@ -117,6 +117,11 @@ private:
 	*/
 
 	void initGlobal();
+	/*
+	将要发送的数据写入环形buffer
+
+	*/
+	void writeOutputDataIntoBuffer(DataOutput &dataOutput);
 
 
 	DataOutput priDataOutput;
@@ -215,6 +220,11 @@ private:
 
 	//标记 QIN QPL 发生改变。
 	bool isQINQPLTransformed;
+
+
+	// 倒计时 
+
+	int  raceCountDownTime;
 };
 
 #endif // BllDataIdentify_H

@@ -155,7 +155,7 @@ public slots:
 
 
 	int  isDataOutputNew(DataOutput &outputStruct,DataOutput &priOutputStruct);
-
+	void getClientSocketState(QAbstractSocket::SocketState socketState);
 signals:
 	void connect(QString,qint32);
 	void disconnect();

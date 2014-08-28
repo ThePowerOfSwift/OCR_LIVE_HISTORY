@@ -30,9 +30,9 @@ TcpSocket::TcpSocket(int descriptor, QObject *parent)
     qDebug()  << "TcpSocket ThreadId:" << QThread::currentThreadId();
 	
     //信号槽:跟踪TcpSocket状态.客户端/服务端.已经在Network和Tcpserver中跟踪了。
-    //connect(this,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(getTcpSocketState(QAbstractSocket::SocketState)));
+	//connect(this, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(getTcpSocketState(QAbstractSocket::SocketState), Qt::DirectConnection));
     
-    
+	qRegisterMetaType<QAbstractSocket::SocketState>("QAbstractSocket::SocketState");
 }
 TcpSocket::~TcpSocket()
 {

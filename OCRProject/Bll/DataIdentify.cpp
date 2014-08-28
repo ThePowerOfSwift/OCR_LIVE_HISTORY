@@ -1149,7 +1149,7 @@ int DataIdentify::getWINPLAIdentify()
 #ifdef WRITE_ROI_SMAPLES_TEMP
 
 		QString path = QString(".//temp//");
-		writeSamples(QString("WINPLA_ROI.bmp"), imageGrayThreshold, path);
+		writeSamples(QString("WINPLA_ROI.bmp"), image, path);
 
 
 #endif
@@ -1240,7 +1240,7 @@ int DataIdentify::getWINPLAIdentify()
 
 			}
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
-	
+			QString path = QString(".//temp//");
 			QString fileNameStr;
 			
 			fileNameStr = QString("");
@@ -1468,7 +1468,7 @@ int DataIdentify::getQINQPLIdentify()
 #ifdef WRITE_ROI_SMAPLES_TEMP
 	QString path = QString(".//temp//");
 
-	writeSamples(QString("GetQinQpl.bmp"), imageTemp, path);
+	writeSamples(QString("GetQinQpl.bmp"), image, path);
 
 
 #endif
@@ -1688,7 +1688,15 @@ int DataIdentify::getQINQPLIdentify()
 					}
 					Mat singleNum(roiNew, rect[0][k]);								// the single number image
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+					QString fileNameTemp;
+					fileNameTemp.prepend(QString(".bmp"));
+					fileNameTemp.prepend(QString::number(k));
+					fileNameTemp.prepend(QString("k_"));
+					fileNameTemp.prepend(QString::number(j));
+					fileNameTemp.prepend(QString("j_"));
+					fileNameTemp.prepend(QString::number(i));
+					fileNameTemp.prepend(QString("i_"));
+					writeSamples(fileNameTemp, singleNum, path);
 #endif
 
 					resize(singleNum, singleNum, hog.winSize);
@@ -1726,7 +1734,15 @@ int DataIdentify::getQINQPLIdentify()
 					}
 					Mat singleNum(roiNew, rect[1][k]);								// the single number image
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+					QString fileNameTemp;
+					fileNameTemp.prepend(QString(".bmp"));
+					fileNameTemp.prepend(QString::number(k));
+					fileNameTemp.prepend(QString("k_"));
+					fileNameTemp.prepend(QString::number(j));
+					fileNameTemp.prepend(QString("j_"));
+					fileNameTemp.prepend(QString::number(i));
+					fileNameTemp.prepend(QString("i_"));
+					writeSamples(fileNameTemp, singleNum, path);
 #endif
 
 					resize(singleNum, singleNum, hog.winSize);
@@ -1773,7 +1789,15 @@ int DataIdentify::getQINQPLIdentify()
 					Mat singleNum(roiNew, rect[2][k]);								// the single number image
 
 #ifdef  WRITE_ROI_SMAPLES_CLASS_INFO2
-					writeSamples(i, j, k, singleNum);
+					QString fileNameTemp;
+					fileNameTemp.prepend(QString(".bmp"));
+					fileNameTemp.prepend(QString::number(k));
+					fileNameTemp.prepend(QString("k_"));
+					fileNameTemp.prepend(QString::number(j));
+					fileNameTemp.prepend(QString("j_"));
+					fileNameTemp.prepend(QString::number(i));
+					fileNameTemp.prepend(QString("i_"));
+					writeSamples(fileNameTemp, singleNum, path);
 #endif
 					resize(singleNum, singleNum, hog.winSize);
 					hog.compute(singleNum, descriptorVector, winStride, padding);

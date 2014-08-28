@@ -70,12 +70,12 @@ public slots:
 	/**
 	* @brief 提交win实时数据
 	*/
-	void submitWINOrPLA(DataOutput& ouputStruct,QString type ="WIN");
+	void submitWINOrPLA(char *data,int dataLength,int dataType );
 	/**
 	* @brief 提交实时数据-QIN或QPL
 	* @param ouputStruct：算法传递来的数据，type:传送类型默认QIN
 	*/
-	void submitQINOrQPL(DataOutput& ouputStruct, QString type = "QIN");
+	void submitQINOrQPL(char *data, int dataLength,int dataType );
 	/**
 	* @brief 识别端处理服务端-提交实时数据指令
 	*/
@@ -104,6 +104,28 @@ public slots:
 signals:
 	void statuChanged(QString status);
 private:
+
+	int connectCount;
 };
+
+enum QAbstractSocketState
+{
+	UnconnectedState = 0 ,
+	HostLookupState = 1 ,
+	ConnectingState = 3 ,
+	BoundState = 4 ,
+	ClosingState = 6 ,
+	ListeningState = 5 
+};
+/*
+QAbstractSocket::UnconnectedState	0	The socket is not connected.
+QAbstractSocket::HostLookupState	1	The socket is performing a host name lookup.
+QAbstractSocket::ConnectingState	2	The socket has started establishing a connection.
+QAbstractSocket::ConnectedState	3	A connection is established.
+QAbstractSocket::BoundState	4	The socket is bound to an address and port.
+QAbstractSocket::ClosingState	6	The socket is about to close(data may still be waiting to be written).
+QAbstractSocket::ListeningState	5	For internal use only.
+
+*/
 
 #endif // BLLREALTIMETRANS_H
