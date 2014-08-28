@@ -23,7 +23,7 @@ BllRealTimeTrans::BllRealTimeTrans(QObject *parent)
 
 BllRealTimeTrans::~BllRealTimeTrans()
 {
-	delete[] data;
+	//delete[] data;
 }
 /**
 * @brief 连接服务器

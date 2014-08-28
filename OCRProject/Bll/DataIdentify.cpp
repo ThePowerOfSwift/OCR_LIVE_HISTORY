@@ -1186,22 +1186,39 @@ int DataIdentify::getWINPLAIdentify()
 			}
 
 
-			Mat roiThreshold(roiSize, CV_8UC3);
-			bool emtyFlag = roi.empty();
+			Mat roiThreshold ;
+		 
+		//	colorThreshold(roi, roiThreshold, 200);
+			
+			
+			
 
-			colorThreshold(roi, roiThreshold, 200);
-			 
 			Mat roiThresholdEdge;
 			cvtColor(roi, roi, CV_RGB2GRAY);
-			//Canny(roi, edge, 150, 100, 3, true);
 
+			roi.copyTo(roiThreshold);
+
+			//使用灰度阈值
+
+			for (int r = 0; r < roiThreshold.rows; r++)
+			 {
+				for (int c = 0; c < roiThreshold.cols; c++)
+				{
+					if (roiThreshold.at<uchar>(r, c) < 200)
+					{
+						roiThreshold.at<uchar>(r, c) = 0;
+					}
+				}
+			 }
+			
 			//专门用于 小数点检测
-			cvtColor(roiThreshold, roiThreshold, CV_RGB2GRAY);
+			//cvtColor(roiThreshold, roiThreshold, CV_RGB2GRAY);
 
 			CvRect roiNewSize;
 			//	dotFlag = DataIdentifyImageInfor2_Dot_live(&edge);
 			Mat roiNew;
 			Mat roiForDotJudge;
+
 
 			trimRoiBlankPart(roiThreshold, roiForDotJudge, roiNewSize);
 			if (algorithmState == EXIT_THIS_OCR )
@@ -1217,23 +1234,11 @@ int DataIdentify::getWINPLAIdentify()
 			}
 			roiNew = Mat(roi, roiNewSize);
 			 
-
-			// 将阈值后的图像增强 roiThreshold 进行小数点判断
-			for (int c = 0; c < roiThreshold.cols; c++)
-			{
-				for (int r = 0; r < roiThreshold.rows; r++)
-				{
-					if (roiThreshold.at<uchar>(r, c) > 10)
-					{
-						roiThreshold.at<uchar>(r, c) = 250;
-					}
-				}
-			}
- 
-			if (i == 1 && j == 0 )
+		 
+			if (i == 2&& j == 0 )
 			{
  
-
+				int temp = 0;
 #ifdef QDEBUG_OUTPUT
 				qDebug("getwinPlaPosStruct_live:Mark");
 #endif // QDEBUG_OUTPUT
@@ -1612,7 +1617,7 @@ int DataIdentify::getQINQPLIdentify()
 			Mat edge;
 			dotFlag = judgeQINQPLDot(roiForDotJudge, edge, x);
 		 
-#ifdef WRITE_ROI_SMAPLES_TEMP
+#ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
 				QString fileNameTemp;
 				fileNameTemp.prepend(QString(".bmp"));
 				fileNameTemp.prepend(QString::number(i));

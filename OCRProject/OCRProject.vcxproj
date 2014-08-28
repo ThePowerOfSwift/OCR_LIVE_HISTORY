@@ -721,6 +721,8 @@
     <None Include="Acq\AVSDK\AVerCapAPI.dll" />
     <None Include="AVerCapAPI.dll" />
     <None Include="Bll\number_SVM.xlm" />
+    <None Include="Lib\AVerCapAPI.dll" />
+    <None Include="Lib\JPPlayApi.dll" />
     <None Include="LN_SVM_1.xlm" />
     <None Include="number_SVM_1.xlm" />
     <CustomBuild Include="ocrproject.qrc">
@@ -749,6 +751,7 @@
   <ItemGroup>
     <Library Include="Acq\AVSDK\AVerCapAPI.lib" />
     <Library Include="Lib\AVerCapAPI.lib" />
+    <Library Include="Lib\JPPlayApi.lib" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="1.bmp" />
@@ -775,6 +778,15 @@
   <ItemGroup>
     <Text Include="dat\horseNameHistoryDataFile.txt" />
     <Text Include="dat\horseNameIdDataFile.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="SVM\HK18D14Number.xml" />
+    <Xml Include="SVM\HK18numberSvm.xml" />
+    <Xml Include="SVM\LIVENumber.xml" />
+    <Xml Include="SVM\LN_SVM_1.xml" />
+    <Xml Include="SVM\number_SVM_1 - 副本.xml" />
+    <Xml Include="SVM\raceTime.xml" />
+    <Xml Include="SVM\YZTnumberSvm.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

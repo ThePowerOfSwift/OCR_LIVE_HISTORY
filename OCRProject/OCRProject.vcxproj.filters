@@ -352,10 +352,13 @@
     <None Include="AVerCapAPI.dll" />
     <None Include="OCRProject.aps" />
     <None Include="OCRProject_0627_ok.rar" />
+    <None Include="Lib\AVerCapAPI.dll" />
+    <None Include="Lib\JPPlayApi.dll" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Acq\AVSDK\AVerCapAPI.lib" />
     <Library Include="Lib\AVerCapAPI.lib" />
+    <Library Include="Lib\JPPlayApi.lib" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="pp.jpg" />
@@ -382,5 +385,14 @@
   <ItemGroup>
     <Text Include="dat\horseNameIdDataFile.txt" />
     <Text Include="dat\horseNameHistoryDataFile.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="SVM\HK18D14Number.xml" />
+    <Xml Include="SVM\HK18numberSvm.xml" />
+    <Xml Include="SVM\LIVENumber.xml" />
+    <Xml Include="SVM\LN_SVM_1.xml" />
+    <Xml Include="SVM\number_SVM_1 - 副本.xml" />
+    <Xml Include="SVM\raceTime.xml" />
+    <Xml Include="SVM\YZTnumberSvm.xml" />
   </ItemGroup>
 </Project>
