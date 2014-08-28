@@ -2973,6 +2973,18 @@ void DataIdentify::createClassifySamples(float result, Mat &singleNum)
 {
 
  
+	//
+	QString runPath = QCoreApplication::applicationDirPath();
+
+	QDir::setCurrent(runPath);
+	//退到上一层目录
+	QDir::setCurrent("../");
+
+	QDir::setCurrent("../");
+
+
+	QDir::setCurrent(".//OCRProject//");
+
 
 	QString fileNameStr = QString(".//acqSamples//");
 
@@ -3010,6 +3022,19 @@ void DataIdentify::createClassifySamples(float result, Mat &singleNum)
 void DataIdentify::writeSamples(QString fileName, Mat &roi,QString path)
 {
  
+	//重新获取目录
+	QString runPath = QCoreApplication::applicationDirPath();
+
+	QDir::setCurrent(runPath);
+	//退到上一层目录
+	QDir::setCurrent("../");
+
+	QDir::setCurrent("../");
+
+
+	QDir::setCurrent(".//OCRProject//");
+
+
 	QString fileNameStr = path;
 
 

@@ -106,6 +106,15 @@ signals:
 private:
 
 	int connectCount;
+
+	bool replyNoReceived;
+
+	int dataType ;
+	int dataLength ;
+
+	char * data;
+
+	bool dataHasBeenRead;
 };
 
 enum QAbstractSocketState

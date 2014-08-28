@@ -379,4 +379,8 @@
   <ItemGroup>
     <ResourceCompile Include="OCRProject.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="dat\horseNameIdDataFile.txt" />
+    <Text Include="dat\horseNameHistoryDataFile.txt" />
+  </ItemGroup>
 </Project>

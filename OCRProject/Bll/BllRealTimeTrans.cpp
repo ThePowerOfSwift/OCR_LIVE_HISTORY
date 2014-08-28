@@ -14,11 +14,16 @@ BllRealTimeTrans::BllRealTimeTrans(QObject *parent)
 
 
 	connectCount = 0;
+
+	replyNoReceived = false;
+
+	dataLength = 0;
+	dataType = 0;
 }
 
 BllRealTimeTrans::~BllRealTimeTrans()
 {
-
+	delete[] data;
 }
 /**
 * @brief 连接服务器
@@ -340,7 +345,7 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 	}
 	*/
 	//没有连接，此时请求连接
-	if (Global::mcsNetClient->clientIsValid() != UnconnectedState)
+	if (Global::mcsNetClient->clientIsValid() != ConnectingState)
 	{
 		qDebug("test re connect ");
 		
@@ -368,30 +373,42 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 	int usedSize = Global::sendDataCCycleBuffer->getUsedSize();
 	if (usedSize > 2)
 	{
-		  
-		int dataType = 0;
-		Global::sendDataCCycleBuffer->read((char *)&dataType, sizeof(int));
-		int dataLength = 0;
-		Global::sendDataCCycleBuffer->read((char *)&dataLength, sizeof(int));
+		 if (replyNoReceived == false)
+		 {
+			 Global::sendDataCCycleBuffer->read((char *)&dataType, sizeof(int));
+			 Global::sendDataCCycleBuffer->read((char *)&dataLength, sizeof(int));
+			 data = new char[dataLength];
 
-		char * data = new char[dataLength];
-		//读出多组数据
-		if (dataType == WINTYPE | dataType == PLATYPE)
-		{
-			Global::sendDataCCycleBuffer->read((char *)data, dataLength);
+			 Global::sendDataCCycleBuffer->read((char *)data, dataLength);
 
-			submitWINOrPLA(data, dataLength,dataType);
-		}
-		else if (dataType == QINTYPE | dataType == QPLTYPE)
+			 dataHasBeenRead = true;
+		 }
+		if (dataHasBeenRead )
 		{
-			Global::sendDataCCycleBuffer->read((char *)data, dataLength);
+			//读出多组数据
+			if (dataType == WINTYPE | dataType == PLATYPE)
+			{
 
-			submitQINOrQPL(data, dataLength, dataType);
+				submitWINOrPLA(data, dataLength, dataType);
+			}
+			else if (dataType == QINTYPE | dataType == QPLTYPE)
+			{
+
+				submitQINOrQPL(data, dataLength, dataType);
+
+			}
+			else
+			{
+				qDebug("BllRealTimeTrans: wrong dataType ");
+			}
 		}
-		else
+		
+		if (replyNoReceived == false)
 		{
-			qDebug("BllRealTimeTrans: wrong dataType ");
+			dataHasBeenRead = false;
 		}
+
+		 
 	 
 	}
 	 
@@ -448,10 +465,20 @@ void BllRealTimeTrans::submitWINOrPLA(char *data, int dataLength,int dataType)
 		Global::mcsNetClient->readAllMessage(result, descriptor);//读取数据
 
 		QString reply = result.data();
-		emit statuChanged(QString("服务端：回复，提交实时数据指令，%1").arg(reply));
+
+		if (reply == "NO")
+		{
+			replyNoReceived = true;
+			qDebug("wait");
+		}
+
+	//	emit statuChanged(QString("服务端：回复，提交实时数据指令，%1,2%").arg(reply).arg(type));
+
+		emit statuChanged(QString("服务端：回复%2，提交实时数据指令-%1").arg(type).arg(reply));
+
 		if (reply == "OK")//提交WIN
 		{
-			 
+			replyNoReceived = false;
 			//****************************************************//
 			Global::mcsNetClient->sendData(sendBlock, false);//发送数据，且不需要关闭socket
 			emit statuChanged(QString("服务端：回复，提交实时数据-%1").arg(type));
@@ -484,6 +511,7 @@ void BllRealTimeTrans::submitWINOrPLA(char *data, int dataLength,int dataType)
 		 
 		//将数据写入文件
 		Global::serverSubmitFailed = true;
+		replyNoReceived = true;
 		emit statuChanged("识别端：错误，提交实时数据指令失败.") ;
 
 		 
@@ -541,10 +569,15 @@ void BllRealTimeTrans::submitQINOrQPL(char *data, int dataLength,int dataType)
 
 		QString reply = result.data();
 		emit statuChanged(QString("服务端：回复，提交实时数据指令-%1,%2").arg(type).arg(reply));
+		if (reply == "NO")
+		{
+			replyNoReceived = true;
+			qDebug("wait");
+		}
 		if (reply == "OK")//提交QIN
 		{
 			
-		 
+			replyNoReceived = false;
 			//****************************************************//
 			Global::mcsNetClient->sendData(sendBlock, false);//发送数据，且不需要关闭socket
 			emit statuChanged(QString("识别端：正常，提交实时数据-%1，14个.").arg(type));
@@ -575,7 +608,7 @@ void BllRealTimeTrans::submitQINOrQPL(char *data, int dataLength,int dataType)
 	else
 	{
 		//将数据写入文件
-
+		replyNoReceived = true;
 		Global::serverSubmitFailed = true;
 		emit statuChanged(QString("识别端：错误，提交实时数据指令-%1,失败.").arg(type));
   

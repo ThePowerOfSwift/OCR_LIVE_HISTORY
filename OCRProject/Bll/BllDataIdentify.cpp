@@ -1217,6 +1217,10 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 				writeOutputDataIntoBuffer(outputStruct);
 
 			}
+			else
+			{
+				qDebug("not requested ");
+			}
 			
 			emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
 
@@ -1265,8 +1269,8 @@ void BllDataIdentify::writeOutputDataIntoBuffer(DataOutput &dataOutput)
 
 			WPData.AtTime = Global::countRaceTime;
 
-			int m = sizeof(TagProtocolMsg);
-			sendBlock.append((char*)&WPData, m);
+			int m = sizeof(TagWPDataInfo);
+			sendBlock.append((char*)&WPData, sizeof(TagWPDataInfo));
 
 			
 		}
@@ -1563,7 +1567,7 @@ void BllDataIdentify::getHorseNameFromDataFile(QString fileName,DataOutput &outp
 					| oneHorseName.size() != 4 )
 				{
 					//写入系统日志
-					Global::systemLog->append(QString(tr("ERROR")), tr("马名 超出有效值范围." + oneHorseName),
+					Global::systemLog->append(QString(tr("ERROR")), QString(tr("马名 超出有效值范围." ))+ oneHorseName,
 						SystemLog::ERROR_TYPE);
 
 				}
@@ -1703,7 +1707,7 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 	if (Global::historyVideoDate.size() < 6 )
 	{
 		//写入系统日志
-		Global::systemLog->append(QString(tr("ERROR")), tr("writeHistoryData func : historyVideoDate Wrong."
+		Global::systemLog->append(QString(tr("ERROR")), QString(tr("writeHistoryData func : historyVideoDate Wrong.")
 			+Global::historyVideoDate),	SystemLog::ERROR_TYPE);
 	}
 
