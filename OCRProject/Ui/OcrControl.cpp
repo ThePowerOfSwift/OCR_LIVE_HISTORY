@@ -386,6 +386,19 @@ OcrControl::OcrControl(QWidget *parent)
 	QObject::connect(Global::mcsNetClient, SIGNAL(clientSocketStateSignal(QAbstractSocket::SocketState socketState)), this, \
 		SLOT(getClientSocketState(QAbstractSocket::SocketState socketState)));
 
+
+	// 写数据文件
+
+	logFile.setFileName("RDBSDataAfterChange.txt");
+	if (!logFile.open(QIODevice::WriteOnly | QIODevice::Text))
+		qDebug("logFile open Failed \n");
+
+ 
+	priSession = 0;
+
+//	logContentOut.setDevice(&logFile);
+
+
 }
 
 OcrControl::~OcrControl()
@@ -1356,6 +1369,8 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 {
 
 
+	QTextStream logContentOut(&logFile);
+
 	//如果是直播则 
 	if (!Global::isHistoryVideo  & liveBackupDataFileCreated == false )
 	{
@@ -1374,7 +1389,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 		// 写数据文件
 		//如果是直播的时候中断 ，那么将数据写入本地文档，做备份，待比赛结束，将数据导入服务器
 		
-		liveCurDate = QDate::currentDate().toString("yyyyMMdd");
+		liveCurDate = QDate::currentDate().toString("yyyy-MM-dd");
 		liveBackupFile.setFileName(liveCurDate + QString(".txt"));
 
 		QString curPath = QDir::currentPath();
@@ -1428,6 +1443,12 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 		}
 	 
+		// 写 赛程文件 
+
+		if (Global::isHistoryVideo)
+		{
+			raceFile.setFileName(QString(".//historyIdentifyData//") + Global::historyVideoDate + QString("RaceInfo.txt")) ;
+		}
 		
 		QString curPath = QDir::currentPath();
 
@@ -1451,6 +1472,30 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 			Global::historyIdentifyDataWS.setDevice(&Global::historyIdentifyDataFile);
 
 		}
+		// 赛程文件信息写入
+
+		if (!raceFile.exists())
+		{
+
+			if (!raceFile.open(QIODevice::WriteOnly))
+				qDebug("historyIdentifyDataFile open Failed");
+
+			raceDataStream.setFloatingPointPrecision(QDataStream::SinglePrecision);
+			raceDataStream.setDevice(&raceFile);
+
+		}
+		else
+		{
+			raceFile.remove();
+			if (!raceFile.open(QIODevice::WriteOnly))
+				qDebug("historyIdentifyDataFile open Failed");
+
+			raceDataStream.setFloatingPointPrecision(QDataStream::SinglePrecision);
+			raceDataStream.setDevice(&raceFile);
+
+		}
+
+
 		videoFileDate = Global::historyVideoDate;
 
 	}
@@ -1492,9 +1537,52 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 	 
 	}
 
-	//检测数据是否发生了变化
+
+	//检测数据是否发生了变化  结果数据被保存在了 OcrControl 这个类的成员变量里面
 	isDataOutputNew(dataOutput,priDataOutputForWrite);
 
+	// 检查是否 场次号发生了变化
+
+	if (Global::session != priSession  & priSession > 0)
+	{
+ 
+
+		RACEINFO mRaceInfo;
+
+		QByteArray raceDate;
+		raceDate = Global::historyVideoDate.toLatin1();
+
+		mRaceInfo.RaceID = 0;
+		mRaceInfo.RaceNO = priSession;
+		 
+		memcpy(mRaceInfo.RaceDate, raceDate.data(), 8);
+
+		QTime curTime = QTime::currentTime();
+		QString curTimeStr = curTime.toString("hh:mm:ss");
+
+		QByteArray curTimeBa;
+		curTimeBa = curTimeStr.toLatin1();
+
+		memcpy(mRaceInfo.RaceTime, curTimeBa.data(), 8);
+
+		mRaceInfo.CountTime = priCountRaceTime;
+	
+		mRaceInfo.HorseCount = dataOutput.horseNum;
+
+		//修改日期格式
+		QString historyDate;
+
+		historyDate = Global::historyVideoDate.mid(0,4);
+		historyDate += QString("-"); 
+		historyDate += Global::historyVideoDate.mid(4, 2);
+
+		historyDate += QString("-");
+		historyDate += Global::historyVideoDate.mid(6, 2);
+
+		//写入文件
+		raceDataStream << mRaceInfo.RaceID << mRaceInfo.RaceNO << Global::historyVideoDate << curTimeStr
+					   << mRaceInfo.CountTime << mRaceInfo.HorseCount ;
+	}
 	//dataOutput = mDataOutput;
 	
 	if (dataOutput.changeStatus > 0)
@@ -1507,6 +1595,8 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 	Global::raceId = raceIdStr.toInt();
 
+	priSession = Global::session ;
+	priCountRaceTime = Global::countRaceTime;
 	//写入win
 	if (dataOutput.changeStatus == WIN_CHANGED | dataOutput.changeStatus == WIN_PLA_CHANGED
 		| dataOutput.changeStatus == WIN_QIN_QPL_CHANGED | dataOutput.changeStatus == WIN_PLA_QIN_QPL_CHANGED)
@@ -1547,12 +1637,12 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 					<< WPData.WinValue << WPData.AtTime;
 			}
 			
-
-			/*
-			logContentOut << QString("Type") << QString::number(dataType) << QString::number(WPData.RaceID) <<
-				QString::number(WPData.HorseID) << QString::number(WPData.HorseNO) << QString::number(WPData.WinValue)
+			logContentOut << QString("T_") << QString("WN") << QString::number(dataType)
+				<< QString("RD") << QString::number(WPData.RaceID) << QString("HD") <<
+				QString::number(WPData.HorseID) << QString("HN") << QString::number(WPData.HorseNO)
+				<< QString("WV") << QString::number(WPData.WinValue) << QString("AT")
 				<< QString::number(WPData.AtTime);
-			*/
+
 		}
 
 
@@ -1599,11 +1689,12 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 					<< WPData.HorseNO << WPData.WinValue << WPData.AtTime;
 			}
 
-			/*
-			logContentOut << QString("Type") << QString::number(dataType) << QString::number(WPData.RaceID) <<
-				QString::number(WPData.HorseID) << QString::number(WPData.HorseNO) << QString::number(WPData.WinValue)
+			logContentOut << QString("T_") << QString("PL") << QString::number(dataType)
+				<< QString("RD") << QString::number(WPData.RaceID) << QString("HD") <<
+				QString::number(WPData.HorseID) << QString("HN") << QString::number(WPData.HorseNO)
+				<< QString("WV") << QString::number(WPData.WinValue) << QString("AT")
 				<< QString::number(WPData.AtTime);
-			*/
+
 		}
 
 	}
@@ -1653,14 +1744,12 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 					liveBackupDataStream << dataType << QDataInfo.RaceID << QDataInfo.HorseID
 						<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
 				}
-			
-				/*
-				logContentOut << QString("Type") << QString::number(dataType) << QString::number(QDataInfo.RaceID) <<
-					QString::number(QDataInfo.HorseID) << QString::number(QDataInfo.HorseNO) <<
-					QString::number(QDataInfo.YNO)
-					<< QString::number(QDataInfo.QinValue)
+				logContentOut << QString("T_") << QString("Q") << QString::number(dataType)
+					<< QString("RD") << QString::number(QDataInfo.RaceID) << QString("HD")
+					<< QString::number(QDataInfo.HorseID) << QString("HN") << QString::number(QDataInfo.HorseNO)
+					<< QString("YN") << QString::number(QDataInfo.YNO)
+					<< QString("V") << QString::number(QDataInfo.QinValue) << QString("AT")
 					<< QString::number(QDataInfo.AtTime);
-				*/
 			}
 
 			for (int j = i + 1; j <= dataOutput.horseNum; /* HORSENUMBER_1; */ j++)
@@ -1693,13 +1782,12 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 					liveBackupDataStream << dataType << QDataInfo.RaceID << QDataInfo.HorseID
 						<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
 				}
-				/*
-				logContentOut << QString("Type") << QString::number(dataType) << QString::number(QDataInfo.RaceID) <<
-					QString::number(QDataInfo.HorseID) << QString::number(QDataInfo.HorseNO) <<
-					QString::number(QDataInfo.YNO)
-					<< QString::number(QDataInfo.QinValue)
+				logContentOut << QString("T_") << QString("Q") << QString::number(dataType)
+					<< QString("RD") << QString::number(QDataInfo.RaceID) << QString("HD")
+					<< QString::number(QDataInfo.HorseID) << QString("HN") << QString::number(QDataInfo.HorseNO)
+					<< QString("YN") << QString::number(QDataInfo.YNO)
+					<< QString("V") << QString::number(QDataInfo.QinValue) << QString("AT")
 					<< QString::number(QDataInfo.AtTime);
-				 */
 
 			}
 

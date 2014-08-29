@@ -63,7 +63,7 @@ void SystemLogThread::saveSystemLog(MoSystemLog mo)
 	}
 	else
 	{
-		qDebug() << "【SystemLogThread】将USB数据写入文件成功,文件名：" << fileName;
+		qDebug() << "【SystemLogThread】写入历史日志文件,文件名：" << fileName;
 	}
 	//关闭文件
 	if (fclose(projectFile) != 0)

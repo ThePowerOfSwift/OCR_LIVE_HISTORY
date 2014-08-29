@@ -1509,12 +1509,27 @@ void BllDataIdentify::getHorseNameFromDataFile(QString fileName,DataOutput &outp
 			}
 		}
 		Global::historyVideoDate = fileName.mid(startPos+1, 8);
+		/*
+		Global::historyVideoDate = fileName.mid(startPos + 1, 4);
+		Global::historyVideoDate.append(QString("-"));
+		Global::historyVideoDate += fileName.mid(startPos + 5, 2);
+		Global::historyVideoDate.append(QString("-"));
+		Global::historyVideoDate += fileName.mid(startPos + 7, 2);
+
+		*/
 	}
 	else
 	{
 		labelPos = fileName.indexOf("01N");
 
 		Global::historyVideoDate = fileName.mid(labelPos + 3, 8);
+		/*
+		Global::historyVideoDate = fileName.mid(labelPos + 3, 4);
+		Global::historyVideoDate.append(QString("-"));
+		Global::historyVideoDate += fileName.mid(labelPos + 7, 2);
+		Global::historyVideoDate.append(QString("-"));
+		Global::historyVideoDate += fileName.mid(labelPos + 9, 2);
+		*/
 	}
 	//如果直播，那么日期值小于 4 
 	if (Global::historyVideoDate.size() < 4 )
@@ -1534,6 +1549,19 @@ void BllDataIdentify::getHorseNameFromDataFile(QString fileName,DataOutput &outp
 	int oneSessionStrPos;
 	oneSessionStrPos = horseNameHistoryStr.indexOf(searchLabel);
 
+
+	if (oneSessionStrPos >  1 )
+	{
+		//写入系统日志
+		Global::systemLog->append(QString(tr("信息")), QString(tr("当前识别历史文件日期为")) 
+			+ Global::historyVideoDate,SystemLog::INFO_TYPE);
+	}
+	else
+	{
+		//写入系统日志
+		Global::systemLog->append(QString(tr("错误")), QString(tr("日期错误"))
+			+ Global::historyVideoDate, SystemLog::INFO_TYPE);
+	}
 
 	QString oneSessionStr;
 	oneSessionStr = horseNameHistoryStr.mid(oneSessionStrPos, 140);
@@ -1563,8 +1591,8 @@ void BllDataIdentify::getHorseNameFromDataFile(QString fileName,DataOutput &outp
 		{
 			if (oneHorseName.size() >= 2)
 			{
-				if (oneHorseName.size() != 2 | oneHorseName.size() != 3
-					| oneHorseName.size() != 4 )
+				if (oneHorseName.size() != 2 & oneHorseName.size() != 3
+					& oneHorseName.size() != 4 )
 				{
 					//写入系统日志
 					Global::systemLog->append(QString(tr("ERROR")), QString(tr("马名 超出有效值范围." ))+ oneHorseName,
@@ -1746,8 +1774,10 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 		//	Global::historyIdentifyDataWS << dataType << WPData.RaceID << WPData.HorseID << WPData.HorseNO
 		//					<<WPData.WinValue<< WPData.AtTime;
 
-			logContentOut << QString("Type") << QString::number(dataType) << QString::number(WPData.RaceID) <<
-				QString::number(WPData.HorseID) << QString::number(WPData.HorseNO) << QString::number(WPData.WinValue)
+			logContentOut << QString("Type") << QString("WINTYPE") << QString::number(dataType) 
+				<< QString("RaceID") << QString::number(WPData.RaceID) << QString("HorseID") <<
+				QString::number(WPData.HorseID) << QString("HorseNo") << QString::number(WPData.HorseNO) 
+				<< QString("WINValue") << QString::number(WPData.WinValue) << QString("AtTime") 
 				<< QString::number(WPData.AtTime);
 		}
 		 
@@ -1790,10 +1820,18 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 			//写文件
 		//	Global::historyIdentifyDataWS << dataType<< WPData.RaceID << WPData.HorseID 
 		//					<< WPData.HorseNO <<WPData.WinValue<< WPData.AtTime;
-
+			/*
 			logContentOut << QString("Type") << QString::number(dataType) << QString::number(WPData.RaceID) <<
 				QString::number(WPData.HorseID) << QString::number(WPData.HorseNO) << QString::number(WPData.WinValue)
 				<< QString::number(WPData.AtTime);
+
+				*/
+			logContentOut << QString("Type") << QString("PLAType") << QString::number(dataType)
+				<< QString("RaceID") << QString::number(WPData.RaceID) << QString("HorseID") <<
+				QString::number(WPData.HorseID) << QString("HorseNo") << QString::number(WPData.HorseNO)
+				<< QString("WINValue") << QString::number(WPData.WinValue) << QString("AtTime")
+				<< QString::number(WPData.AtTime);
+
 
 		}
 
@@ -1836,12 +1874,20 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 				//写文件
 			//	Global::historyIdentifyDataWS << dataType << QDataInfo.RaceID << QDataInfo.HorseID
 			//		<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
-
+				/*
 				logContentOut << QString("Type") << QString::number(dataType) << QString::number(QDataInfo.RaceID) <<
 					QString::number(QDataInfo.HorseID) << QString::number(QDataInfo.HorseNO) <<
-					QString::number(QDataInfo.YNO)
-					<< QString::number(QDataInfo.QinValue)
+					QString::number(QDataInfo.YNO)	<< QString::number(QDataInfo.QinValue)
 					<< QString::number(QDataInfo.AtTime);
+				*/
+
+				logContentOut << QString("Type") << QString("QINQPL") << QString::number(dataType)
+					<< QString("RaceID") << QString::number(QDataInfo.RaceID) << QString("HorseID")  
+					<<QString::number(QDataInfo.HorseID) << QString("HorseNo") << QString::number(QDataInfo.HorseNO)
+					<< QString("YNO") << QString::number(QDataInfo.YNO)
+					<< QString("Value") << QString::number(QDataInfo.QinValue) << QString("AtTime")
+					<< QString::number(QDataInfo.AtTime);
+
 			}
 
 			for (int j = i + 1; j <= dataOutput.horseNum; /* HORSENUMBER_1; */ j++)
@@ -1866,14 +1912,21 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 				//写文件
 			//	Global::historyIdentifyDataWS << dataType << QDataInfo.RaceID << QDataInfo.HorseID
 			//		<< QDataInfo.HorseNO << QDataInfo.YNO << QDataInfo.QinValue << QDataInfo.AtTime;
-
+				/*
 				logContentOut << QString("Type") << QString::number(dataType) << QString::number(QDataInfo.RaceID) <<
 					QString::number(QDataInfo.HorseID) << QString::number(QDataInfo.HorseNO) <<
 					QString::number(QDataInfo.YNO)
 					<< QString::number(QDataInfo.QinValue)
 					<< QString::number(QDataInfo.AtTime);
 
-				 
+				*/
+
+				logContentOut << QString("Type") << QString("QINQPL") << QString::number(dataType)
+					<< QString("RaceID") << QString::number(QDataInfo.RaceID) << QString("HorseID") <<
+					QString::number(QDataInfo.HorseID) << QString("HorseNo") << QString::number(QDataInfo.HorseNO)
+					<< QString("YNO")<<QString::number(QDataInfo.YNO)
+					<< QString("Value") << QString::number(QDataInfo.QinValue) << QString("AtTime")
+					<< QString::number(QDataInfo.AtTime);
 			}
 
 

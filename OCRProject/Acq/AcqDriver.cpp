@@ -47,8 +47,7 @@ void AcqDriver::createFalseData()
 	
 	//fileName = (QString("F://1197.bmp") );
 
-	fileName.prepend(QString("E://BaiduYunDownload//20140706//"));
-	
+	fileName.prepend(QString("E://BaiduYunDownload//20140706//"));	
 	
 	//fileName.prepend(QString("E://RDBS_Yp//OCRProject0627//OCRProject//OCRProject//acqImages//"));
 	//fileName.prepend(QString("D://20140701-2//")) ;

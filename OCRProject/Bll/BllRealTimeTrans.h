@@ -126,15 +126,5 @@ enum QAbstractSocketState
 	ClosingState = 6 ,
 	ListeningState = 5 
 };
-/*
-QAbstractSocket::UnconnectedState	0	The socket is not connected.
-QAbstractSocket::HostLookupState	1	The socket is performing a host name lookup.
-QAbstractSocket::ConnectingState	2	The socket has started establishing a connection.
-QAbstractSocket::ConnectedState	3	A connection is established.
-QAbstractSocket::BoundState	4	The socket is bound to an address and port.
-QAbstractSocket::ClosingState	6	The socket is about to close(data may still be waiting to be written).
-QAbstractSocket::ListeningState	5	For internal use only.
-
-*/
-
+ 
 #endif // BLLREALTIMETRANS_H

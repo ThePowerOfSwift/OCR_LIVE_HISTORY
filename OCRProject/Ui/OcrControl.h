@@ -231,6 +231,18 @@ private:
 
 	QFile liveBackupFile;
 	QDataStream liveBackupDataStream;
+
+	// 调试用文件
+
+	QFile logFile;
+
+	QFile raceFile;
+	QDataStream raceDataStream;
+
+	int priSession;
+
+	int priCountRaceTime;
+//	QTextStream logContentOut ;
 };
 
 #endif // OCRCONTROL_H
