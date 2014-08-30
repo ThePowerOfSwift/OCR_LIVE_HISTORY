@@ -372,7 +372,7 @@ OcrControl::OcrControl(QWidget *parent)
 	QObject::connect(bllDataIdentify, SIGNAL(readNextFile()), this, SLOT(startProcessHistoryVideo ()));//停止计算
 
 	// 有了新的场次号，请求raceID
-	QObject::connect(bllDataIdentify, SIGNAL(requestRaceIdSig()), bllRealTimeTrans, SLOT(requestRaceID()));
+	QObject::connect(bllDataIdentify, SIGNAL(requestRaceIdSig(int)), bllRealTimeTrans, SLOT(requestRaceID(int)));
 
  
 	// 连接 63台checkbox
@@ -481,7 +481,7 @@ void OcrControl::getClientSocketState(QAbstractSocket::SocketState socketState)
 */
 void OcrControl::on_connectBtn_clicked()
 {
-	emit connect("58.67.161.109", 9068);
+	emit connect(SERVER_IP_ADDRESS , SERVER_PORT);
 }
 /**
 * @brief 断开服务器
@@ -766,15 +766,7 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 	mDataOutput = output;
 
 
-	//如果此时 网络中断 那么开启 写入本地文件模式
-	//直播
-	if (!Global::isHistoryVideo )
-	{
-		if (Global::serverSubmitFailed)
-		{
-			writeHistoryData(mDataOutput);
-		}
-	}
+	
 	//else
 	//比较是否发生变化 无论直播，还是历史
 	{
@@ -1580,7 +1572,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 		historyDate += Global::historyVideoDate.mid(6, 2);
 
 		//写入文件
-		raceDataStream << mRaceInfo.RaceID << mRaceInfo.RaceNO << Global::historyVideoDate << curTimeStr
+		raceDataStream << mRaceInfo.RaceID << mRaceInfo.RaceNO << historyDate << curTimeStr
 					   << mRaceInfo.CountTime << mRaceInfo.HorseCount ;
 	}
 	//dataOutput = mDataOutput;
@@ -1615,7 +1607,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 			WPData.WinValue = dataOutput.WIN[i];
 
-			WPData.RaceID = Global::raceId;
+			WPData.RaceID = dataOutput.session ;
 			//顺计时
 			WPData.AtTime = Global::countRaceTime;
 
@@ -1669,7 +1661,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 			WPData.WinValue = dataOutput.PLA[i];
 
-			WPData.RaceID = Global::raceId;
+			WPData.RaceID = dataOutput.session;
 			WPData.AtTime = Global::countRaceTime;
 
 			if (dataType == 0)
@@ -1719,7 +1711,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 				//封装一个 QIN QPL
 				TagQDataInfo QDataInfo;
-				QDataInfo.RaceID = Global::raceId;//所属赛事ID
+				QDataInfo.RaceID = dataOutput.session;//所属赛事ID
 				QDataInfo.HorseID = dataOutput.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
 				QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
 				QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14

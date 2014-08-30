@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_BllDataIdentify_t {
-    QByteArrayData data[21];
-    char stringdata[251];
+    QByteArrayData data[22];
+    char stringdata[259];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -40,23 +40,25 @@ QT_MOC_LITERAL(7, 66, 11),
 QT_MOC_LITERAL(8, 78, 12),
 QT_MOC_LITERAL(9, 91, 12),
 QT_MOC_LITERAL(10, 104, 16),
-QT_MOC_LITERAL(11, 121, 17),
-QT_MOC_LITERAL(12, 139, 8),
-QT_MOC_LITERAL(13, 148, 17),
-QT_MOC_LITERAL(14, 166, 4),
-QT_MOC_LITERAL(15, 171, 5),
-QT_MOC_LITERAL(16, 177, 8),
-QT_MOC_LITERAL(17, 186, 9),
-QT_MOC_LITERAL(18, 196, 4),
-QT_MOC_LITERAL(19, 201, 21),
-QT_MOC_LITERAL(20, 223, 27)
+QT_MOC_LITERAL(11, 121, 7),
+QT_MOC_LITERAL(12, 129, 17),
+QT_MOC_LITERAL(13, 147, 8),
+QT_MOC_LITERAL(14, 156, 17),
+QT_MOC_LITERAL(15, 174, 4),
+QT_MOC_LITERAL(16, 179, 5),
+QT_MOC_LITERAL(17, 185, 8),
+QT_MOC_LITERAL(18, 194, 9),
+QT_MOC_LITERAL(19, 204, 4),
+QT_MOC_LITERAL(20, 209, 21),
+QT_MOC_LITERAL(21, 231, 27)
     },
     "BllDataIdentify\0readyRead\0\0DataOutput\0"
     "output\0byteArray\0imageWidth\0imageHeight\0"
     "readyReadBmp\0readNextFile\0requestRaceIdSig\0"
-    "submitRaceTimeSig\0raceTime\0sendBufferDataSig\0"
-    "init\0start\0fileName\0videoType\0stop\0"
-    "sessionNumTextChanged\0sessionCountDownTextChanged"
+    "session\0submitRaceTimeSig\0raceTime\0"
+    "sendBufferDataSig\0init\0start\0fileName\0"
+    "videoType\0stop\0sessionNumTextChanged\0"
+    "sessionCountDownTextChanged"
 };
 #undef QT_MOC_LITERAL
 
@@ -77,28 +79,28 @@ static const uint qt_meta_data_BllDataIdentify[] = {
        1,    4,   69,    2, 0x06 /* Public */,
        8,    4,   78,    2, 0x06 /* Public */,
        9,    0,   87,    2, 0x06 /* Public */,
-      10,    0,   88,    2, 0x06 /* Public */,
-      11,    1,   89,    2, 0x06 /* Public */,
-      13,    0,   92,    2, 0x06 /* Public */,
+      10,    1,   88,    2, 0x06 /* Public */,
+      12,    1,   91,    2, 0x06 /* Public */,
+      14,    0,   94,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      14,    0,   93,    2, 0x0a /* Public */,
-      15,    2,   94,    2, 0x0a /* Public */,
-      18,    0,   99,    2, 0x0a /* Public */,
-      19,    0,  100,    2, 0x0a /* Public */,
-      20,    0,  101,    2, 0x0a /* Public */,
+      15,    0,   95,    2, 0x0a /* Public */,
+      16,    2,   96,    2, 0x0a /* Public */,
+      19,    0,  101,    2, 0x0a /* Public */,
+      20,    0,  102,    2, 0x0a /* Public */,
+      21,    0,  103,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3, QMetaType::QByteArray, QMetaType::Int, QMetaType::Int,    4,    5,    6,    7,
     QMetaType::Void, 0x80000000 | 3, QMetaType::QByteArray, QMetaType::Int, QMetaType::Int,    4,    5,    6,    7,
     QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   12,
+    QMetaType::Void, QMetaType::Int,   11,
+    QMetaType::Void, QMetaType::Int,   13,
     QMetaType::Void,
 
  // slots: parameters
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString, QMetaType::Int,   16,   17,
+    QMetaType::Void, QMetaType::QString, QMetaType::Int,   17,   18,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -114,7 +116,7 @@ void BllDataIdentify::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         case 0: _t->readyRead((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< int(*)>(_a[4]))); break;
         case 1: _t->readyReadBmp((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< int(*)>(_a[4]))); break;
         case 2: _t->readNextFile(); break;
-        case 3: _t->requestRaceIdSig(); break;
+        case 3: _t->requestRaceIdSig((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 4: _t->submitRaceTimeSig((*reinterpret_cast< qint32(*)>(_a[1]))); break;
         case 5: _t->sendBufferDataSig(); break;
         case 6: _t->init(); break;
@@ -146,7 +148,7 @@ void BllDataIdentify::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
             }
         }
         {
-            typedef void (BllDataIdentify::*_t)();
+            typedef void (BllDataIdentify::*_t)(int );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&BllDataIdentify::requestRaceIdSig)) {
                 *result = 3;
             }
@@ -223,9 +225,10 @@ void BllDataIdentify::readNextFile()
 }
 
 // SIGNAL 3
-void BllDataIdentify::requestRaceIdSig()
+void BllDataIdentify::requestRaceIdSig(int _t1)
 {
-    QMetaObject::activate(this, &staticMetaObject, 3, 0);
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 3, _a);
 }
 
 // SIGNAL 4

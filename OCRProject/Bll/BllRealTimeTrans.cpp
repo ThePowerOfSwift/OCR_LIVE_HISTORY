@@ -19,11 +19,54 @@ BllRealTimeTrans::BllRealTimeTrans(QObject *parent)
 
 	dataLength = 0;
 	dataType = 0;
+
+
+	isSessionChanged = false;
+	priSession = 0;
+
+	stopReadBuffData = false;
 }
 
 BllRealTimeTrans::~BllRealTimeTrans()
 {
 	//delete[] data;
+
+
+	//重新获取目录
+	QString runPath = QCoreApplication::applicationDirPath();
+
+	QDir::setCurrent(runPath);
+	//退到上一层目录
+	QDir::setCurrent("../");
+
+	QDir::setCurrent("../");
+
+
+	QDir::setCurrent(".//OCRProject//liveBackupData//");
+
+
+	//将缓存区数据写入文件
+
+	// 写数据文件
+	QFile dataBuffFile;
+	dataBuffFile.setFileName("RDBSDataBuffFile.txt");
+	if (!dataBuffFile.open(QIODevice::WriteOnly))
+		qDebug("logFile open Failed \n");
+
+	QDataStream dataBufferDs;
+
+	dataBufferDs.setDevice(&dataBuffFile);
+
+	while (Global::sendDataCCycleBuffer->getUsedSize() >= sizeof(DataOutput ))
+	{
+		Global::sendDataCCycleBuffer->read((char*)&mDataOutput, sizeof(DataOutput));
+		
+		QByteArray ba;
+		ba.append((char *)&mDataOutput, sizeof(DataOutput));
+		dataBufferDs << ba;
+	}
+
+	dataBuffFile.close();
 }
 /**
 * @brief 连接服务器
@@ -181,7 +224,7 @@ void BllRealTimeTrans::handleRequestHorse(QByteArray result, int descriptor)
 /**
 * @brief 识别端根据RaceNO(场次号)请求RaceID指令
 */
-void BllRealTimeTrans::requestRaceID( )
+void BllRealTimeTrans::requestRaceID( int session )
 {
 #ifndef HISTORY_SUBMIT
 	if (Global::isHistoryVideo)
@@ -191,7 +234,7 @@ void BllRealTimeTrans::requestRaceID( )
 #endif
 	TagProtocolMsg msg;
 	msg.MsgID = 6;
-	msg.nDataSize = Global::session;
+	msg.nDataSize = session ;
 	strcpy(msg.Param, "");
 	strcpy(msg.Check, "RDBS");
 
@@ -248,6 +291,11 @@ void BllRealTimeTrans::handleRequestRaceID(QByteArray result, int descriptor)
 	memcpy(&raceId, result.data(), sizeof(qint32));
 	Global::requestRaceId = raceId;
 	Global::raceId = raceId;
+
+	//标记已经获取了
+	Global::isThisSessionRaceIDRequested[Global::session] = true;
+	Global::requestedRaceID[Global::session] = raceId;
+
 	emit statuChanged(QString("服务端：回复，raceId，%1").arg(raceId));
 }
 /**
@@ -320,6 +368,10 @@ void BllRealTimeTrans::handleSubmitRaceTime(QByteArray result, int descriptor)
 
 	emit statuChanged(QString("服务端：回复，提交比赛时长指令，%1").arg(reply));
 
+	if (reply == "OK")
+	{
+		Global::isThisTotalSessionTimeSumbit[Global::session] = true;
+	}
 }
 
 /**
@@ -348,29 +400,154 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 	if (Global::mcsNetClient->clientIsValid() != ConnectingState)
 	{
 		qDebug("test re connect ");
-		
+
+		Global::serverNotConnected = true  ;
 		connectCount++;
 		if (connectCount == 30 )
 		{
 			connectToHost(SERVER_IP_ADDRESS, SERVER_PORT);
-			connectCount++;
+			connectCount = 0 ;
+		}
+		
+	}
+	else
+	{
+		//只有提交成功而才能设置为真
+		if (!Global::serverSubmitFailed)
+		{
+			Global::serverNotConnected = false;
 		}
 		
 	}
 		
-	if ( !Global::isSessionRaceIdRequested )
-	{
-		requestRaceID();
-	}
-	//如果提交失败 那么就不要传输了 直接返回 
-	// serverSubmitFailed 会在网络重新连接上的时候 置为false 
-
-	if (Global::serverSubmitFailed )
-	{
-		return;
-	}
+	 
+	 
 	//读取buffer
 	int usedSize = Global::sendDataCCycleBuffer->getUsedSize();
+	
+	if (usedSize >= sizeof(DataOutput ))
+	{
+		//必须连接才可以读取数据
+		if (!stopReadBuffData & !Global::serverNotConnected)
+		{
+			//读入结构体
+			Global::sendDataCCycleBuffer->read((char *)&mDataOutput, sizeof(DataOutput));
+		}
+		
+		if (mDataOutput.session != priSession )
+		{
+			isSessionChanged = true;
+		}
+		else
+		{
+			isSessionChanged = false;
+		}
+		//如果新的场次号出来了，但是没有请求到场次号，那么此时，就应该停止读取数据了
+		if (isSessionChanged & !Global::isThisSessionRaceIDRequested[mDataOutput.session])
+		{ 
+			stopReadBuffData = true ;
+		}
+		
+		//如果此时获取到了新场次号了，那么继续读取数据
+		if (stopReadBuffData == true)
+		{
+			if (Global::isThisSessionRaceIDRequested[mDataOutput.session])
+			{
+				stopReadBuffData = false;
+			}
+			//如果服务器处于连接模式 ，那么请求raceId
+			if (!Global::serverNotConnected)
+			{
+				requestRaceID(mDataOutput.session);
+			}
+		}
+
+		priSession = mDataOutput.session;
+
+		//必须提交成功才能进入 此次获取了RaceId才行 并且服务器一定要处于连接状态
+		//并且处于连接状态
+		if (!Global::serverNotConnected &
+			Global::isThisSessionRaceIDRequested[mDataOutput.session] & !Global::serverNotConnected)
+		{
+			//检查是否有漏发的总时长
+			if (Global::isThisTotalSessionTimeSumbit[mDataOutput.session] == false)
+			{
+				submitRaceTime(Global::totalSessionTime[mDataOutput.session]);
+			}
+			//提交实时WIN数据
+			if (mDataOutput.changeStatus == WIN_CHANGED)
+			{
+				submitWINOrPLA(mDataOutput, "WIN");
+			}
+			else if (mDataOutput.changeStatus == PLA_CHANGED)
+			{
+				submitWINOrPLA(mDataOutput, "PLA");
+			}
+			else if (mDataOutput.changeStatus == WIN_PLA_CHANGED)
+			{
+				submitWINOrPLA(mDataOutput, "WIN");
+				submitWINOrPLA(mDataOutput, "PLA");
+			}
+			else if (mDataOutput.changeStatus == QIN_QPL_CHANGED)
+			{
+				if (mDataOutput.isQPL)
+				{
+					submitQINOrQPL(mDataOutput, "QPL");
+				}
+				else
+				{
+					submitQINOrQPL(mDataOutput, "QIN");
+
+				}
+			}
+			else if (mDataOutput.changeStatus == WIN_QIN_QPL_CHANGED)
+			{
+				submitWINOrPLA(mDataOutput, "WIN");
+				if (mDataOutput.isQPL)
+				{
+					submitQINOrQPL(mDataOutput, "QPL");
+				}
+				else
+				{
+					submitQINOrQPL(mDataOutput, "QIN");
+
+				}
+			}
+			else if (mDataOutput.changeStatus == PLA_QIN_QPL_CHANGED)
+			{
+				submitWINOrPLA(mDataOutput, "PLA");
+				if (mDataOutput.isQPL)
+				{
+					submitQINOrQPL(mDataOutput, "QPL");
+				}
+				else
+				{
+					submitQINOrQPL(mDataOutput, "QIN");
+
+				}
+			}
+			else if (mDataOutput.changeStatus == WIN_PLA_QIN_QPL_CHANGED)
+			{
+				submitWINOrPLA(mDataOutput, "WIN");
+				submitWINOrPLA(mDataOutput, "PLA");
+				if (mDataOutput.isQPL)
+				{
+					submitQINOrQPL(mDataOutput, "QPL");
+				}
+				else
+				{
+					submitQINOrQPL(mDataOutput, "QIN");
+
+				}
+
+			}
+
+		}
+
+
+	}
+	
+	/*
 	if (usedSize > 2)
 	{
 		 if (replyNoReceived == false)
@@ -412,34 +589,32 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 	 
 	}
 	 
+	 */
  
 }
+
 /**
 * @brief 提交实时数据-WIN或PLA
 * @param ouputStruct：算法传递来的数据，type:传送类型默认win
 */
-void BllRealTimeTrans::submitWINOrPLA(char *data, int dataLength,int dataType)
+void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct, QString type)
 {
 	TagProtocolMsg msg;
 	msg.MsgID = 8;
-	msg.nDataSize = dataLength;
-	 
-	QString  type;
-	if (dataType == WINTYPE )
+	msg.nDataSize = ouputStruct.horseNum *sizeof(TagWPDataInfo);// N个WPDATAINFO或QDATAINFO结构数据，按马编号
+	int dataType = 0;
+	if (type == "WIN")
 	{
-		type = QString("WIN");
 		dataType = WINTYPE;
 		strcpy(msg.Param, "WIN");//"WIN(或PLA或QIN或QPL)";
-	}		
-	else if  (dataType == PLATYPE)
+	}
+	else if (type == "PLA")
 	{
-		type = QString("PLA");
 		dataType = PLATYPE;
 		strcpy(msg.Param, "PLA");//"WIN(或PLA或QIN或QPL)";
 	}
-	
 	strcpy(msg.Check, "RDBS");
-	
+
 
 	QByteArray byteArray;
 	int m = sizeof(TagProtocolMsg);
@@ -448,15 +623,11 @@ void BllRealTimeTrans::submitWINOrPLA(char *data, int dataLength,int dataType)
 	Global::client_cmd_status = ClientCmdStatus::submit_real_data_status;
 	Global::mcsNetClient->sendData(byteArray, false);//发送数据，且不需要关闭socket
 
-	//data char * 转为 QByteArray
+
 	QByteArray sendBlock;
-	sendBlock.append(data,dataLength);
-	//memcpy(sendBlock.data(),data,dataLength);
-	//sendBlock = QByteArray(data);
 
 	//稍微需要处理一下循环发送数据//
 	bool success = Global::mcsNetClient->waitForReadyRead(3000);//阻塞等待
-	//bool success = false;
 	if (success)
 	{
 		Global::serverSubmitFailed = false;
@@ -465,20 +636,33 @@ void BllRealTimeTrans::submitWINOrPLA(char *data, int dataLength,int dataType)
 		Global::mcsNetClient->readAllMessage(result, descriptor);//读取数据
 
 		QString reply = result.data();
-
-		if (reply == "NO")
-		{
-			replyNoReceived = true;
-			qDebug("wait");
-		}
-
-	//	emit statuChanged(QString("服务端：回复，提交实时数据指令，%1,2%").arg(reply).arg(type));
-
-		emit statuChanged(QString("服务端：回复%2，提交实时数据指令-%1").arg(type).arg(reply));
-
+		emit statuChanged(QString("服务端：回复，提交实时数据指令，%1").arg(reply));
 		if (reply == "OK")//提交WIN
 		{
-			replyNoReceived = false;
+			//*************还得发送数据：WIN(或PLA或QIN或QPL)*********//
+
+			for (int i = 1; i <= ouputStruct.horseNum; /* HORSENUMBER_1; */i++)
+			{
+				//封装一个WIN
+				TagWPDataInfo WPData;
+				WPData.HorseID = i;
+				WPData.HorseNO = i;
+
+				if (type == "WIN")
+				{
+					WPData.WinValue = ouputStruct.WIN[i - 1];
+				}
+				else if (type == "PLA")
+				{
+					WPData.WinValue = ouputStruct.PLA[i - 1];
+
+				}
+				WPData.RaceID = Global::requestedRaceID[mDataOutput.session];
+
+				WPData.AtTime = ouputStruct.countRaceTime;
+
+				sendBlock.append((char*)&WPData, sizeof(TagWPDataInfo));
+			}
 			//****************************************************//
 			Global::mcsNetClient->sendData(sendBlock, false);//发送数据，且不需要关闭socket
 			emit statuChanged(QString("服务端：回复，提交实时数据-%1").arg(type));
@@ -496,54 +680,38 @@ void BllRealTimeTrans::submitWINOrPLA(char *data, int dataLength,int dataType)
 			//}
 			//else
 			//{
-			//	emit statuChanged(QString("服务端：错误，提交实时数据--%1，%2，14个.").arg(type).arg(reply));
+			//	emit statuChanged(QString("服务端： 错误，提交实时数据--%1，%2，14个.").arg(type).arg(reply));
 			//}
 			//**若对方有回复****//
-		}
-		else
-		{
-			qDebug("Submit WIN  PLA reply No \n");
 		}
 
 	}
 	else
 	{
-		 
 		//将数据写入文件
 		Global::serverSubmitFailed = true;
-		replyNoReceived = true;
-		emit statuChanged("识别端：错误，提交实时数据指令失败.") ;
+		emit statuChanged("识别端：错误，提交实时数据指令失败.");
 
+		Global::serverNotConnected = true;
 		 
+
 	}
-		
+
 }
 
 /**
 * @brief 提交实时数据-QIN或QPL
 * @param ouputStruct：算法传递来的数据，type:传送类型默认win
 */
-void BllRealTimeTrans::submitQINOrQPL(char *data, int dataLength,int dataType)
+void BllRealTimeTrans::submitQINOrQPL(DataOutput &ouputStruct, QString type)
 {
-	 
 	TagProtocolMsg msg;
-	QString type;
 	msg.MsgID = 8;
-	msg.nDataSize =  dataLength ;// N个WPDATAINFO或QDATAINFO结构数据，按马编号
-	if (dataType  == QINTYPE)
-	{
-		type = QString("QIN");
+	msg.nDataSize = (ouputStruct.horseNum - 1)*ouputStruct.horseNum  * sizeof(TagQDataInfo);// N个WPDATAINFO或QDATAINFO结构数据，按马编号
+	if (type == "QIN")
 		strcpy(msg.Param, "QIN");//"WIN(或PLA或QIN或QPL)";
-		dataType = QINTYPE;
-	}
-		
-	else if (dataType == QPLTYPE)
-	{
-		type = QString("QPL");
+	else if (type == "QPL")
 		strcpy(msg.Param, "QPL");//"WIN(或PLA或QIN或QPL)";
-		dataType = QPLTYPE;
-	}
-		
 	strcpy(msg.Check, "RDBS");
 
 
@@ -557,8 +725,6 @@ void BllRealTimeTrans::submitQINOrQPL(char *data, int dataLength,int dataType)
 
 	//**稍微需要处理一下循环发送数据****//
 	bool success = Global::mcsNetClient->waitForReadyRead(3000);//阻塞等待
-	QByteArray sendBlock ;
-	sendBlock.append(data, dataLength);
 	if (success)
 	{
 		Global::serverSubmitFailed = false;
@@ -569,15 +735,78 @@ void BllRealTimeTrans::submitQINOrQPL(char *data, int dataLength,int dataType)
 
 		QString reply = result.data();
 		emit statuChanged(QString("服务端：回复，提交实时数据指令-%1,%2").arg(type).arg(reply));
-		if (reply == "NO")
-		{
-			replyNoReceived = true;
-			qDebug("wait");
-		}
 		if (reply == "OK")//提交QIN
 		{
-			
-			replyNoReceived = false;
+			//*************还得发送数据：WIN(或PLA或QIN或QPL)*********//
+			QByteArray sendBlock;
+			//每一列
+
+			for (int i = 1; i <= ouputStruct.horseNum; i++)
+			{
+				for (int j = 1; j < i; j++)
+				{
+					//封装一个WIN
+					TagQDataInfo QDataInfo;
+					QDataInfo.RaceID = Global::requestedRaceID[mDataOutput.session];//所属赛事ID
+					QDataInfo.HorseID = ouputStruct.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
+					QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
+					QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
+					QDataInfo.AtTime = mDataOutput.countRaceTime ;
+					if (j <= 7) // 正表
+					{
+						if (type == "QIN")//数据值，由XNO与YNO组合得出 QPL+QIN[7][15]
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[j - 1][i];
+						else if (type == "QPL")
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[j - 1][i];
+					}
+					else //补充图表
+					{
+						if (type == "QIN")//数据值，由XNO与YNO组合得出 QPL+QIN[7][15]
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 8][j - 8];
+						else if (type == "QPL")
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 8][j - 8];
+					}
+
+
+					//发送
+					sendBlock.append((char*)&QDataInfo, sizeof(TagQDataInfo));
+
+				}
+
+				for (int j = i + 1; j <= ouputStruct.horseNum; /* HORSENUMBER_1; */ j++)
+				{
+
+					//封装一个WIN
+					TagQDataInfo QDataInfo;
+					QDataInfo.RaceID = Global::requestedRaceID[ouputStruct.session];//所属赛事ID
+					QDataInfo.HorseID = ouputStruct.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
+					QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
+					QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
+					QDataInfo.AtTime = ouputStruct.countRaceTime;
+					if (i <= 7) // 正表
+					{
+						if (type == "QIN")//数据值，由XNO与YNO组合得出 QPL+QIN[7][15]
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 1][j];
+						else if (type == "QPL")
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 1][j];
+					}
+					else //补充图表
+					{
+						if (type == "QIN")//数据值，由XNO与YNO组合得出 QPL+QIN[7][15]
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[j - 8][i - 8];
+						else if (type == "QPL")
+							QDataInfo.QinValue = ouputStruct.QPL_QIN[j - 8][i - 8];
+					}
+
+
+					//发送
+					sendBlock.append((char*)&QDataInfo, sizeof(TagQDataInfo));
+				}
+
+
+			}
+
+
 			//****************************************************//
 			Global::mcsNetClient->sendData(sendBlock, false);//发送数据，且不需要关闭socket
 			emit statuChanged(QString("识别端：正常，提交实时数据-%1，14个.").arg(type));
@@ -599,22 +828,16 @@ void BllRealTimeTrans::submitQINOrQPL(char *data, int dataLength,int dataType)
 			//}
 			//**若对方有回复****//
 		}
-		else
-		{
-			qDebug("Submit Qin QPL reply No \n");
-		}
 
 	}
 	else
 	{
 		//将数据写入文件
-		replyNoReceived = true;
+		Global::serverNotConnected = true;
 		Global::serverSubmitFailed = true;
 		emit statuChanged(QString("识别端：错误，提交实时数据指令-%1,失败.").arg(type));
-  
-
 	}
-		
+
 }
 
 /**

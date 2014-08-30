@@ -48,7 +48,7 @@ public slots:
 	* @brief 识别端根据RaceNO(场次号)请求RaceID指令
 	* @param qint32 raceNo 场次号
 	*/
-	void requestRaceID(  );
+	void requestRaceID(int session );
 	/**
 	* @brief 识别端处理服务端-请求RaceID指令
 	*/
@@ -70,12 +70,12 @@ public slots:
 	/**
 	* @brief 提交win实时数据
 	*/
-	void submitWINOrPLA(char *data,int dataLength,int dataType );
+	void submitWINOrPLA(DataOutput &outputStruct, QString type);
 	/**
 	* @brief 提交实时数据-QIN或QPL
 	* @param ouputStruct：算法传递来的数据，type:传送类型默认QIN
 	*/
-	void submitQINOrQPL(char *data, int dataLength,int dataType );
+	void submitQINOrQPL(DataOutput &outputStruct, QString type);
 	/**
 	* @brief 识别端处理服务端-提交实时数据指令
 	*/
@@ -115,6 +115,15 @@ private:
 	char * data;
 
 	bool dataHasBeenRead;
+
+	//检测是否场次号发生了变化
+	bool isSessionChanged;
+
+	int priSession;
+
+	DataOutput mDataOutput;
+
+	bool stopReadBuffData;
 };
 
 enum QAbstractSocketState

@@ -80,9 +80,15 @@ qint32 Global::requestRaceId = 0;
 
 bool Global::serverSubmitFailed = false;
 
+//标记状态
+
+bool Global::serverNotConnected = false;
 //本场场次号的全局id 已经请求 标志位
 
 bool Global::isSessionRaceIdRequested = false;
+
+bool Global:: requestedRaceID[14];
+
 //比赛已经开始标志
 qint32 Global::raceHasStarted = 0 ;
 //比赛当前场次计时 
@@ -97,6 +103,13 @@ bool Global::isSessioncalibrated = false ;
 //是否 场次号发生了变化
 
 bool Global::isSessionChanged = false;
+ // 保存请求到的场次号 
+bool Global::isThisSessionRaceIDRequested[14];
+
+// 保存比赛时长
+
+int Global::totalSessionTime[14];
+bool Global::isThisTotalSessionTimeSumbit[14];
 
 //历史视频比赛日期
 
@@ -149,6 +162,20 @@ void Global::init()
 	//threadAcq = new ThreadAcq();
 	//myIAcq->moveToThread(threadAcq);
 	
+
+	// 场次号 是否请求到了
+	for (int i = 0; i < 14; i++)
+	{
+		Global::isThisSessionRaceIDRequested[i] = false;
+
+		Global::requestedRaceID[i] = 0;
+
+		Global::totalSessionTime[i] = 0;
+
+		Global::isThisTotalSessionTimeSumbit[i] = false;
+	}
+
+
 
 }
 

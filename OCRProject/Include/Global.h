@@ -149,12 +149,25 @@ public:
 	//提交失败
 
 	static bool serverSubmitFailed;
+
+	//标志连接状态
+	static bool serverNotConnected;
 	// //比赛已经开始了 标志位
 	static qint32 raceHasStarted; 
 	
 	//每次场次号发生反转的时候，必须等待 根据本场场次号 请求到全局场次号后才可以发送 比赛数据
 
 	static bool isSessionRaceIdRequested;
+
+	//最长不超过14场的
+	static bool isThisSessionRaceIDRequested[14];
+	//保存请求到的场次号
+	static bool requestedRaceID[14];
+	//保存每一场的所有时间
+
+	static int totalSessionTime[14];
+
+	static bool isThisTotalSessionTimeSumbit[14];
 
 	// 是否 用户矫正了 场次号
 	static bool isSessioncalibrated;

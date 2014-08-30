@@ -99,6 +99,7 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 
 	QINQPLTransformed = false;
 
+
 }
 
 BllDataIdentify::~BllDataIdentify()
@@ -297,7 +298,13 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 						Global::raceTime = maxContent % 10;
 
 						//总时长
-						emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+						if (Global::totalSessionTime[Global::session] != Global::raceTime + Global::countRaceTime)
+						{
+							emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+							// 保存计时
+							Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
+						}
+						
 					}
 					//如果出现次数很多，强行赋值
 					else if (maxContentCount >= 10 )
@@ -306,7 +313,12 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 						Global::raceTime = maxContent % 10;
 							 
 						//总时长
-						emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+						if (Global::totalSessionTime[Global::session] != Global::raceTime + Global::countRaceTime)
+						{
+							emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+							// 保存计时
+							Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
+						}
 					}
 
 				}
@@ -316,7 +328,12 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 					{
 						Global::raceTime = maxContent;
 						//总时长
-						emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+						if (Global::totalSessionTime[Global::session] != Global::raceTime + Global::countRaceTime)
+						{
+							emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+							// 保存计时
+							Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
+						}
 
 					}
 						//如果出现次数很多，强行赋值
@@ -325,7 +342,13 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 							 
 						Global::raceTime = maxContent;
 						//总时长
-						emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+						if (Global::totalSessionTime[Global::session] != Global::raceTime + Global::countRaceTime)
+						{
+							emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+							// 保存计时
+							Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
+						}
+						
 						 
 					}
 				}
@@ -341,6 +364,8 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 					Global::raceTime = maxContent ;
 					//总时长
 					emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+					// 保存计时
+					Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
 				}
 				raceCountDownTime = maxContent ;
 
@@ -662,6 +687,8 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 	// 选择正确场次号，倒计时
 	chooseRightRaceTimeRaceSession(outputStruct);
 
+	//赋值顺计时
+	outputStruct.countRaceTime = Global::countRaceTime;
 	
 
 	 //如果场次号发生了变化，那么要对priDataOutput赋值，如果qinqpl发生了变化，
@@ -690,7 +717,7 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 
 		Global::isSessionRaceIdRequested = false;
 		//请求新场次号
-		emit requestRaceIdSig();
+		emit requestRaceIdSig(Global::session);
 
 	}
 
@@ -794,6 +821,7 @@ int BllDataIdentify::startHistoryDataIdentify(QString fileName, int videoType)
 		// 分钟数
 		Global::countRaceTime = Global::historyFrameCount / 60;
 
+		
 		Global::frameAccValue = 1;
 
 		//暂停即进入睡眠，停止暂停，退出 一旦此时有快进请求那么，进行快进或者倒退显示
@@ -922,7 +950,7 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 
 		if (emptyData == true)
 		{
-			qDebug() << "empty image data" << endl;
+			//qDebug() << "empty image data" << endl;
 
 		}
 
@@ -1003,7 +1031,7 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 			if (emptyData == true)
 			{
 				return -1;
-				qDebug() << "empty image data" << endl;
+				//qDebug() << "empty image data" << endl;
 
 			}
 
@@ -1197,6 +1225,11 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 		//显示图片，但是不输出结果
 		emit readyReadBmp(dataIdentifyClass.dataOutput, byteArray, imageWidth, imageHeight);
 
+		if (Global::sendDataCCycleBuffer->getBufSize() >= sizeof(DataOutput))
+		{
+			emit readyRead(dataIdentifyClass.dataOutput, byteArray, imageWidth, imageHeight);
+		}
+
 	}
 	else if (dataIdentifyClass.haveDataFlag == true)
 	{
@@ -1212,14 +1245,15 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 			//为了与raceID保持同步，必须在获取raceID后才能写入buffer
 			// isSessionRaceIdRequested 在场次号发生变化时候被 置false
 			// 在获取到的时候，被置为true 
-			if (Global::isSessionRaceIdRequested)
+			// Global::isSessionRaceIdRequested )
+			//if( Global::isThisSessionRaceIDRequested[Global::session] == true )
 			{
-				writeOutputDataIntoBuffer(outputStruct);
+				writeOutputDataIntoBuffer( outputStruct );
 
 			}
-			else
+		//	else
 			{
-				qDebug("not requested ");
+			//	qDebug("not requested ");
 			}
 			
 			emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
@@ -1228,10 +1262,9 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 		}
 		else //如果没有改变，那么此时可以发送缓存未发送的数据
 		{
-			if (Global::sendDataCCycleBuffer->getBufSize() > 2  )
-			{
-
-				emit sendBufferDataSig();
+			if (Global::sendDataCCycleBuffer->getBufSize() >= sizeof(DataOutput)  )
+			{ 
+				emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
 			}
 		}
 		qDebug() << "【BllDataIdentify】一帧图像识别时间：" << endl;
@@ -1247,6 +1280,19 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 void BllDataIdentify::writeOutputDataIntoBuffer(DataOutput &dataOutput)
 {
 	 
+	//赋值 session 
+
+	dataOutput.session = Global::session;
+
+	//写入缓存
+	if (Global::sendDataCCycleBuffer->getFreeSize() > sizeof(DataOutput))
+	{
+		int l = sizeof(DataOutput);
+		Global::sendDataCCycleBuffer->write((char*)&dataOutput, sizeof(DataOutput));
+		 
+	}
+	return;
+	// **************************************************************************//
 	QByteArray sendBlock;
 	int dataType = 0;
 	//提交实时WIN数据
@@ -1272,12 +1318,14 @@ void BllDataIdentify::writeOutputDataIntoBuffer(DataOutput &dataOutput)
 			int m = sizeof(TagWPDataInfo);
 			sendBlock.append((char*)&WPData, sizeof(TagWPDataInfo));
 
-			
 		}
 
 		//写入缓存
 		if (Global::sendDataCCycleBuffer->getFreeSize() > sendBlock.size())
 		{
+			////写入是否获取id
+			//Global::sendDataCCycleBuffer->write((char*)Global::isSessionRaceIdRequested, sizeof(bool));
+
 			Global::sendDataCCycleBuffer->write((char*)&dataType, sizeof(dataType));
 			int sendBlockSize = sendBlock.size();
 			Global::sendDataCCycleBuffer->write((char*)&sendBlockSize, sizeof(sendBlockSize));
@@ -1391,7 +1439,7 @@ void BllDataIdentify::writeOutputDataIntoBuffer(DataOutput &dataOutput)
 
 
 		}
-
+		 
 		//写入缓存
 		if (Global::sendDataCCycleBuffer->getFreeSize() > sendBlock.size())
 		{

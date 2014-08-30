@@ -225,7 +225,7 @@ struct DataOutput
 	int changeStatus;
 
 	//比赛时长  一个场次的
-	int onceRaceTime;
+	int countRaceTime;
 	// onceRaceTIme+倒计时 
 	int totoalRaceTime;
 

@@ -1055,7 +1055,8 @@ int DataIdentify::isHorseNameChanged()
 			dataOutput.horseNameChangedNum);
 #endif
 		Global::session++;
-
+		//赋值场次号
+		
 		//定时器清零 。新的场次号。 如果是历史视频通过 计算帧数来实现
 		Global::timerCount = 0;
 	 
@@ -1064,6 +1065,8 @@ int DataIdentify::isHorseNameChanged()
 		Global::isSessionChanged = true;
 
 	}
+	dataOutput.session = Global::session;
+
 	//如果人工校正了场次号，那么此时 重新赋值场次号。
 	if (Global::isSessioncalibrated)
 	{

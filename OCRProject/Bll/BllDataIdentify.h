@@ -66,7 +66,7 @@ signals:
 	//本次读取的历史文件已经处理完毕，读取下一个文件
 	void readNextFile();
 	// 场次号发生了变化，请求服务器 本场次号对应的raceID
-	void requestRaceIdSig();
+	void requestRaceIdSig(int session);
 
 
 	// 提交比赛时长 
@@ -220,11 +220,15 @@ private:
 
 	//标记 QIN QPL 发生改变。
 	bool isQINQPLTransformed;
-
-
-	// 倒计时 
-
+	 
+	// 倒计时  
 	int  raceCountDownTime;
+
+	//
+	QByteArray notRequestRaceIdSession;
+
+	
+
 };
 
 #endif // BllDataIdentify_H
