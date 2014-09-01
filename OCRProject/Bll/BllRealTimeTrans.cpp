@@ -316,10 +316,10 @@ void BllRealTimeTrans::submitRaceTime(qint32 raceTime)
 	QString raceTimeStr;
 
 	raceTimeStr = QString::number(raceTime);
-	
-	 
+
+
 	QByteArray ba = raceTimeStr.toLatin1();
- 
+
 
 	strcpy(msg.Param, ba.data());
 	//strcpy(msg.Param, "35");//比赛分钟数
@@ -344,10 +344,23 @@ void BllRealTimeTrans::submitRaceTime(qint32 raceTime)
 		int descriptor;
 		Global::mcsNetClient->readAllMessage(result, descriptor);//读取数据
 		handleSubmitRaceTime(result, descriptor);//处理login返回数据
+
+		//写入系统日志
+		Global::systemLog->append(QString(tr("信息")), QString(tr("服务端：回复，提交比赛时长"))
+			+ raceTimeStr, SystemLog::INFO_TYPE);
+
 	}
 	else
+	{
 		emit statuChanged("识别端：错误，提交比赛时长指令失败。");
+
+		//写入系统日志
+		Global::systemLog->append(QString(tr("错误")), QString(tr("识别端：错误，提交比赛时长指令失败"))
+			+ raceTimeStr, SystemLog::INFO_TYPE);
+
+	}
 }
+		
 /**
 * @brief 识别端处理服务端-提交比赛时长指令
 */
@@ -367,6 +380,8 @@ void BllRealTimeTrans::handleSubmitRaceTime(QByteArray result, int descriptor)
 	QString reply = result.data();
 
 	emit statuChanged(QString("服务端：回复，提交比赛时长指令，%1").arg(reply));
+
+	
 
 	if (reply == "OK")
 	{
@@ -470,7 +485,7 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 			Global::isThisSessionRaceIDRequested[mDataOutput.session] & !Global::serverNotConnected)
 		{
 			//检查是否有漏发的总时长
-			if (Global::isThisTotalSessionTimeSumbit[mDataOutput.session] == false)
+			if (Global::isThisTotalSessionTimeSumbit[mDataOutput.session] == false & Global::totalSessionTime[mDataOutput.session] > 10 )
 			{
 				submitRaceTime(Global::totalSessionTime[mDataOutput.session]);
 			}
@@ -693,6 +708,10 @@ void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct, QString type)
 		emit statuChanged("识别端：错误，提交实时数据指令失败.");
 
 		Global::serverNotConnected = true;
+
+		//写入系统日志
+		Global::systemLog->append(QString(tr("错误")), QString(tr("识别端：错误，提交实时数据指令失败"))
+			+ type, SystemLog::INFO_TYPE);
 		 
 
 	}
@@ -836,6 +855,13 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput &ouputStruct, QString type)
 		Global::serverNotConnected = true;
 		Global::serverSubmitFailed = true;
 		emit statuChanged(QString("识别端：错误，提交实时数据指令-%1,失败.").arg(type));
+
+
+		//写入系统日志
+		Global::systemLog->append(QString(tr("错误")), QString(tr("识别端：错误，提交实时数据指令失败"))
+		+type	, SystemLog::INFO_TYPE);
+
+
 	}
 
 }

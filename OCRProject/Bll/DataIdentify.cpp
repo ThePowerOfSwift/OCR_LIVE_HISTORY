@@ -1553,30 +1553,32 @@ int DataIdentify::getQINQPLIdentify()
 			CvSize roiSize;
 			roiSize.height = qinQPLPosStruct.rect[i][j].height;
 			roiSize.width = qinQPLPosStruct.rect[i][j].width;
-			Mat roiThreshold(roiSize, CV_8UC3);
+			
 
 
 
-			if (i == 1 & j == 0)
+	 
+
+		//	colorThreshold(roi, roiThreshold, 200);
+			Mat roiThreshold ;
+			Mat roiThresholdEdge;
+			cvtColor(roi, roi, CV_RGB2GRAY);
+
+			roi.copyTo(roiThreshold);
+
+			//使用灰度阈值
+
+			for (int r = 0; r < roiThreshold.rows; r++)
 			{
-				qDebug("Mark \n");
-#ifdef  QDEBUG_OUTPUT
-				qDebug("Mark \n");
-#endif //  QDEBUG_OUTPUT
-
-
+				for (int c = 0; c < roiThreshold.cols; c++)
+				{
+					if (roiThreshold.at<uchar>(r, c) < 200)
+					{
+						roiThreshold.at<uchar>(r, c) = 0;
+					}
+				}
 			}
-
-			colorThreshold(roi, roiThreshold, 200);
-			//roi = roiThreshold;
-			if (i == 1 & j == 6)
-			{
-				//imshow("roiThreshold", roi);
-				//	waitKey();
-			}
-
-
-			//	Canny(roi, edge, 450, 400, 3, true);
+ 
 
 			CvRect roiNewSize;
 			//	dotFlag = identifyImageInfor2_Dot_live(&edge);
@@ -1589,9 +1591,9 @@ int DataIdentify::getQINQPLIdentify()
 				return EXIT_THIS_OCR;
 			}
 
-			cvtColor(roiForDotJudge, roiForDotJudge, CV_RGB2GRAY);
+			//cvtColor(roiForDotJudge, roiForDotJudge, CV_RGB2GRAY);
 
-			cvtColor(roi, roi, CV_RGB2GRAY);
+		//	cvtColor(roi, roi, CV_RGB2GRAY);
 
 			roiNew = Mat(roi, roiNewSize);
 
@@ -1614,21 +1616,28 @@ int DataIdentify::getQINQPLIdentify()
 			memset(x, 0, 4);
 
 
-
+			if ( i == 1 & j== 9 )
+			{
+				qDebug("test");
+			}
 
 
 			Mat edge;
 			dotFlag = judgeQINQPLDot(roiForDotJudge, edge, x);
 		 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
-				QString fileNameTemp;
-				fileNameTemp.prepend(QString(".bmp"));
-				fileNameTemp.prepend(QString::number(i));
-				fileNameTemp.prepend(QString("i_j"));
-				fileNameTemp.prepend(QString::number(j));
+			 
+			QString fileNameTemp;
+			fileNameTemp.prepend(QString(".bmp"));
+			fileNameTemp.prepend(QString("_6"));
+			fileNameTemp.prepend(QString::number(j));
+			fileNameTemp.prepend(QString("j_"));
+			fileNameTemp.prepend(QString::number(i));
+			fileNameTemp.prepend(QString("i_"));
+
 			//	QString path = QString(".//temp//");
 
-				writeSamples(fileNameTemp, edge, path);
+			writeSamples(fileNameTemp, edge, path);
 
 
 #endif
@@ -2419,7 +2428,8 @@ int  DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 	else if (delta < 21 & delta >= 5) // two number 
 	{
 		//两位数，防止 两位小数 进入 进行检测， 通过宽度已经无法检测出 两位小数与两位数 如1.1 ，99
-		Mat halfEdge = Mat(edge, cvRect(0, 0, edge.cols, edge.rows / 2));
+		//需要小数点位置不要超过 上面1/4位置
+		Mat halfEdge = Mat(edge, cvRect(0, 0, edge.cols, edge.rows * 3 / 4 ));
 		if (calculateXBewttenNumber(halfEdge, x) != EXEC_SUCCESS)
 		{
 			if (graySum != NULL)

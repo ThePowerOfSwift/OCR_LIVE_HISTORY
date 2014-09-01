@@ -147,7 +147,12 @@ public slots:
 	*/
 
 	void is63TAICheckBoxStateChanged( bool);
+	/*
+		是否锁定修改
+	*/
 
+
+	void islockCaliCheckBoxStatusChanged(bool);
 	/*
 		写入数据文件
 	*/

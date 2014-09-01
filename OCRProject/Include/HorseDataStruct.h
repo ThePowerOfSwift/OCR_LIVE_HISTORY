@@ -200,6 +200,9 @@ struct DataOutput
 	bool winChangedFlag[HORSENUMBER];
 	bool plaChangedFlag[HORSENUMBER];
 
+	//标记 是否用户矫正
+	bool winCaliFlag[HORSENUMBER];
+	bool plaCaliFlag[HORSENUMBER];
 
 	//用于标记是否该位置的WIN  PLA 有底色。
 	bool  isWinPlaHasGroundColor[HORSENUMBER][2];
@@ -211,6 +214,9 @@ struct DataOutput
 	//标记改变
 	bool qplQinChangedFlag[QIN_QPL_ROW][QIN_QPL_COL];
 
+	//标记是否矫正
+
+	bool qplQinCaliFlag[QIN_QPL_ROW][QIN_QPL_COL];
 	//用于标记是否该位置的qpl qin 有底色。
 	bool  isQplQinHasGroundColor[QIN_QPL_ROW][QIN_QPL_COL];
 	// image region 3

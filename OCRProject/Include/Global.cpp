@@ -115,7 +115,9 @@ bool Global::isThisTotalSessionTimeSumbit[14];
 
 QString Global::historyVideoDate = "";
 
+//是否锁定了矫正
 
+bool Global::islockCali= false ;
 
 //历史数据文件
 

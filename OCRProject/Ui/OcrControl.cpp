@@ -378,6 +378,9 @@ OcrControl::OcrControl(QWidget *parent)
 	// 连接 63台checkbox
 	QObject::connect(ui.is63TAICheckBox, SIGNAL(clicked(bool)), this, SLOT(is63TAICheckBoxStateChanged(bool)));
 
+	// 连接是否锁定改变按钮被按下checkbox
+	QObject::connect(ui.lockCaliCheckBox, SIGNAL(clicked(bool)), this, SLOT(islockCaliCheckBoxStatusChanged(bool)));
+	
 
 	liveBackupDataFileCreated = false;
 	
@@ -397,6 +400,24 @@ OcrControl::OcrControl(QWidget *parent)
 	priSession = 0;
 
 //	logContentOut.setDevice(&logFile);
+
+
+	for (int i = 0; i < HORSENUMBER; i++)
+	{
+		mDataOutput.winCaliFlag[i] = false;
+		mDataOutput.plaCaliFlag[i] = false;
+	}
+
+	for (int i = 0; i < QIN_QPL_ROW; i++)
+	{
+ 
+		for (int j = 0; j < QIN_QPL_COL; j++)
+		{
+			mDataOutput.qplQinCaliFlag[i][j]= false ;
+
+		}
+	}
+
 
 
 }
@@ -763,6 +784,44 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 {
 
 	//获取当前 输出结果
+	//将标记 写入 output
+	if (Global::isHistoryVideo)
+	{
+		for (int i = 0; i < HORSENUMBER; i++)
+		{
+			output.winCaliFlag[i] = mDataOutput.winCaliFlag[i];
+			output.plaCaliFlag[i] = mDataOutput.plaCaliFlag[i];
+
+			if (mDataOutput.winCaliFlag[i])
+			{
+				output.WIN[i] = mDataOutput.WIN[i];
+			}
+			if (mDataOutput.plaCaliFlag[i])
+			{
+				output.PLA[i] = mDataOutput.PLA[i];
+			}
+
+		}
+
+		for (int i = 0; i < qinList.size(); i++)
+		{
+
+			QList<QLineEdit*> list = qinList.at(i);
+			for (int j = 0; j < list.size(); j++)
+			{
+				output.qplQinCaliFlag[i][j] = mDataOutput.qplQinCaliFlag[i][j];
+
+				if (output.qplQinCaliFlag[i][j])
+				{
+					output.QPL_QIN[i][j] = mDataOutput.QPL_QIN[i][j];
+
+				}
+
+			}
+		}
+	}
+	
+
 	mDataOutput = output;
 
 
@@ -1189,6 +1248,18 @@ void OcrControl::on_caliSessionCountDownBtn_clicked()
 	//更新全局时间
 	Global::raceTime = raceTimeStr.toInt();
 
+	/*
+	//更新顺计时
+	QString raceTimeStr;
+	raceTimeStr = ui.CountRaceTimeLineEdit->text();
+
+	//更新全局时间
+	Global::raceTime = raceTimeStr.toInt();
+
+	*/
+
+
+
 }
 
 
@@ -1316,7 +1387,36 @@ void OcrControl::on_inputUserDataBtn_clicked()
 		QString win;
 		win = winLableList[i]->text();
 
-		mDataOutput.WIN[i] = win.toFloat();
+		//如果锁定了校正，那么校正值不会发生改变
+
+		if (Global::islockCali)
+		{
+			if (!mDataOutput.winCaliFlag[i])
+			{
+				if (abs(mDataOutput.WIN[i] - win.toFloat()) > 0.01)
+				{
+					mDataOutput.WIN[i] = win.toFloat();
+					
+				}
+			}
+		}
+		else
+		{
+			//只有没被矫正过的才能赋值
+			if (abs(mDataOutput.WIN[i] - win.toFloat()) > 0.01 & !mDataOutput.winCaliFlag[i])
+			{
+				mDataOutput.WIN[i] = win.toFloat();
+				mDataOutput.winCaliFlag[i] = true;
+			}
+			else
+			{
+				mDataOutput.winCaliFlag[i] = false;
+			}
+		}
+		
+	
+
+
 		 
 	}
 	for (int i = 0; i < plaLableList.size(); i++)
@@ -1324,9 +1424,36 @@ void OcrControl::on_inputUserDataBtn_clicked()
 
 		QString pla;
 		pla = plaLableList[i]->text();
-
-		mDataOutput.PLA[i] = pla.toFloat();
+ 
 	  
+		//如果锁定了校正，那么校正值不会发生改变
+
+		if (Global::islockCali)
+		{
+			if (!mDataOutput.plaCaliFlag[i])
+			{
+				if (abs(mDataOutput.PLA[i] - pla.toFloat()) > 0.01)
+				{
+					mDataOutput.PLA[i] = pla.toFloat();
+
+				}
+			}
+		}
+		else
+		{
+			//只有没被矫正过的才能赋值
+			if (abs(mDataOutput.PLA[i] - pla.toFloat()) > 0.01 & !mDataOutput.plaCaliFlag[i])
+			{
+				mDataOutput.PLA[i] = pla.toFloat();
+				mDataOutput.plaCaliFlag[i] = true;
+			}
+			else
+			{
+				mDataOutput.plaCaliFlag[i] = false;
+			}
+		}
+
+	
 	}
 
 	for (int i = 0; i < qinList.size(); i++)
@@ -1339,7 +1466,17 @@ void OcrControl::on_inputUserDataBtn_clicked()
 			 
 			qplQin = label->text();
 
-			mDataOutput.QPL_QIN[i][j] = qplQin.toFloat();
+
+			if (abs(mDataOutput.QPL_QIN[i][j] - qplQin.toFloat()) > 0.01)
+			{
+				mDataOutput.QPL_QIN[i][j] = qplQin.toFloat();
+				mDataOutput.qplQinCaliFlag[i][j] = true;
+			}
+			else
+			{
+				mDataOutput.qplQinCaliFlag[i][j] = false;
+			}
+			 
 			 
 		}
 	}	 
@@ -1749,7 +1886,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 				//封装一个WIN
 				TagQDataInfo QDataInfo;
-				QDataInfo.RaceID = Global::raceId;//所属赛事ID
+				QDataInfo.RaceID = dataOutput.session; //所属赛事ID
 				QDataInfo.HorseID = dataOutput.mHorseInfo.horseID[i - 1];//马的唯一编号可关联马信息表
 				QDataInfo.HorseNO = i;//本场比赛中马的序号，比如第3号，1-13
 				QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
@@ -1790,7 +1927,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 	}
 	 
 	//退回上一目录
-	QDir::setCurrent("../");
+//	QDir::setCurrent("../");
 
 }
 
@@ -2024,4 +2161,13 @@ void OcrControl::updateAfterUserInput(DataOutput  &output)
 void OcrControl::is63TAICheckBoxStateChanged(bool)
 {
 	Global::is63TAIVideoData = ui.is63TAICheckBox->isChecked();
+}
+
+
+/*
+实时获取 是否锁定修改 check box 状态
+*/
+void OcrControl::islockCaliCheckBoxStatusChanged(bool)
+{
+	Global::islockCali = ui.lockCaliCheckBox->isChecked();
 }

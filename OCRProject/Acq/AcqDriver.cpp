@@ -20,7 +20,7 @@ AcqDriver::AcqDriver(QObject *parent)
 	timerCount = 0;
 #ifdef OFFLINE_DEBUG
 		
-	count = 1420  ;
+	count = 4180  ;
 #endif
 
  
@@ -34,7 +34,7 @@ AcqDriver::AcqDriver(QObject *parent)
 void AcqDriver::createFalseData()
 {
 	if (count < 16000 )
-		count += 3 ;
+		count += 1 ;
 	else
 		count = 0 ;
 

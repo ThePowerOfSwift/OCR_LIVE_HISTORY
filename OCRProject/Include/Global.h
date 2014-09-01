@@ -187,6 +187,10 @@ public:
 
 	//当前视频是否是63台需要识别的数据
 	static bool is63TAIVideoData;
+
+	//是否锁定了矫正
+
+	static bool islockCali;
 	/***********比赛数据***********/
 
 	//历史视频 起始帧位置

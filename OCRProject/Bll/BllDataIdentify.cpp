@@ -339,8 +339,13 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 						//如果出现次数很多，强行赋值
 					else if (maxContentCount >= 10)
 					{
+						//排除掉-1
+						if (maxContent > 0 )
+						{
+							Global::raceTime = maxContent;
+						}
 							 
-						Global::raceTime = maxContent;
+						
 						//总时长
 						if (Global::totalSessionTime[Global::session] != Global::raceTime + Global::countRaceTime)
 						{
