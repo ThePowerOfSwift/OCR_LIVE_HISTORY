@@ -65,6 +65,10 @@ void AcqDriver::createFalseData()
 	//Global::AppendLogString( logDataStr,true);
 	qDebug("AcqDriver 第%d 帧 图片.当前计时器运行次数为 %d \n ",count,timerCount);
 	
+	//写入系统日志
+	Global::systemLog->append(QString(tr("AcqDriver当前计时器运行次数为 ")), QString::number(count),
+		SystemLog::INFO_TYPE);
+
 	if (pbData == NULL)
 	{
 		logDataStr =  QString( " AcqDriver::createFalseData() :pbData is NULL err!");
@@ -130,14 +134,18 @@ LONG AcqDriver::init()
 		//Global::AppendLogString( QString("Can't get the number of devices."),true);
 #ifdef  QDEBUGPRINT
 		qDebug("Can't get the number of devices.");
+
 #endif
+
+		//写入系统日志
+		Global::systemLog->append(QString(tr("Can't get the number of devices ")),QString("AcqDriver"),
+			SystemLog::ERROR_TYPE);
+
 		return 2;
 	}
 	else
 	{
-		QString logStr;
-		logStr = QString("get the number of devices. The num is ") + QString::number(dwDeviceNum);		
-		//Global::AppendLogString(logStr,1);
+		 
 
 #ifdef  QDEBUGPRINT
 		qDebug(" get the number of devices.%d ", dwDeviceNum);
@@ -155,6 +163,9 @@ LONG AcqDriver::init()
 #ifdef  QDEBUGPRINT
 			qDebug("can not get the name of device.");
 #endif
+			//写入系统日志
+			Global::systemLog->append(QString(tr("Can't get the name of devices ")), QString("AcqDriver"),
+				SystemLog::ERROR_TYPE);
 			return 2;
 		}
 		else
@@ -283,9 +294,13 @@ void AcqDriver::writeData(VIDEO_SAMPLE_INFO VideoInfo, BYTE *pbData, LONG lLengt
 		//Global::AppendLogString(QString("AcqDriver: writeData wrong ! "),true) ;
 #ifdef QDEBUGPRINT
 		qDebug("AcqDriver: writeData wrong ! \n");
+		//写入系统日志
+	
 #endif
+		Global::systemLog->append(QString(tr("AcqDriver: writeData wrong ")), QString("AcqDriver"),
+			SystemLog::ERROR_TYPE);
 	}
-	//if (Global::S_CCycleBuffer->getFreeSize() >= lLength )
+	if (Global::S_CCycleBuffer->getFreeSize() >= lLength )
 	{
 		Global::S_CCycleBuffer->write((char *)pbData, lLength);
 
@@ -387,11 +402,11 @@ void AcqDriver::captureSingleImage()
 	//睡眠调节 采集图片时间 1秒两次 
 	 
 	// 内存拷贝,添加至环形缓冲区
-	if (localImage.bits() == NULL || imageLength > //Global::S_CCycleBuffer->getBufSize())
+	if (localImage.bits() == NULL || imageLength > Global::S_CCycleBuffer->getBufSize())
 	{
 		qDebug("AcqDriver: captureSingleImage func wrong ! \n");
 	}
-	//if (//Global::S_CCycleBuffer->getFreeSize() >= lLength )
+	if (Global::S_CCycleBuffer->getFreeSize() >= imageLength)
 	{
 		Global::S_CCycleBuffer->write((char *)localImage.bits(), imageLength);
 

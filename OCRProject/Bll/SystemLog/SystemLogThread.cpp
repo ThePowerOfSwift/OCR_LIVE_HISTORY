@@ -8,8 +8,8 @@ SystemLogThread::SystemLogThread(QObject *parent)
 : QThread(parent)
 {
 	////从界面打开
-	//fileName = "SystemLog.txt";
-	//projectFile = fopen(fileName.toLocal8Bit().data(), "a+");
+	fileName = "SystemLog.txt";
+	projectFile = fopen(fileName.toLocal8Bit().data(), "a+");
 
 }
 
@@ -42,13 +42,14 @@ void SystemLogThread::run()
 void SystemLogThread::saveSystemLog(MoSystemLog mo)
 {
 
+
 	QString log = QString("ID:%1,标题:%2,日志内容：%3,日志类型:%4,日志时间:%5\n").arg(QString::number(mo.getLogId())).arg(mo.getLogTitle()).arg(mo.getLogDetail()).arg(mo.getLogType()).arg(mo.getLogTime().toString());
 	QByteArray array = log.toLocal8Bit();
 	char* logChar = array.data();
 
 	//从界面打开
 	QString fileName = "SystemLog.txt";
-	FILE *projectFile = fopen(fileName.toLocal8Bit().data(), "a+");
+	//FILE *projectFile = fopen(fileName.toLocal8Bit().data(), "a+");
 	if (!projectFile)
 	{
 		qDebug() << "【SystemLogThread】数据文件" << projectFile << "，打开失败！\n";
@@ -65,8 +66,8 @@ void SystemLogThread::saveSystemLog(MoSystemLog mo)
 	{
 		qDebug() << "【SystemLogThread】写入历史日志文件,文件名：" << fileName;
 	}
-	//关闭文件
-	if (fclose(projectFile) != 0)
-		qDebug() << "【SystemLogThread】关闭文件失败，文件名：" << fileName;
+	////关闭文件
+	//if (fclose(projectFile) != 0)
+	//	qDebug() << "【SystemLogThread】关闭文件失败，文件名：" << fileName;
 
 }

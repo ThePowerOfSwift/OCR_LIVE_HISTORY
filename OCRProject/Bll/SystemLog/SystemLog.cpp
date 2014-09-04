@@ -1,4 +1,4 @@
-#include "SystemLog.h"
+﻿#include "SystemLog.h"
 
 SystemLog::SystemLog(QObject *parent)
 	: QObject(parent)
@@ -23,6 +23,22 @@ QMutex SystemLog::mutexSystemLog;
  */
 void SystemLog::append(QString logTitle, QString logDetail, SystemLog::LogType logType)
 {
+
+
+	//重新获取目录
+	QString runPath = QCoreApplication::applicationDirPath();
+
+	QDir::setCurrent(runPath);
+	/*
+	//退到上一层目录
+	QDir::setCurrent("../");
+
+	QDir::setCurrent("../");
+
+
+	QDir::setCurrent(".//OCRProject//");
+	*/
+
 	//注册该对象为元对象可识别系统，元对象将会将该参数保存起来，供队列连接调用。特别针对多线程
 	qRegisterMetaType<MoSystemLog>("MoSystemLog");
 	MoSystemLog moSystemLog;
@@ -40,6 +56,11 @@ void SystemLog::append(QString logTitle, QString logDetail, SystemLog::LogType l
 
 	//发出缓冲区新增日志的信号
 	emit dataEntered(moSystemLog);
+
+	//重新获取目录
+	runPath = QCoreApplication::applicationDirPath();
+
+	QDir::setCurrent(runPath);
 }
 /**
  *刘兆邦-添加

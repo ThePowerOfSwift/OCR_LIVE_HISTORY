@@ -67,6 +67,11 @@ BllRealTimeTrans::~BllRealTimeTrans()
 	}
 
 	dataBuffFile.close();
+
+	//退回到exe路径
+	runPath = QCoreApplication::applicationDirPath();
+
+	QDir::setCurrent(runPath);
 }
 /**
 * @brief 连接服务器
@@ -407,7 +412,7 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 	 //网络中断了 则重连服务器
 	if (Global::serverSubmitFailed == true )
 	{		 
-		connectToHost(SERVER_IP_ADDRESS,SERVER_PORT);
+		connectToHost(Global::serverIpAddr,Global::serverPort);
 	
 	}
 	*/
@@ -420,7 +425,7 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 		connectCount++;
 		if (connectCount == 30 )
 		{
-			connectToHost(SERVER_IP_ADDRESS, SERVER_PORT);
+			connectToHost(Global::serverIpAddr, Global::serverPort);
 			connectCount = 0 ;
 		}
 		
@@ -950,7 +955,7 @@ void BllRealTimeTrans::handleDisConnect()
 	//网络中断了 则重连服务器
 	if (Global::serverSubmitFailed == true)
 	{
- 		//connectToHost(SERVER_IP_ADDRESS, SERVER_PORT);
+ 		//connectToHost(Global::serverIpAddr, Global::serverPort);
 
 	}
 

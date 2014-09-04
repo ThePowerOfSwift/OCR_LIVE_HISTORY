@@ -13,9 +13,9 @@
   <property name="windowTitle">
    <string>OcrControl</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_22">
+  <layout class="QHBoxLayout" name="horizontalLayout_15">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="16,5,1">
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="16,5,4">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout" stretch="5">
        <item>
@@ -226,7 +226,7 @@
                </layout>
               </item>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_19" stretch="0,1,10">
+               <layout class="QVBoxLayout" name="verticalLayout_19" stretch="0,0,10">
                 <item>
                  <widget class="QLabel" name="versionNumLabel">
                   <property name="styleSheet">
@@ -299,7 +299,7 @@
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="delFileBtn_2">
+                          <widget class="QPushButton" name="videoStartFrameCountBtn">
                            <property name="text">
                             <string>视频起始帧数</string>
                            </property>
@@ -1134,57 +1134,46 @@
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_17">
+       <layout class="QHBoxLayout" name="horizontalLayout_14">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="4,6">
+         <layout class="QHBoxLayout" name="horizontalLayout_11">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_16">
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_3">
-                <item>
-                 <widget class="QPushButton" name="connectBtn">
-                  <property name="text">
-                   <string>连接</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="loginBtn">
-                  <property name="text">
-                   <string>登陆</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="reconnectCheckBox">
-                <property name="text">
-                 <string>自动重连</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="disconnectBtn">
-                <property name="text">
-                 <string>断开</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_15">
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_9">
+                  <item>
+                   <widget class="QPushButton" name="connectBtn">
+                    <property name="text">
+                     <string>连接</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="reconnectCheckBox">
+                    <property name="text">
+                     <string>自动重连</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_10">
                   <item>
-                   <widget class="QCheckBox" name="is63TAICheckBox">
+                   <widget class="QPushButton" name="loginBtn">
                     <property name="text">
-                     <string>63台</string>
+                     <string>登陆</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="disconnectBtn">
+                    <property name="text">
+                     <string>断开</string>
                     </property>
                    </widget>
                   </item>
@@ -1193,42 +1182,95 @@
                </layout>
               </item>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_9">
+               <widget class="QCheckBox" name="is63TAICheckBox">
+                <property name="text">
+                 <string>63台</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_14">
+              <item>
+               <widget class="QComboBox" name="videoTypeComboBox">
                 <item>
-                 <widget class="QComboBox" name="videoTypeComboBox">
-                  <item>
-                   <property name="text">
-                    <string>香港18台D14</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>香港18台</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>亚洲台</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>直播</string>
-                   </property>
-                  </item>
-                 </widget>
+                 <property name="text">
+                  <string>香港18台D14</string>
+                 </property>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="startAcqBtn">
+                 <property name="text">
+                  <string>香港18台</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>亚洲台</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>直播</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="startAcqBtn">
+                <property name="text">
+                 <string>开始采集</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="stopAcqBtn">
+                <property name="text">
+                 <string>停止采集</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_16">
+                <item>
+                 <widget class="QLabel" name="label_38">
                   <property name="text">
-                   <string>开始采集</string>
+                   <string>服务器地址</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="stopAcqBtn">
+                 <widget class="QLabel" name="label_39">
                   <property name="text">
-                   <string>停止采集</string>
+                   <string>端口</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_40">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_15">
+                <item>
+                 <widget class="QLineEdit" name="svrIpAddrLineEdit"/>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="svrPortLineEdit"/>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="svrConfigSaveBtn">
+                  <property name="text">
+                   <string>保存设置</string>
                   </property>
                  </widget>
                 </item>

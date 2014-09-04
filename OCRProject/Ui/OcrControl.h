@@ -14,7 +14,8 @@
 
 #include "HorseNameTrain/HorseNameTrain.h"
 
-#define  VERSION_NUM "版本:1.0 2014/08/25 yp " //
+//#define  VERSION_NUM "版本:1.0 2014/9/2  离线模式 yp " //
+#define  VERSION_NUM "版本:1.0 2014/9/2  直播模式 yp " //
 #define  SHOW_ADBMP 1
 
 class OcrControl : public QWidget
@@ -128,6 +129,18 @@ public slots:
 	void on_inputUserDataBtn_clicked();
 
  
+	/*
+			录入服务器设置
+	*/
+
+	void on_svrConfigSaveBtn_clicked();
+
+
+	/*
+		获取今天马匹排位表
+	*/
+
+
 	/*
 	用户输入完毕后，进行更新界面，主要是 马名，场次号 ，win pla qin qpl数据
 	*/

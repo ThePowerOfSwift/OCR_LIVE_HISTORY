@@ -418,8 +418,23 @@ OcrControl::OcrControl(QWidget *parent)
 		}
 	}
 
+	//按钮灰色
 
+	ui.appendFileBtn->setEnabled(false);
+	ui.videoStartFrameCountBtn->setEnabled(false);
+	ui.loginBtn->setEnabled(false);
 
+	ui.reconnectCheckBox->setEnabled(false);
+
+	//从用户界面获取数据
+
+	Global::serverIpAddr = QString("58.67.161.109");
+	Global::serverPort = 9068;
+
+	ui.svrIpAddrLineEdit->setText(Global::serverIpAddr);
+	ui.svrPortLineEdit->setText(QString::number(Global::serverPort));
+	
+	
 }
 
 OcrControl::~OcrControl()
@@ -502,7 +517,7 @@ void OcrControl::getClientSocketState(QAbstractSocket::SocketState socketState)
 */
 void OcrControl::on_connectBtn_clicked()
 {
-	emit connect(SERVER_IP_ADDRESS , SERVER_PORT);
+	emit connect(Global::serverIpAddr , Global::serverPort);
 }
 /**
 * @brief 断开服务器
@@ -616,13 +631,16 @@ void OcrControl::getHorseNameFromDataFile(   )
 void OcrControl::startProcessHistoryVideo()
 {
 	
- 
+	/*
 	threadDataIdentify->quit();// 退出 	 
 	while (threadDataIdentify->isRunning())
 	{
 		Sleep(1);
 	}
+	
 	threadDataIdentify->start();//开始识别 
+
+	*/
 
 	//如果处理掉的文件
 	if (historyVideoFileNum > 0)
@@ -717,6 +735,21 @@ void OcrControl::on_stopAcqBtn_clicked()
 		 
 }
 
+/*
+	录入用户输入的服务器设置
+
+*/
+
+void OcrControl::on_svrConfigSaveBtn_clicked()
+{
+
+	Global::serverIpAddr = ui.svrIpAddrLineEdit->text();
+
+	QString svrPortStr = ui.svrPortLineEdit->text();
+
+	Global::serverPort = svrPortStr.toInt();
+}
+
 
 /**
 * @brief 更新广告图片
@@ -785,8 +818,14 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 
 	//获取当前 输出结果
 	//将标记 写入 output
+	
+
 	if (Global::isHistoryVideo)
 	{
+
+		//写入系统日志
+		Global::systemLog->append(QString(tr("历史数据 ")), QString(""),
+			SystemLog::INFO_TYPE);
 		for (int i = 0; i < HORSENUMBER; i++)
 		{
 			output.winCaliFlag[i] = mDataOutput.winCaliFlag[i];
@@ -823,9 +862,7 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 	
 
 	mDataOutput = output;
-
-
-	
+	 
 	//else
 	//比较是否发生变化 无论直播，还是历史
 	{
@@ -876,9 +913,18 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 	// 设置无数据区域 i 0-6 j 0-14 （0,0）（1,1）~（6,6）
 	QPalette pe;
 	pe.setColor(QPalette::WindowText, Qt::white);
+	/*
+	//写入系统日志
+	Global::systemLog->append(QString(tr("更新ui数据 1 ")), tr(" updateData"),
+		SystemLog::INFO_TYPE);
+	*/
 	if (output.haveDataFlag)
 	{
-		
+		/*
+		//写入系统日志
+		Global::systemLog->append(QString(tr("更新ui数据 2 ")), tr(" updateData"),
+			SystemLog::INFO_TYPE);
+		*/
 		ui.adTimeLbl->setText("比赛");
 		ui.adTimeLbl->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
 		//	ui.adTimeLbl->setStyleSheet(QStringLiteral("background-color: Green;"));
@@ -981,7 +1027,11 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 
 		winLableList[i]->setText(QString::number(output.WIN[i]));
 
-
+		/*
+		//写入系统日志
+		Global::systemLog->append(QString(tr("WIN ")), QString::number(output.WIN[i]),
+			SystemLog::INFO_TYPE);
+		*/
 		if (output.isWinPlaHasGroundColor[i][0] )
 		{
 		//	winLableList[i]->setStyleSheet("QLineEdit{background: green;color: #FFFFFF}");
@@ -1107,7 +1157,10 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 		
 		//label->setPalette(pe1);
 		label->setStyleSheet("QLineEdit{background: gray;color: #FFFFFF}");
-		label->setText(QString::number(i + 1));
+		//label->setText(QString::number(i + 1));
+
+		label->setText(QString::number(Global::timerCount));
+
 	}
 
 
@@ -1119,7 +1172,7 @@ void OcrControl::reConnect()
 	if (ui.reconnectCheckBox->isChecked())
 	{
 		qDebug("识别端：重连服务器 \n");
-		emit connect(SERVER_IP_ADDRESS,SERVER_PORT);
+		emit connect(Global::serverIpAddr,Global::serverPort);
 	}
 	else
 	{
@@ -1499,7 +1552,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 
 	QTextStream logContentOut(&logFile);
-
+	/*
 	//如果是直播则 
 	if (!Global::isHistoryVideo  & liveBackupDataFileCreated == false )
 	{
@@ -1547,6 +1600,8 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 	}
 
+	*/
+
 	//历史视频
 	if (videoFileDate != Global::historyVideoDate & Global::isHistoryVideo )
 	{
@@ -1566,22 +1621,15 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 		QDir::setCurrent(".//OCRProject//");
 		// 写数据文件
 		//如果是直播的时候中断 ，那么将数据写入本地文档，做备份，待比赛结束，将数据导入服务器
-		if (Global::isHistoryVideo)
-		{
-			Global::historyIdentifyDataFile.setFileName(QString(".//historyIdentifyData//") + Global::historyVideoDate + QString(".txt"));
+		
+		Global::historyIdentifyDataFile.setFileName(QString(".//historyIdentifyData//") + Global::historyVideoDate + QString(".txt"));
 
-		}
-	 
 		// 写 赛程文件 
-
-		if (Global::isHistoryVideo)
-		{
-			raceFile.setFileName(QString(".//historyIdentifyData//") + Global::historyVideoDate + QString("RaceInfo.txt")) ;
-		}
+		raceFile.setFileName(QString(".//historyIdentifyData//") + Global::historyVideoDate + QString("RaceInfo.txt")) ;
 		
 		QString curPath = QDir::currentPath();
 
-		if (!Global::historyIdentifyDataFile.exists())
+		if ( !Global::historyIdentifyDataFile.exists() )
 		{
 
 			if (!Global::historyIdentifyDataFile.open(QIODevice::WriteOnly))
@@ -1593,13 +1641,31 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 		}
 		else
 		{
+			for (int index = 1; index < 10; index ++ )
+			{
+				Global::historyIdentifyDataFile.setFileName(QString(".//historyIdentifyData//") +
+					Global::historyVideoDate +QString("_")+ QString::number(index) + QString(".txt"));
+
+				if (!Global::historyIdentifyDataFile.exists())
+				{
+					if (!Global::historyIdentifyDataFile.open(QIODevice::WriteOnly))
+						qDebug("historyIdentifyDataFile open Failed");
+
+					Global::historyIdentifyDataWS.setFloatingPointPrecision(QDataStream::SinglePrecision);
+					Global::historyIdentifyDataWS.setDevice(&Global::historyIdentifyDataFile);
+					//退出
+					break;
+				}
+			}
+			
+			/*
 			Global::historyIdentifyDataFile.remove();
 			if (!Global::historyIdentifyDataFile.open(QIODevice::WriteOnly))
 				qDebug("historyIdentifyDataFile open Failed");
 
 			Global::historyIdentifyDataWS.setFloatingPointPrecision(QDataStream::SinglePrecision);
 			Global::historyIdentifyDataWS.setDevice(&Global::historyIdentifyDataFile);
-
+			*/
 		}
 		// 赛程文件信息写入
 
@@ -1615,13 +1681,32 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 		}
 		else
 		{
+			for (int index = 1; index < 10; index++)
+			{
+				raceFile.setFileName(QString(".//historyIdentifyData//") + 
+					Global::historyVideoDate + QString("RaceInfo_")+ QString::number(index)+
+					QString(".txt"));
+
+				 
+				if (!raceFile.exists())
+				{
+					if (!raceFile.open(QIODevice::WriteOnly))
+						qDebug("raceFile open Failed");
+
+					raceDataStream.setFloatingPointPrecision(QDataStream::SinglePrecision);
+					raceDataStream.setDevice(&raceFile);
+					//退出
+					break;
+				}
+			}
+			/*
 			raceFile.remove();
 			if (!raceFile.open(QIODevice::WriteOnly))
 				qDebug("historyIdentifyDataFile open Failed");
 
 			raceDataStream.setFloatingPointPrecision(QDataStream::SinglePrecision);
 			raceDataStream.setDevice(&raceFile);
-
+			*/
 		}
 
 
@@ -1926,6 +2011,11 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 	}
 	 
+	//退回到exe路径
+	QString runPath = QCoreApplication::applicationDirPath();
+
+	QDir::setCurrent(runPath);
+
 	//退回上一目录
 //	QDir::setCurrent("../");
 

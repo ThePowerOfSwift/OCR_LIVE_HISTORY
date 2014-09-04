@@ -56,8 +56,10 @@
 #define	 IMAGE_BUFF_LENGTH (720*576*3 + BMP_HEADER )
 
 //"Server", "58.67.161.109", 9068);
-#define  SERVER_IP_ADDRESS QString("58.67.161.109")
-#define  SERVER_PORT 9068 
+/* 
+#define  Global::serverIpAddr QString("58.67.161.109")
+#define  Global::serverPort 9068 
+*/
 //视频种类
  
 enum videoKinds
@@ -122,7 +124,8 @@ public:
 	static bool pauseDataIdentifyTag;//识别标识符
 	// 服务器ip地址，端口号
 
-	
+	static QString serverIpAddr;
+	static qint32  serverPort;
 
 	/***********比赛数据***********/
 	static qint32 raceId;//比赛唯一识别ID，服务端获得

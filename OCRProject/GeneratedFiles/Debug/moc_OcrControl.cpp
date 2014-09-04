@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_OcrControl_t {
-    QByteArrayData data[64];
-    char stringdata[1061];
+    QByteArrayData data[65];
+    char stringdata[1089];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -80,19 +80,20 @@ QT_MOC_LITERAL(47, 707, 25),
 QT_MOC_LITERAL(48, 733, 22),
 QT_MOC_LITERAL(49, 756, 23),
 QT_MOC_LITERAL(50, 780, 27),
-QT_MOC_LITERAL(51, 808, 20),
-QT_MOC_LITERAL(52, 829, 11),
-QT_MOC_LITERAL(53, 841, 24),
-QT_MOC_LITERAL(54, 866, 27),
-QT_MOC_LITERAL(55, 894, 31),
-QT_MOC_LITERAL(56, 926, 16),
-QT_MOC_LITERAL(57, 943, 10),
-QT_MOC_LITERAL(58, 954, 15),
-QT_MOC_LITERAL(59, 970, 12),
-QT_MOC_LITERAL(60, 983, 15),
-QT_MOC_LITERAL(61, 999, 20),
-QT_MOC_LITERAL(62, 1020, 28),
-QT_MOC_LITERAL(63, 1049, 11)
+QT_MOC_LITERAL(51, 808, 27),
+QT_MOC_LITERAL(52, 836, 20),
+QT_MOC_LITERAL(53, 857, 11),
+QT_MOC_LITERAL(54, 869, 24),
+QT_MOC_LITERAL(55, 894, 27),
+QT_MOC_LITERAL(56, 922, 31),
+QT_MOC_LITERAL(57, 954, 16),
+QT_MOC_LITERAL(58, 971, 10),
+QT_MOC_LITERAL(59, 982, 15),
+QT_MOC_LITERAL(60, 998, 12),
+QT_MOC_LITERAL(61, 1011, 15),
+QT_MOC_LITERAL(62, 1027, 20),
+QT_MOC_LITERAL(63, 1048, 28),
+QT_MOC_LITERAL(64, 1077, 11)
     },
     "OcrControl\0connect\0\0disconnect\0login\0"
     "requestHorseInfo\0requestRaceId\0raceNO\0"
@@ -118,6 +119,7 @@ QT_MOC_LITERAL(63, 1049, 11)
     "on_advance1SecBtn_clicked\0"
     "on_pullBackBtn_clicked\0on_pauseCaliBtn_clicked\0"
     "on_inputUserDataBtn_clicked\0"
+    "on_svrConfigSaveBtn_clicked\0"
     "updateAfterUserInput\0DataOutput&\0"
     "getHorseNameFromDataFile\0"
     "is63TAICheckBoxStateChanged\0"
@@ -135,7 +137,7 @@ static const uint qt_meta_data_OcrControl[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      46,   14, // methods
+      47,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -143,54 +145,55 @@ static const uint qt_meta_data_OcrControl[] = {
       12,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    2,  244,    2, 0x06 /* Public */,
-       3,    0,  249,    2, 0x06 /* Public */,
-       4,    0,  250,    2, 0x06 /* Public */,
-       5,    0,  251,    2, 0x06 /* Public */,
-       6,    1,  252,    2, 0x06 /* Public */,
-       8,    1,  255,    2, 0x06 /* Public */,
-      10,    0,  258,    2, 0x06 /* Public */,
-      11,    0,  259,    2, 0x06 /* Public */,
-      12,    0,  260,    2, 0x06 /* Public */,
-      13,    2,  261,    2, 0x06 /* Public */,
-      16,    0,  266,    2, 0x06 /* Public */,
-      17,    0,  267,    2, 0x06 /* Public */,
+       1,    2,  249,    2, 0x06 /* Public */,
+       3,    0,  254,    2, 0x06 /* Public */,
+       4,    0,  255,    2, 0x06 /* Public */,
+       5,    0,  256,    2, 0x06 /* Public */,
+       6,    1,  257,    2, 0x06 /* Public */,
+       8,    1,  260,    2, 0x06 /* Public */,
+      10,    0,  263,    2, 0x06 /* Public */,
+      11,    0,  264,    2, 0x06 /* Public */,
+      12,    0,  265,    2, 0x06 /* Public */,
+      13,    2,  266,    2, 0x06 /* Public */,
+      16,    0,  271,    2, 0x06 /* Public */,
+      17,    0,  272,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      18,    0,  268,    2, 0x0a /* Public */,
-      19,    0,  269,    2, 0x0a /* Public */,
-      20,    0,  270,    2, 0x0a /* Public */,
-      21,    1,  271,    2, 0x0a /* Public */,
-      23,    0,  274,    2, 0x0a /* Public */,
-      24,    0,  275,    2, 0x0a /* Public */,
-      25,    4,  276,    2, 0x0a /* Public */,
-      31,    4,  285,    2, 0x0a /* Public */,
-      32,    2,  294,    2, 0x0a /* Public */,
-      33,    2,  299,    2, 0x0a /* Public */,
-      34,    0,  304,    2, 0x0a /* Public */,
-      35,    0,  305,    2, 0x0a /* Public */,
-      36,    0,  306,    2, 0x0a /* Public */,
-      37,    0,  307,    2, 0x0a /* Public */,
-      38,    1,  308,    2, 0x0a /* Public */,
-      39,    1,  311,    2, 0x0a /* Public */,
-      39,    0,  314,    2, 0x2a /* Public | MethodCloned */,
-      41,    0,  315,    2, 0x0a /* Public */,
-      42,    0,  316,    2, 0x0a /* Public */,
-      43,    0,  317,    2, 0x0a /* Public */,
-      44,    0,  318,    2, 0x0a /* Public */,
-      45,    0,  319,    2, 0x0a /* Public */,
-      46,    0,  320,    2, 0x0a /* Public */,
-      47,    0,  321,    2, 0x0a /* Public */,
-      48,    0,  322,    2, 0x0a /* Public */,
-      49,    0,  323,    2, 0x0a /* Public */,
-      50,    0,  324,    2, 0x0a /* Public */,
-      51,    1,  325,    2, 0x0a /* Public */,
-      53,    0,  328,    2, 0x0a /* Public */,
-      54,    1,  329,    2, 0x0a /* Public */,
-      55,    1,  332,    2, 0x0a /* Public */,
-      56,    1,  335,    2, 0x0a /* Public */,
-      58,    2,  338,    2, 0x0a /* Public */,
-      61,    1,  343,    2, 0x0a /* Public */,
+      18,    0,  273,    2, 0x0a /* Public */,
+      19,    0,  274,    2, 0x0a /* Public */,
+      20,    0,  275,    2, 0x0a /* Public */,
+      21,    1,  276,    2, 0x0a /* Public */,
+      23,    0,  279,    2, 0x0a /* Public */,
+      24,    0,  280,    2, 0x0a /* Public */,
+      25,    4,  281,    2, 0x0a /* Public */,
+      31,    4,  290,    2, 0x0a /* Public */,
+      32,    2,  299,    2, 0x0a /* Public */,
+      33,    2,  304,    2, 0x0a /* Public */,
+      34,    0,  309,    2, 0x0a /* Public */,
+      35,    0,  310,    2, 0x0a /* Public */,
+      36,    0,  311,    2, 0x0a /* Public */,
+      37,    0,  312,    2, 0x0a /* Public */,
+      38,    1,  313,    2, 0x0a /* Public */,
+      39,    1,  316,    2, 0x0a /* Public */,
+      39,    0,  319,    2, 0x2a /* Public | MethodCloned */,
+      41,    0,  320,    2, 0x0a /* Public */,
+      42,    0,  321,    2, 0x0a /* Public */,
+      43,    0,  322,    2, 0x0a /* Public */,
+      44,    0,  323,    2, 0x0a /* Public */,
+      45,    0,  324,    2, 0x0a /* Public */,
+      46,    0,  325,    2, 0x0a /* Public */,
+      47,    0,  326,    2, 0x0a /* Public */,
+      48,    0,  327,    2, 0x0a /* Public */,
+      49,    0,  328,    2, 0x0a /* Public */,
+      50,    0,  329,    2, 0x0a /* Public */,
+      51,    0,  330,    2, 0x0a /* Public */,
+      52,    1,  331,    2, 0x0a /* Public */,
+      54,    0,  334,    2, 0x0a /* Public */,
+      55,    1,  335,    2, 0x0a /* Public */,
+      56,    1,  338,    2, 0x0a /* Public */,
+      57,    1,  341,    2, 0x0a /* Public */,
+      59,    2,  344,    2, 0x0a /* Public */,
+      62,    1,  349,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString, QMetaType::Int,    2,    2,
@@ -234,13 +237,14 @@ static const uint qt_meta_data_OcrControl[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 52,   27,
+    QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 53,   27,
     QMetaType::Void,
     QMetaType::Void, QMetaType::Bool,    2,
     QMetaType::Void, QMetaType::Bool,    2,
-    QMetaType::Void, 0x80000000 | 52,   57,
-    QMetaType::Int, 0x80000000 | 52, 0x80000000 | 52,   59,   60,
-    QMetaType::Void, 0x80000000 | 62,   63,
+    QMetaType::Void, 0x80000000 | 53,   58,
+    QMetaType::Int, 0x80000000 | 53, 0x80000000 | 53,   60,   61,
+    QMetaType::Void, 0x80000000 | 63,   64,
 
        0        // eod
 };
@@ -291,20 +295,21 @@ void OcrControl::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 36: _t->on_pullBackBtn_clicked(); break;
         case 37: _t->on_pauseCaliBtn_clicked(); break;
         case 38: _t->on_inputUserDataBtn_clicked(); break;
-        case 39: _t->updateAfterUserInput((*reinterpret_cast< DataOutput(*)>(_a[1]))); break;
-        case 40: _t->getHorseNameFromDataFile(); break;
-        case 41: _t->is63TAICheckBoxStateChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 42: _t->islockCaliCheckBoxStatusChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 43: _t->writeHistoryData((*reinterpret_cast< DataOutput(*)>(_a[1]))); break;
-        case 44: { int _r = _t->isDataOutputNew((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< DataOutput(*)>(_a[2])));
+        case 39: _t->on_svrConfigSaveBtn_clicked(); break;
+        case 40: _t->updateAfterUserInput((*reinterpret_cast< DataOutput(*)>(_a[1]))); break;
+        case 41: _t->getHorseNameFromDataFile(); break;
+        case 42: _t->is63TAICheckBoxStateChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 43: _t->islockCaliCheckBoxStatusChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 44: _t->writeHistoryData((*reinterpret_cast< DataOutput(*)>(_a[1]))); break;
+        case 45: { int _r = _t->isDataOutputNew((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< DataOutput(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 45: _t->getClientSocketState((*reinterpret_cast< QAbstractSocket::SocketState(*)>(_a[1]))); break;
+        case 46: _t->getClientSocketState((*reinterpret_cast< QAbstractSocket::SocketState(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 45:
+        case 46:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
@@ -415,13 +420,13 @@ int OcrControl::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 46)
+        if (_id < 47)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 46;
+        _id -= 47;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 46)
+        if (_id < 47)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 46;
+        _id -= 47;
     }
     return _id;
 }

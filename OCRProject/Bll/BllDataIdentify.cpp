@@ -874,7 +874,7 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 		bool emptyData = (mYZTDataIdentify).read(imageTemp, imageBuf, (IMAGE_BUFF_LENGTH - BMP_HEADER),
 			IMAGE_HEIGHT, IMAGE_WIDTH);
 
-		if (emptyData == true)
+		if ( emptyData == true )
 		{
 			qDebug() << "empty image data" << endl;
 
@@ -911,7 +911,7 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 
 		(mYZTDataIdentify).dataOutput.videoProgressPercent = progressPercent;
 
-		if ((mYZTDataIdentify).haveDataFlag == false) //广告
+		if ((mYZTDataIdentify).haveDataFlag == false | rtValue == EXIT_THIS_OCR ) //广告
 		{
 			//显示图片，但是不输出结果
 			emit readyReadBmp((mYZTDataIdentify).dataOutput, byteArray, imageWidth, imageHeight);
@@ -991,13 +991,13 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 		(mHK18DataIdentify).dataOutput.videoProgressPercent = progressPercent;
 
 
-		if ((mHK18DataIdentify).haveDataFlag == false) //广告
+		if ((mHK18DataIdentify).haveDataFlag == false | rtValue == EXIT_THIS_OCR ) //广告
 		{
 			//显示图片，但是不输出结果
 			emit readyReadBmp((mHK18DataIdentify).dataOutput, byteArray, imageWidth, imageHeight);
 
 		}
-		else if ((mHK18DataIdentify).haveDataFlag == true)
+		else if ((mHK18DataIdentify).haveDataFlag == true | rtValue == EXIT_THIS_OCR )
 		{
 			//获取算法数据
 			DataOutput outputStruct = (mHK18DataIdentify).dataOutput;
@@ -1072,7 +1072,7 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 			(mHK63D14DataIdentify).dataOutput.videoProgressPercent = progressPercent;
 
 
-			if ((mHK63D14DataIdentify).haveDataFlag == false) //广告
+			if ((mHK63D14DataIdentify).haveDataFlag == false | rtValue == EXIT_THIS_OCR ) //广告
 			{
 				//显示图片，但是不输出结果
 				emit readyReadBmp((mHK63D14DataIdentify).dataOutput, byteArray, imageWidth, imageHeight);
@@ -1080,6 +1080,8 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 			}
 			else if ((mHK63D14DataIdentify).haveDataFlag == true)
 			{
+
+
 				//获取算法数据
 				DataOutput outputStruct = (mHK63D14DataIdentify).dataOutput;
 				//数据处理，屏蔽无效数据为-1
@@ -1106,6 +1108,7 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 
 			return 1;
 		}
+		// Hk18 D14 
 		else
 		{
 			bool emptyData = (mHK18D14DataIdentify).read(imageTemp, imageBuf, (IMAGE_BUFF_LENGTH - BMP_HEADER),
@@ -1150,13 +1153,15 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 			(mHK18D14DataIdentify).dataOutput.videoProgressPercent = progressPercent;
 
 
-			if ((mHK18D14DataIdentify).haveDataFlag == false) //广告
+		 
+
+			if ((mHK18D14DataIdentify).haveDataFlag == false | rtValue == EXIT_THIS_OCR )  //广告
 			{
 				//显示图片，但是不输出结果
 				emit readyReadBmp((mHK18D14DataIdentify).dataOutput, byteArray, imageWidth, imageHeight);
 
 			}
-			else if ((mHK18D14DataIdentify).haveDataFlag == true)
+			else if ((mHK18D14DataIdentify).haveDataFlag == true )
 			{
 				//获取算法数据
 				DataOutput outputStruct = (mHK18D14DataIdentify).dataOutput;
@@ -1185,7 +1190,8 @@ int BllDataIdentify::algorithmExecHistory(int videoType, uchar * imageBuf, Mat &
 
 		}
 	}
-		
+	
+	return EXEC_SUCCESS;
 }
 
 /**/
@@ -1206,8 +1212,10 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 
 	if (emptyData == true)
 	{
-		qDebug() << "empty image data" << endl;
-
+		//写入系统日志
+		Global::systemLog->append(QString(tr("错误")), QString(tr("读取图像为空"))
+			, SystemLog::INFO_TYPE);
+		 
 	}
 
 	int imageWidth;
@@ -1238,6 +1246,10 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 	}
 	else if (dataIdentifyClass.haveDataFlag == true)
 	{
+		//写入系统日志
+		Global::systemLog->append(QString(tr("信息")), tr("数据为比赛数据"),
+			 SystemLog::INFO_TYPE);
+
 		//获取算法数据
 		DataOutput outputStruct = dataIdentifyClass.dataOutput;
 		//数据处理，屏蔽无效数据为-1
@@ -1255,6 +1267,10 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 			{
 				writeOutputDataIntoBuffer( outputStruct );
 
+				//写入系统日志
+				Global::systemLog->append(QString(tr("BLLDataIdentify WIN ")), QString::number(outputStruct.WIN[3]),
+					SystemLog::INFO_TYPE);
+				
 			}
 		//	else
 			{
@@ -1271,8 +1287,14 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 			{ 
 				emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
 			}
+
+			//写入系统日志
+			Global::systemLog->append(QString(tr("信息")), tr("数据为广告"),
+				SystemLog::INFO_TYPE);
+
 		}
-		qDebug() << "【BllDataIdentify】一帧图像识别时间：" << endl;
+		
+ 
 	}
 
 	return 1;

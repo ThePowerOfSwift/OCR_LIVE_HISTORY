@@ -58,6 +58,7 @@ LONG IAcq::unLoadDevice()
 		return CAP_EC_ERROR_STATE;
 	}
  
+	return 1 ;
 }
 
 QString IAcq::getTestImageName()

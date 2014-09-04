@@ -158,54 +158,54 @@ private:
  
 
 //场次号位置
-#define SESSION_POS_RECT cvRect(267,38,285-267,60-38)
+#define SESSION_POS_RECT_LIVE cvRect(267,38,285-267,60-38)
 //分钟位置
 // 十位数
-#define  COUNTDOWNMINUTE_POS_RECT1 cvRect(567,37,575-567,54-37)
+#define  COUNTDOWNMINUTE_POS_RECT1_LIVE cvRect(567,37,575-567,54-37)
 //个位数
-#define  COUNTDOWNMINUTE_POS_RECT2 cvRect(576,37,587-576,54-37)
+#define  COUNTDOWNMINUTE_POS_RECT2_LIVE cvRect(576,37,587-576,54-37)
 
 // WIN PLA
-#define  WIN_POS_RECT cvRect(136,65,38,363-65)
+#define  WIN_POS_RECT_LIVE cvRect(136,65,38,363-65)
 // PLA 
-#define  PLA_POS_RECT cvRect(216,65,38,363-65)
+#define  PLA_POS_RECT_LIVE cvRect(216,65,38,363-65)
 
 //QIN QPL标签位置
-#define  QINQPL_LABEL_POS_RECT cvRect(126,381,12,17)
+#define  QINQPL_LABEL_POS_RECT_LIVE cvRect(126,381,12,17)
 
 // QIN QPL 位置
-#define		WHOLE_QINQPL_POS_RECT  cvRect(9, 376, 697, 197)
-#define		QINQPL_POS_RECT cvRect(69, 22, 563, 137)
+#define		WHOLE_QINQPL_POS_RECT_LIVE  cvRect(9, 376, 697, 197)
+#define		QINQPL_POS_RECT_LIVE cvRect(69, 22, 563, 137)
  
-#define  LB_REGION1_RECT cvRect(0, 19, 43, 116)
-#define  LB_REGION2_RECT cvRect(42, 38, 36, 99)
-#define  LB_REGION3_RECT cvRect(77, 56, 38, 79)
-#define  LB_REGION4_RECT cvRect(114, 74, 38, 62)
-#define  LB_REGION5_RECT cvRect(149, 95, 186 - 149 + 1, 40)
-#define  LB_REGION6_RECT cvRect(188, 111, 225 - 188 + 1, 24)
+#define  LB_REGION1_RECT_LIVE cvRect(0, 19, 43, 116)
+#define  LB_REGION2_RECT_LIVE cvRect(42, 38, 36, 99)
+#define  LB_REGION3_RECT_LIVE cvRect(77, 56, 38, 79)
+#define  LB_REGION4_RECT_LIVE cvRect(114, 74, 38, 62)
+#define  LB_REGION5_RECT_LIVE cvRect(149, 95, 186 - 149 + 1, 40)
+#define  LB_REGION6_RECT_LIVE cvRect(188, 111, 225 - 188 + 1, 24)
 
-#define RU_REGION1_RECT  cvRect(81, 0, 36, 21)
-#define RU_REGION2_RECT  cvRect(117, 0, 38, 40)
-#define RU_REGION3_RECT  cvRect(154, 0, 190 - 154 + 1, 60)
-#define RU_REGION4_RECT  cvRect(190, 0, 227 - 190 + 1, 78)
-#define RU_REGION5_RECT  cvRect(227, 0, 263 - 227 + 1, 96)
-#define RU_REGION6_RECT  cvRect(263, 0, 302 - 263 + 1, 115)
+#define RU_REGION1_RECT_LIVE  cvRect(81, 0, 36, 21)
+#define RU_REGION2_RECT_LIVE  cvRect(117, 0, 38, 40)
+#define RU_REGION3_RECT_LIVE  cvRect(154, 0, 190 - 154 + 1, 60)
+#define RU_REGION4_RECT_LIVE  cvRect(190, 0, 227 - 190 + 1, 78)
+#define RU_REGION5_RECT_LIVE  cvRect(227, 0, 263 - 227 + 1, 96)
+#define RU_REGION6_RECT_LIVE  cvRect(263, 0, 302 - 263 + 1, 115)
 
-#define R_REGION1_RECT  cvRect(300, 0, 36 + 1, 136)
-#define R_REGION2_RECT cvRect(336, 0, 36, 136)
-#define R_REGION3_RECT cvRect(373, 0, 37, 136)
-#define R_REGION4_RECT cvRect(409, 0, 447 - 409 + 1, 136)
-#define R_REGION5_RECT cvRect(447, 0, 481 - 447 , 136)
-#define R_REGION6_RECT cvRect(481, 0, 36 , 136)
-#define R_REGION7_RECT cvRect(517, 0, 557 - 519 , 136)
+#define R_REGION1_RECT_LIVE  cvRect(300, 0, 36 + 1, 136)
+#define R_REGION2_RECT_LIVE cvRect(336, 0, 36, 136)
+#define R_REGION3_RECT_LIVE cvRect(373, 0, 37, 136)
+#define R_REGION4_RECT_LIVE cvRect(409, 0, 447 - 409 + 1, 136)
+#define R_REGION5_RECT_LIVE cvRect(447, 0, 481 - 447 , 136)
+#define R_REGION6_RECT_LIVE cvRect(481, 0, 36 , 136)
+#define R_REGION7_RECT_LIVE cvRect(517, 0, 557 - 519 , 136)
 
 // 马名位置 
-#define HORSENAME_REGION_RECT cvRect(69,65,134-69,370-65)
+#define HORSENAME_REGION_RECT_LIVE cvRect(69,65,134-69,370-65)
 
 
 
-#define  NUMBER_HEIGHT 18 
-#define  NUMBER_WIDTH 36
+#define  NUMBER_HEIGHT_LIVE 18 
+#define  NUMBER_WIDTH_LIVE 36
 
 
  #endif

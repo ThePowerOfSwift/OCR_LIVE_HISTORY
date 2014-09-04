@@ -1001,6 +1001,7 @@ int YZTDataIdentify::setSessionRectPos()
 
 	sessionPosStruct.rect[0] = SESSION_POS_RECT;
  
+	return EXEC_SUCCESS;
 }
 
 //设置 倒计时位置 
@@ -1014,7 +1015,7 @@ int YZTDataIdentify::setCountDownRectPos()
 	countDownMinutePosStruct.rect[0] = COUNTDOWNMINUTE_POS_RECT1;
 	//个位数
 	countDownMinutePosStruct.rect[1] = COUNTDOWNMINUTE_POS_RECT2;
-
+	return EXEC_SUCCESS;
 	
 }
 //识别马名 
@@ -1321,21 +1322,21 @@ int YZTDataIdentify::getQINQPLIdentify()
 			//rect[2][0].x = 0;	rect[2][1].x = 11;		rect[2][2].x = 22;			// for three number without dot
 			rect[2][0].x = 0;	rect[2][1].x =7;		rect[2][2].x = 14;			// for three number without dot
 
-			for (int i = 0; i < 3; i++)													// set the rect for single number in number region
+			for (int r = 0; r < 3; r++)													// set the rect for single number in number region
 			{
-				for (int j = 0; j < 3; j++)
+				for (int c= 0; c < 3; c++)
 				{
-					rect[i][j].y = 0;
+					rect[r][c].y = 0;
 					if (j < 2)
 					{
-						rect[i][j].width = rect[i][j + 1].x - rect[i][j].x;
+						rect[r][c].width = rect[r][c + 1].x - rect[r][c].x;
 					}
 					else
 					{
-						rect[i][j].width = roiNewSize.width - rect[i][j].x;
+						rect[r][c].width = roiNewSize.width - rect[r][c].x;
 
 					}
-					rect[i][j].height = qinQPLPosStruct.rect[i][j].height;
+					rect[r][c].height = qinQPLPosStruct.rect[r][c].height;
 				}
 			}
 
@@ -1602,7 +1603,7 @@ int YZTDataIdentify::getCountDownIdentify()
 
 	//	result1 += result1 * 10 + result2;
 	//	dataOutput.raceTime = (int)(result1); //倒计时为分钟数
-
+	return EXEC_SUCCESS;
 }
  
 
@@ -2262,6 +2263,7 @@ int  YZTDataIdentify::calculateXBewttenNumber(Mat &mat, int  *x )
 		}
 		return EXEC_SUCCESS;
 	}
+	return EXEC_SUCCESS;
 }
 
 /*

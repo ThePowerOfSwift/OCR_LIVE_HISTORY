@@ -45,6 +45,10 @@ bool Global::stopDataIdentifyTag = false;//模拟采集标志符,开始模拟:fa
 
 
 bool Global::pauseDataIdentifyTag = false;//识别标识符
+// 服务器 地址和端口号
+
+QString Global::serverIpAddr = QString("");
+qint32  Global::serverPort = 0;
 
 
 // 标记，是否为 实时直播
@@ -153,7 +157,7 @@ void Global::init()
 	initQss();
 
 	//服务器网络通讯接口
-	mcsNetClient = new Network("Server", SERVER_IP_ADDRESS, SERVER_PORT );
+	mcsNetClient = new Network("Server", Global::serverIpAddr, Global::serverPort );
 	S_CCycleBuffer = new CCycleBuffer();
 	sendDataCCycleBuffer = new CCycleBuffer();
 	//写入系统日志

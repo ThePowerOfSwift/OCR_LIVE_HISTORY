@@ -34,7 +34,7 @@ QT_BEGIN_NAMESPACE
 class Ui_OcrControl
 {
 public:
-    QVBoxLayout *verticalLayout_22;
+    QHBoxLayout *horizontalLayout_15;
     QVBoxLayout *verticalLayout_2;
     QHBoxLayout *horizontalLayout;
     QVBoxLayout *verticalLayout;
@@ -75,7 +75,7 @@ public:
     QPushButton *loadFileBtn;
     QPushButton *appendFileBtn;
     QPushButton *delFileBtn;
-    QPushButton *delFileBtn_2;
+    QPushButton *videoStartFrameCountBtn;
     QLineEdit *videoPosLineEdit;
     QVBoxLayout *verticalLayout_21;
     QLabel *label_33;
@@ -136,23 +136,31 @@ public:
     QSpacerItem *horizontalSpacer;
     QVBoxLayout *verticalLayout_13;
     QFrame *frame_4;
-    QVBoxLayout *verticalLayout_17;
+    QHBoxLayout *horizontalLayout_14;
+    QHBoxLayout *horizontalLayout_11;
     QHBoxLayout *horizontalLayout_6;
-    QHBoxLayout *horizontalLayout_5;
-    QVBoxLayout *verticalLayout_16;
-    QHBoxLayout *horizontalLayout_3;
-    QPushButton *connectBtn;
-    QPushButton *loginBtn;
-    QCheckBox *reconnectCheckBox;
-    QPushButton *disconnectBtn;
     QHBoxLayout *horizontalLayout_4;
-    QVBoxLayout *verticalLayout_15;
-    QVBoxLayout *verticalLayout_10;
-    QCheckBox *is63TAICheckBox;
+    QHBoxLayout *horizontalLayout_3;
     QVBoxLayout *verticalLayout_9;
+    QPushButton *connectBtn;
+    QCheckBox *reconnectCheckBox;
+    QVBoxLayout *verticalLayout_10;
+    QPushButton *loginBtn;
+    QPushButton *disconnectBtn;
+    QCheckBox *is63TAICheckBox;
+    QVBoxLayout *verticalLayout_14;
     QComboBox *videoTypeComboBox;
     QPushButton *startAcqBtn;
     QPushButton *stopAcqBtn;
+    QHBoxLayout *horizontalLayout_5;
+    QVBoxLayout *verticalLayout_16;
+    QLabel *label_38;
+    QLabel *label_39;
+    QLabel *label_40;
+    QVBoxLayout *verticalLayout_15;
+    QLineEdit *svrIpAddrLineEdit;
+    QLineEdit *svrPortLineEdit;
+    QPushButton *svrConfigSaveBtn;
     QTextBrowser *textBrowser;
 
     void setupUi(QWidget *OcrControl)
@@ -160,10 +168,10 @@ public:
         if (OcrControl->objectName().isEmpty())
             OcrControl->setObjectName(QStringLiteral("OcrControl"));
         OcrControl->resize(1051, 877);
-        verticalLayout_22 = new QVBoxLayout(OcrControl);
-        verticalLayout_22->setSpacing(6);
-        verticalLayout_22->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_22->setObjectName(QStringLiteral("verticalLayout_22"));
+        horizontalLayout_15 = new QHBoxLayout(OcrControl);
+        horizontalLayout_15->setSpacing(6);
+        horizontalLayout_15->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_15->setObjectName(QStringLiteral("horizontalLayout_15"));
         verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
@@ -380,10 +388,10 @@ public:
 
         verticalLayout_3->addWidget(delFileBtn);
 
-        delFileBtn_2 = new QPushButton(groupBox);
-        delFileBtn_2->setObjectName(QStringLiteral("delFileBtn_2"));
+        videoStartFrameCountBtn = new QPushButton(groupBox);
+        videoStartFrameCountBtn->setObjectName(QStringLiteral("videoStartFrameCountBtn"));
 
-        verticalLayout_3->addWidget(delFileBtn_2);
+        verticalLayout_3->addWidget(videoStartFrameCountBtn);
 
         videoPosLineEdit = new QLineEdit(groupBox);
         videoPosLineEdit->setObjectName(QStringLiteral("videoPosLineEdit"));
@@ -475,7 +483,6 @@ public:
 
         verticalLayout_19->addWidget(groupBox);
 
-        verticalLayout_19->setStretch(1, 1);
         verticalLayout_19->setStretch(2, 10);
 
         horizontalLayout_8->addLayout(verticalLayout_19);
@@ -826,113 +833,153 @@ public:
         frame_4->setStyleSheet(QStringLiteral(""));
         frame_4->setFrameShape(QFrame::StyledPanel);
         frame_4->setFrameShadow(QFrame::Raised);
-        verticalLayout_17 = new QVBoxLayout(frame_4);
-        verticalLayout_17->setSpacing(6);
-        verticalLayout_17->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_17->setObjectName(QStringLiteral("verticalLayout_17"));
+        horizontalLayout_14 = new QHBoxLayout(frame_4);
+        horizontalLayout_14->setSpacing(6);
+        horizontalLayout_14->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_14->setObjectName(QStringLiteral("horizontalLayout_14"));
+        horizontalLayout_11 = new QHBoxLayout();
+        horizontalLayout_11->setSpacing(6);
+        horizontalLayout_11->setObjectName(QStringLiteral("horizontalLayout_11"));
         horizontalLayout_6 = new QHBoxLayout();
         horizontalLayout_6->setSpacing(6);
         horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
+        horizontalLayout_4 = new QHBoxLayout();
+        horizontalLayout_4->setSpacing(6);
+        horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
+        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3->setSpacing(6);
+        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+        verticalLayout_9 = new QVBoxLayout();
+        verticalLayout_9->setSpacing(6);
+        verticalLayout_9->setObjectName(QStringLiteral("verticalLayout_9"));
+        connectBtn = new QPushButton(frame_4);
+        connectBtn->setObjectName(QStringLiteral("connectBtn"));
+
+        verticalLayout_9->addWidget(connectBtn);
+
+        reconnectCheckBox = new QCheckBox(frame_4);
+        reconnectCheckBox->setObjectName(QStringLiteral("reconnectCheckBox"));
+
+        verticalLayout_9->addWidget(reconnectCheckBox);
+
+
+        horizontalLayout_3->addLayout(verticalLayout_9);
+
+        verticalLayout_10 = new QVBoxLayout();
+        verticalLayout_10->setSpacing(6);
+        verticalLayout_10->setObjectName(QStringLiteral("verticalLayout_10"));
+        loginBtn = new QPushButton(frame_4);
+        loginBtn->setObjectName(QStringLiteral("loginBtn"));
+
+        verticalLayout_10->addWidget(loginBtn);
+
+        disconnectBtn = new QPushButton(frame_4);
+        disconnectBtn->setObjectName(QStringLiteral("disconnectBtn"));
+
+        verticalLayout_10->addWidget(disconnectBtn);
+
+
+        horizontalLayout_3->addLayout(verticalLayout_10);
+
+
+        horizontalLayout_4->addLayout(horizontalLayout_3);
+
+        is63TAICheckBox = new QCheckBox(frame_4);
+        is63TAICheckBox->setObjectName(QStringLiteral("is63TAICheckBox"));
+
+        horizontalLayout_4->addWidget(is63TAICheckBox);
+
+
+        horizontalLayout_6->addLayout(horizontalLayout_4);
+
+        verticalLayout_14 = new QVBoxLayout();
+        verticalLayout_14->setSpacing(6);
+        verticalLayout_14->setObjectName(QStringLiteral("verticalLayout_14"));
+        videoTypeComboBox = new QComboBox(frame_4);
+        videoTypeComboBox->setObjectName(QStringLiteral("videoTypeComboBox"));
+
+        verticalLayout_14->addWidget(videoTypeComboBox);
+
+        startAcqBtn = new QPushButton(frame_4);
+        startAcqBtn->setObjectName(QStringLiteral("startAcqBtn"));
+
+        verticalLayout_14->addWidget(startAcqBtn);
+
+        stopAcqBtn = new QPushButton(frame_4);
+        stopAcqBtn->setObjectName(QStringLiteral("stopAcqBtn"));
+
+        verticalLayout_14->addWidget(stopAcqBtn);
+
+
+        horizontalLayout_6->addLayout(verticalLayout_14);
+
         horizontalLayout_5 = new QHBoxLayout();
         horizontalLayout_5->setSpacing(6);
         horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
         verticalLayout_16 = new QVBoxLayout();
         verticalLayout_16->setSpacing(6);
         verticalLayout_16->setObjectName(QStringLiteral("verticalLayout_16"));
-        horizontalLayout_3 = new QHBoxLayout();
-        horizontalLayout_3->setSpacing(6);
-        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
-        connectBtn = new QPushButton(frame_4);
-        connectBtn->setObjectName(QStringLiteral("connectBtn"));
+        label_38 = new QLabel(frame_4);
+        label_38->setObjectName(QStringLiteral("label_38"));
 
-        horizontalLayout_3->addWidget(connectBtn);
+        verticalLayout_16->addWidget(label_38);
 
-        loginBtn = new QPushButton(frame_4);
-        loginBtn->setObjectName(QStringLiteral("loginBtn"));
+        label_39 = new QLabel(frame_4);
+        label_39->setObjectName(QStringLiteral("label_39"));
 
-        horizontalLayout_3->addWidget(loginBtn);
+        verticalLayout_16->addWidget(label_39);
 
+        label_40 = new QLabel(frame_4);
+        label_40->setObjectName(QStringLiteral("label_40"));
 
-        verticalLayout_16->addLayout(horizontalLayout_3);
-
-        reconnectCheckBox = new QCheckBox(frame_4);
-        reconnectCheckBox->setObjectName(QStringLiteral("reconnectCheckBox"));
-
-        verticalLayout_16->addWidget(reconnectCheckBox);
-
-        disconnectBtn = new QPushButton(frame_4);
-        disconnectBtn->setObjectName(QStringLiteral("disconnectBtn"));
-
-        verticalLayout_16->addWidget(disconnectBtn);
+        verticalLayout_16->addWidget(label_40);
 
 
         horizontalLayout_5->addLayout(verticalLayout_16);
 
-        horizontalLayout_4 = new QHBoxLayout();
-        horizontalLayout_4->setSpacing(6);
-        horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
         verticalLayout_15 = new QVBoxLayout();
         verticalLayout_15->setSpacing(6);
         verticalLayout_15->setObjectName(QStringLiteral("verticalLayout_15"));
-        verticalLayout_10 = new QVBoxLayout();
-        verticalLayout_10->setSpacing(6);
-        verticalLayout_10->setObjectName(QStringLiteral("verticalLayout_10"));
-        is63TAICheckBox = new QCheckBox(frame_4);
-        is63TAICheckBox->setObjectName(QStringLiteral("is63TAICheckBox"));
+        svrIpAddrLineEdit = new QLineEdit(frame_4);
+        svrIpAddrLineEdit->setObjectName(QStringLiteral("svrIpAddrLineEdit"));
 
-        verticalLayout_10->addWidget(is63TAICheckBox);
+        verticalLayout_15->addWidget(svrIpAddrLineEdit);
 
+        svrPortLineEdit = new QLineEdit(frame_4);
+        svrPortLineEdit->setObjectName(QStringLiteral("svrPortLineEdit"));
 
-        verticalLayout_15->addLayout(verticalLayout_10);
+        verticalLayout_15->addWidget(svrPortLineEdit);
 
+        svrConfigSaveBtn = new QPushButton(frame_4);
+        svrConfigSaveBtn->setObjectName(QStringLiteral("svrConfigSaveBtn"));
 
-        horizontalLayout_4->addLayout(verticalLayout_15);
-
-        verticalLayout_9 = new QVBoxLayout();
-        verticalLayout_9->setSpacing(6);
-        verticalLayout_9->setObjectName(QStringLiteral("verticalLayout_9"));
-        videoTypeComboBox = new QComboBox(frame_4);
-        videoTypeComboBox->setObjectName(QStringLiteral("videoTypeComboBox"));
-
-        verticalLayout_9->addWidget(videoTypeComboBox);
-
-        startAcqBtn = new QPushButton(frame_4);
-        startAcqBtn->setObjectName(QStringLiteral("startAcqBtn"));
-
-        verticalLayout_9->addWidget(startAcqBtn);
-
-        stopAcqBtn = new QPushButton(frame_4);
-        stopAcqBtn->setObjectName(QStringLiteral("stopAcqBtn"));
-
-        verticalLayout_9->addWidget(stopAcqBtn);
+        verticalLayout_15->addWidget(svrConfigSaveBtn);
 
 
-        horizontalLayout_4->addLayout(verticalLayout_9);
-
-
-        horizontalLayout_5->addLayout(horizontalLayout_4);
+        horizontalLayout_5->addLayout(verticalLayout_15);
 
 
         horizontalLayout_6->addLayout(horizontalLayout_5);
 
+
+        horizontalLayout_11->addLayout(horizontalLayout_6);
+
         textBrowser = new QTextBrowser(frame_4);
         textBrowser->setObjectName(QStringLiteral("textBrowser"));
 
-        horizontalLayout_6->addWidget(textBrowser);
+        horizontalLayout_11->addWidget(textBrowser);
 
-        horizontalLayout_6->setStretch(0, 4);
-        horizontalLayout_6->setStretch(1, 6);
 
-        verticalLayout_17->addLayout(horizontalLayout_6);
+        horizontalLayout_14->addLayout(horizontalLayout_11);
 
 
         verticalLayout_2->addWidget(frame_4);
 
         verticalLayout_2->setStretch(0, 16);
         verticalLayout_2->setStretch(1, 5);
-        verticalLayout_2->setStretch(2, 1);
+        verticalLayout_2->setStretch(2, 4);
 
-        verticalLayout_22->addLayout(verticalLayout_2);
+        horizontalLayout_15->addLayout(verticalLayout_2);
 
 
         retranslateUi(OcrControl);
@@ -961,7 +1008,7 @@ public:
         loadFileBtn->setText(QApplication::translate("OcrControl", "\350\275\275\345\205\245\345\216\206\345\217\262\350\247\206\351\242\221", 0));
         appendFileBtn->setText(QApplication::translate("OcrControl", "\350\277\275\345\212\240\346\226\207\344\273\266", 0));
         delFileBtn->setText(QApplication::translate("OcrControl", "\345\210\240\351\231\244\345\244\264\346\226\207\344\273\266", 0));
-        delFileBtn_2->setText(QApplication::translate("OcrControl", "\350\247\206\351\242\221\350\265\267\345\247\213\345\270\247\346\225\260", 0));
+        videoStartFrameCountBtn->setText(QApplication::translate("OcrControl", "\350\247\206\351\242\221\350\265\267\345\247\213\345\270\247\346\225\260", 0));
         label_33->setText(QApplication::translate("OcrControl", "\350\247\206\351\242\221\345\244\204\347\220\206\350\277\233\345\272\246", 0));
         pauseCaliBtn->setText(QApplication::translate("OcrControl", "\346\232\202\345\201\234", 0));
         inputUserDataBtn->setText(QApplication::translate("OcrControl", "\350\276\223\345\205\245", 0));
@@ -1007,8 +1054,8 @@ public:
         label_13->setText(QApplication::translate("OcrControl", "7", 0));
         imageFileNameLabel->setText(QApplication::translate("OcrControl", "imageName", 0));
         connectBtn->setText(QApplication::translate("OcrControl", "\350\277\236\346\216\245", 0));
-        loginBtn->setText(QApplication::translate("OcrControl", "\347\231\273\351\231\206", 0));
         reconnectCheckBox->setText(QApplication::translate("OcrControl", "\350\207\252\345\212\250\351\207\215\350\277\236", 0));
+        loginBtn->setText(QApplication::translate("OcrControl", "\347\231\273\351\231\206", 0));
         disconnectBtn->setText(QApplication::translate("OcrControl", "\346\226\255\345\274\200", 0));
         is63TAICheckBox->setText(QApplication::translate("OcrControl", "63\345\217\260", 0));
         videoTypeComboBox->clear();
@@ -1020,6 +1067,10 @@ public:
         );
         startAcqBtn->setText(QApplication::translate("OcrControl", "\345\274\200\345\247\213\351\207\207\351\233\206", 0));
         stopAcqBtn->setText(QApplication::translate("OcrControl", "\345\201\234\346\255\242\351\207\207\351\233\206", 0));
+        label_38->setText(QApplication::translate("OcrControl", "\346\234\215\345\212\241\345\231\250\345\234\260\345\235\200", 0));
+        label_39->setText(QApplication::translate("OcrControl", "\347\253\257\345\217\243", 0));
+        label_40->setText(QString());
+        svrConfigSaveBtn->setText(QApplication::translate("OcrControl", "\344\277\235\345\255\230\350\256\276\347\275\256", 0));
     } // retranslateUi
 
 };
