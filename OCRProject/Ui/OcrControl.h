@@ -174,8 +174,15 @@ public slots:
 
 	int  isDataOutputNew(DataOutput &outputStruct,DataOutput &priOutputStruct);
 	void getClientSocketState(QAbstractSocket::SocketState socketState);
+
+
+	// 初始化用户界面
+
+	void initUi();
 signals:
-	void connect(QString,qint32);
+	void connectToServer(QString,qint32);
+	void connectToServer1(QString, qint32);
+
 	void disconnect();
 	void login();
 	void requestHorseInfo();
@@ -195,8 +202,13 @@ signals:
 
 private:
 	Ui::OcrControl ui;
-	BllRealTimeTrans* bllRealTimeTrans;//实时采集
-	ThreadRealTime* threadRealTime;//实时采集线程
+	BllRealTimeTrans* bllRealTimeTrans;//实时传输
+	ThreadRealTime* threadRealTime;//实时传输 
+	//第二个服务器 发送数据 
+	BllRealTimeTrans *bllRealTimeTrans1;
+	ThreadRealTime *threadRealTime1;
+
+
 	BllDataIdentify* bllDataIdentify;//数据识别
 	ThreadDataIdentify* threadDataIdentify;//数据识别线程
 

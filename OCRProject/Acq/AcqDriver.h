@@ -14,7 +14,7 @@
 
 #include "bll/ReadHistoryVideo.h"
 
-//#define	OFFLINE_DEBUG 
+#define	OFFLINE_DEBUG 
 //#define CALLBACK_MODE 
 
 class AcqDriver :public QObject

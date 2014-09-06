@@ -154,7 +154,7 @@ public:
     QPushButton *stopAcqBtn;
     QHBoxLayout *horizontalLayout_5;
     QVBoxLayout *verticalLayout_16;
-    QLabel *label_38;
+    QComboBox *serverNameComboBox;
     QLabel *label_39;
     QLabel *label_40;
     QVBoxLayout *verticalLayout_15;
@@ -919,10 +919,10 @@ public:
         verticalLayout_16 = new QVBoxLayout();
         verticalLayout_16->setSpacing(6);
         verticalLayout_16->setObjectName(QStringLiteral("verticalLayout_16"));
-        label_38 = new QLabel(frame_4);
-        label_38->setObjectName(QStringLiteral("label_38"));
+        serverNameComboBox = new QComboBox(frame_4);
+        serverNameComboBox->setObjectName(QStringLiteral("serverNameComboBox"));
 
-        verticalLayout_16->addWidget(label_38);
+        verticalLayout_16->addWidget(serverNameComboBox);
 
         label_39 = new QLabel(frame_4);
         label_39->setObjectName(QStringLiteral("label_39"));
@@ -1067,7 +1067,12 @@ public:
         );
         startAcqBtn->setText(QApplication::translate("OcrControl", "\345\274\200\345\247\213\351\207\207\351\233\206", 0));
         stopAcqBtn->setText(QApplication::translate("OcrControl", "\345\201\234\346\255\242\351\207\207\351\233\206", 0));
-        label_38->setText(QApplication::translate("OcrControl", "\346\234\215\345\212\241\345\231\250\345\234\260\345\235\200", 0));
+        serverNameComboBox->clear();
+        serverNameComboBox->insertItems(0, QStringList()
+         << QApplication::translate("OcrControl", "\346\234\215\345\212\241\345\231\250", 0)
+         << QApplication::translate("OcrControl", "\346\234\215\345\212\241\345\231\2501", 0)
+         << QApplication::translate("OcrControl", "\346\234\215\345\212\241\345\231\2502", 0)
+        );
         label_39->setText(QApplication::translate("OcrControl", "\347\253\257\345\217\243", 0));
         label_40->setText(QString());
         svrConfigSaveBtn->setText(QApplication::translate("OcrControl", "\344\277\235\345\255\230\350\256\276\347\275\256", 0));

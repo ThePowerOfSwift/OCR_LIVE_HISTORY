@@ -113,23 +113,6 @@ void BllDataIdentify::init()
 {
  
 }
-/**
-* @brief 场次号被用户校正改变 ，
-*/
-void BllDataIdentify::sessionNumTextChanged()
-{
-	qDebug("BllDataIdentify: sessionNumTextChanged \n");
-
-}
-
-/**
-* @brief 倒计时 被用户校正改变 ，
-*/
-void BllDataIdentify::sessionCountDownTextChanged()
-{
-	qDebug("BllDataIdentify: sessionCountDownTextChanged \n");
-
-}
 
 
 /**
@@ -720,7 +703,7 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 	{
 		Global::isSessionChanged = false;
 
-		Global::isSessionRaceIdRequested = false;
+		
 		//请求新场次号
 		emit requestRaceIdSig(Global::session);
 
@@ -1259,17 +1242,11 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 		//数据有改变才会发送信号
 		if (outputStruct.changeStatus >= 0)
 		{
-			//为了与raceID保持同步，必须在获取raceID后才能写入buffer
-			// isSessionRaceIdRequested 在场次号发生变化时候被 置false
-			// 在获取到的时候，被置为true 
-			// Global::isSessionRaceIdRequested )
-			//if( Global::isThisSessionRaceIDRequested[Global::session] == true )
+			//一直写入 ，在发送的时候会检查是否获取了raceID			 
 			{
 				writeOutputDataIntoBuffer( outputStruct );
 
-				//写入系统日志
-				Global::systemLog->append(QString(tr("BLLDataIdentify WIN ")), QString::number(outputStruct.WIN[3]),
-					SystemLog::INFO_TYPE);
+			 
 				
 			}
 		//	else
@@ -1283,11 +1260,13 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 		}
 		else //如果没有改变，那么此时可以发送缓存未发送的数据
 		{
-			if (Global::sendDataCCycleBuffer->getBufSize() >= sizeof(DataOutput)  )
+			if (Global::sendDataCCycleBuffer->getBufSize() >= sizeof(DataOutput) 
+				| Global::sendDataCCycleBuffer1->getBufSize() >= sizeof(DataOutput) )
 			{ 
 				emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
 			}
 
+		 
 			//写入系统日志
 			Global::systemLog->append(QString(tr("信息")), tr("数据为广告"),
 				SystemLog::INFO_TYPE);
@@ -1318,8 +1297,20 @@ void BllDataIdentify::writeOutputDataIntoBuffer(DataOutput &dataOutput)
 		Global::sendDataCCycleBuffer->write((char*)&dataOutput, sizeof(DataOutput));
 		 
 	}
+
+	//写入缓存
+	if (Global::sendDataCCycleBuffer1->getFreeSize() > sizeof(DataOutput))
+	{
+		int l = sizeof(DataOutput);
+		Global::sendDataCCycleBuffer1->write((char*)&dataOutput, sizeof(DataOutput));
+
+	}
+
+
 	return;
-	// **************************************************************************//
+	
+	/*
+	 
 	QByteArray sendBlock;
 	int dataType = 0;
 	//提交实时WIN数据
@@ -1441,7 +1432,7 @@ void BllDataIdentify::writeOutputDataIntoBuffer(DataOutput &dataOutput)
 
 			}
 
-			for (int j = i + 1; j <= dataOutput.horseNum; /* HORSENUMBER_1; */ j++)
+			for (int j = i + 1; j <= dataOutput.horseNum;    j++)
 			{
 
 				//封装一个WIN
@@ -1482,7 +1473,7 @@ void BllDataIdentify::writeOutputDataIntoBuffer(DataOutput &dataOutput)
 
 	}
  
-
+	*/
  
 
 }
@@ -2048,7 +2039,7 @@ void BllDataIdentify::initGlobal()
 
 	//本场场次号的全局id 已经请求 标志位
 
-	Global::isSessionRaceIdRequested = false;
+	 
 	//比赛已经开始标志
 	Global::raceHasStarted = 0;
 	//比赛当前场次计时 
@@ -2060,5 +2051,19 @@ void BllDataIdentify::initGlobal()
 	Global::isSessioncalibrated = false;
 
  
+
+	// 场次号 是否请求到了
+	for (int i = 0; i < 14; i++)
+	{
+		Global::isThisSessionRaceIDRequested[i] = false;
+
+		Global::requestedRaceID[i] = 0;
+
+		Global::totalSessionTime[i] = 0;
+
+		Global::isThisTotalSessionTimeSumbit[i] = false;
+	}
+
+
 }
 

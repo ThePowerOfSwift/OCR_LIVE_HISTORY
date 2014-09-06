@@ -51,12 +51,6 @@ public slots:
 	//停止识别
 	void stop();
 
-	// 场次号被用户从界面修改
-
-	void sessionNumTextChanged();
-
-	// 倒计时 被用户从 界面改变
-	void sessionCountDownTextChanged();
  
 
 signals:

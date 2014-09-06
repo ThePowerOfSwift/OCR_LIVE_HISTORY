@@ -287,9 +287,9 @@ bool Network::stopServer()
 */
 void Network::getClientSocketState(QAbstractSocket::SocketState socketState)
 {
-	remoteHostName = clientSocket->peerAddress().toString();
-	remoteHostIp = clientSocket->peerName();
-	remoteHostPort = clientSocket->peerPort();
+	//remoteHostName = clientSocket->peerAddress().toString();
+	/*remoteHostIp = clientSocket->peerName();
+	remoteHostPort = clientSocket->peerPort();*/
 	emit clientSocketStateSignal(socketState);
 	switch (socketState)
 	{

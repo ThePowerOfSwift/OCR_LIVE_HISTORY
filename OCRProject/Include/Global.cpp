@@ -15,12 +15,7 @@ Global::~Global()
 		delete myIAcq;
 		myIAcq = 0;
 	}
-	if (mcsNetClient!=0)
-	{
-		delete mcsNetClient;
-		mcsNetClient = 0;
-	}
-
+	
 	//if (S_CCycleBuffer != 0)
 	//{
 	//	delete S_CCycleBuffer;
@@ -29,14 +24,17 @@ Global::~Global()
 }
 
 //主控制器网络通讯接口类
-Network *Global::mcsNetClient;
+//Network *Global::mcsNetClient;
+
 //全局客户端状态
-ClientCmdStatus Global::client_cmd_status;
+//ClientCmdStatus Global::client_cmd_status;
 //全局缓冲区
 CCycleBuffer* Global::S_CCycleBuffer = 0;
 
 //发送数据缓存区
 CCycleBuffer * Global::sendDataCCycleBuffer = 0;
+
+CCycleBuffer * Global::sendDataCCycleBuffer1 = 0;
 
 //初始化采集
 IAcq* Global::myIAcq = 0;
@@ -50,6 +48,9 @@ bool Global::pauseDataIdentifyTag = false;//识别标识符
 QString Global::serverIpAddr = QString("");
 qint32  Global::serverPort = 0;
 
+
+QString Global::serverIpAddr1 = QString("");
+qint32  Global::serverPort1 = 0;
 
 // 标记，是否为 实时直播
 
@@ -80,16 +81,9 @@ qint32 Global::raceTime;//比赛时间
 // 请求到的全局场次号id
 qint32 Global::requestRaceId = 0;
 
-//提交失败 标志位
 
-bool Global::serverSubmitFailed = false;
 
-//标记状态
-
-bool Global::serverNotConnected = false;
 //本场场次号的全局id 已经请求 标志位
-
-bool Global::isSessionRaceIdRequested = false;
 
 bool Global:: requestedRaceID[14];
 
@@ -156,10 +150,11 @@ void Global::init()
 	//初始化样式表
 	initQss();
 
-	//服务器网络通讯接口
-	mcsNetClient = new Network("Server", Global::serverIpAddr, Global::serverPort );
+
 	S_CCycleBuffer = new CCycleBuffer();
 	sendDataCCycleBuffer = new CCycleBuffer();
+
+	sendDataCCycleBuffer1 = new CCycleBuffer();
 	//写入系统日志
 	systemLog->append(QString(tr("服务器网络通讯接口初始完毕")), tr("连接打开成功."), SystemLog::INFO_TYPE);
 
@@ -220,26 +215,7 @@ void Global::initQss()
 QString Global::getComputerDeviceName(Global::ComputerId computerId)
 {
 	QString deviceName;
-	switch (computerId)
-	{
-	case 0x0001:
-		deviceName = tr("控制台");
-		break;
-	case 0x0002:
-		deviceName = tr("主控制器");
-		break;
-	case 0x0003:
-		deviceName = tr("CT-ARS");
-		break;
-	case 0x0004:
-		deviceName = tr("PET-ARS");
-		break;
-	case 0x0005:
-		deviceName = tr("控制盒");
-		break;
-	default:
-		deviceName = tr("未明设备");
-	}
+	 
 	return deviceName;
 }
 /**
@@ -251,25 +227,6 @@ QString Global::getComputerDeviceName(Global::ComputerId computerId)
 QString Global::getComputerDeviceName(int computerId)
 {
 	QString deviceName;
-	switch (computerId)
-	{
-	case 0x0001:
-		deviceName = tr("控制台");
-		break;
-	case 0x0002:
-		deviceName = tr("主控制器");
-		break;
-	case 0x0003:
-		deviceName = tr("CT-ARS");
-		break;
-	case 0x0004:
-		deviceName = tr("PET-ARS");
-		break;
-	case 0x0005:
-		deviceName = tr("控制盒");
-		break;
-	default:
-		deviceName = tr("未明设备");
-	}
+	 
 	return deviceName;
 }

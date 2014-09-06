@@ -1237,10 +1237,22 @@
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_16">
                 <item>
-                 <widget class="QLabel" name="label_38">
-                  <property name="text">
-                   <string>服务器地址</string>
-                  </property>
+                 <widget class="QComboBox" name="serverNameComboBox">
+                  <item>
+                   <property name="text">
+                    <string>服务器</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>服务器1</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>服务器2</string>
+                   </property>
+                  </item>
                  </widget>
                 </item>
                 <item>

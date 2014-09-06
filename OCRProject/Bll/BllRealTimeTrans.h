@@ -16,6 +16,21 @@ public:
 	~BllRealTimeTrans();
 
 	DataOutput priDataOutput;
+
+	//主控制器网络通讯接口类
+	Network *mcsNetClient;
+	//全局客户端状态
+	ClientCmdStatus client_cmd_status;
+
+	//
+	qint32 serverNo; 
+private:
+	CCycleBuffer * mSendDataBuffer;
+	bool serverNotConnected;
+
+	bool serverSubmitFailed;
+
+	
 public slots:
 
 	/**

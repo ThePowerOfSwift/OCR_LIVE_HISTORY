@@ -16,20 +16,39 @@ OcrControl::OcrControl(QWidget *parent)
 	bllRealTimeTrans->moveToThread(threadRealTime);
 	threadRealTime->start();
 	
+	bllRealTimeTrans->serverNo = 0;
+
+	//第二条线路
+	bllRealTimeTrans1 = new BllRealTimeTrans();
+	threadRealTime1 = new ThreadRealTime();
+	//启动线程
+	bllRealTimeTrans1->moveToThread(threadRealTime1);
+	threadRealTime1->start();
+
+	bllRealTimeTrans1->serverNo = 1 ;
+	
+	//第一条线路
+
 	QObject::connect(bllRealTimeTrans, SIGNAL(statuChanged(QString)), this, SLOT(appendStatus(QString)));//网络状态反馈
-	QObject::connect(this, SIGNAL(connect(QString, qint32)), bllRealTimeTrans, SLOT(connectToHost(QString, qint32)));//连接
+	QObject::connect(this, SIGNAL(connectToServer(QString, qint32)), bllRealTimeTrans, SLOT(connectToHost(QString, qint32)));//连接
 	QObject::connect(this, SIGNAL(disconnect()), bllRealTimeTrans, SLOT(disconnectToHost()));//断开
-	QObject::connect(this, SIGNAL(login()), bllRealTimeTrans, SLOT(clientLogin()));//登录
-//	QObject::connect(this, SIGNAL(requestHorseInfo()), bllRealTimeTrans, SLOT(requestHorse()));//请求马信息
-//	QObject::connect(this, SIGNAL(requestRaceId()), bllRealTimeTrans, SLOT(requestRaceID( )));//请求马信息
-	
-	//QObject::connect(this, SIGNAL(submitRaceTime(qint32)), bllRealTimeTrans, SLOT(submitRaceTime(qint32)));//发送比赛
+	QObject::connect(this, SIGNAL(login()), bllRealTimeTrans, SLOT(clientLogin()));//登录+
 	
 
-	//QObject::connect(this, SIGNAL(submitReal()), bllRealTimeTrans, SLOT(submitRealData(DataOutput)));//请求马信息
+	 //第二条线路
+
+	QObject::connect(bllRealTimeTrans1, SIGNAL(statuChanged(QString)), this, SLOT(appendStatus(QString)));//网络状态反馈
+	QObject::connect(this, SIGNAL(connectToServer1(QString, qint32)), bllRealTimeTrans1, SLOT(connectToHost(QString, qint32)));//连接
+	QObject::connect(this, SIGNAL(disconnect()), bllRealTimeTrans1, SLOT(disconnectToHost()));//断开
+	QObject::connect(this, SIGNAL(login()), bllRealTimeTrans1, SLOT(clientLogin()));//登录+
 
 
-	QObject::connect(Global::mcsNetClient, SIGNAL(disConnectToHostSuccessSignal()), this, SLOT(reConnect()));//断开重连
+	QObject::connect(bllRealTimeTrans->mcsNetClient, SIGNAL(disConnectToHostSuccessSignal()), 
+		this, SLOT(reConnect()));//断开重连
+
+
+	QObject::connect(bllRealTimeTrans1->mcsNetClient, SIGNAL(disConnectToHostSuccessSignal()),
+		this, SLOT(reConnect()));//断开重连
 
 
 
@@ -70,281 +89,16 @@ OcrControl::OcrControl(QWidget *parent)
 	ui.fileTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);//表格为整行选择
 	ui.fileTableWidget->resizeColumnsToContents();	// 显示文件名 
 
-	//QObject::connect(Global::myIAcq, SIGNAL(stopDataIdentify()), bllDataIdentify, SLOT(stop()));//停止计算
-
-
-	// 历史视频 快进 
 	 
-	//	QObject::connect(this, SIGNAL(setSignal( )), bllDataIdentify, SLOT(testSlot( )));
 
 	// 发送缓存区数据
 	QObject::connect(bllDataIdentify, SIGNAL(sendBufferDataSig()), 
 					 bllRealTimeTrans, SLOT(sendBufferDataToServer()) );
 
 
-
-	int labelHeight = 17;
 	
-	//初始化马信息
-	for (int i = 0; i < 14; i++)
-	{
-		QFrame* frame = new QFrame(ui.horseFrame);
-		frame->setObjectName(QStringLiteral("frame"));
-
-		frame->setStyleSheet(QLatin1String("QFrame#frame\n"
-			"{\n"
-			"	border-bottom: 0px solid #9D9D9D;\n"
-			"	border-radius:0px;\n"
-			"    padding:0 0px;\n"
-			"	margin-right: 0px;\n"
-			"\n"
-			"}\n"
-			""));
-		frame->setFrameShape(QFrame::StyledPanel);
-		frame->setFrameShadow(QFrame::Plain);
-		QHBoxLayout* horizontalLayout_2 = new QHBoxLayout(frame);
-		horizontalLayout_2->setSpacing(0);
-		horizontalLayout_2->setContentsMargins(11, 11, 11, 11);
-		horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
-		horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
-		QLineEdit* indexLbel_3 = new QLineEdit(frame);
-		indexLbel_3->setObjectName(QStringLiteral("indexLbel_3"));
-		QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-		sizePolicy.setHorizontalStretch(0);
-		sizePolicy.setVerticalStretch(0);
-		sizePolicy.setHeightForWidth(indexLbel_3->sizePolicy().hasHeightForWidth());
-		indexLbel_3->setSizePolicy(sizePolicy);
-		indexLbel_3->setAlignment(Qt::AlignLeft);
-
-		indexLbel_3->setMinimumSize(QSize(50, labelHeight));
-		indexLbel_3->setMaximumSize(QSize(50, labelHeight));
-		indexLabelList.append(indexLbel_3);
-		horizontalLayout_2->addWidget(indexLbel_3);
-
-		QLineEdit* horseNameEdit_3 = new QLineEdit(frame);
-		horseNameEdit_3->setObjectName(QStringLiteral("horseNameEdit_3"));
-		QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Maximum);
-		sizePolicy1.setHorizontalStretch(0);
-		sizePolicy1.setVerticalStretch(0);
-		sizePolicy1.setHeightForWidth(horseNameEdit_3->sizePolicy().hasHeightForWidth());
-		horseNameEdit_3->setSizePolicy(sizePolicy1);
-		horseNameEdit_3->setMinimumSize(QSize(16777215, labelHeight));
-		horseNameEdit_3->setMaximumSize(QSize(16777215, labelHeight));
-		horseNameEditList.append(horseNameEdit_3);
-		horizontalLayout_2->addWidget(horseNameEdit_3);
-
-		QLineEdit* winLbl_3 = new QLineEdit(frame);
-		winLbl_3->setObjectName(QStringLiteral("winLbl_3"));
-		sizePolicy.setHeightForWidth(winLbl_3->sizePolicy().hasHeightForWidth());
-		winLbl_3->setSizePolicy(sizePolicy);
-		QFont font1;
-		font1.setPointSize(12);
-		winLbl_3->setFont(font1);
-		winLbl_3->setAlignment(Qt::AlignLeft);
-		winLbl_3->setMinimumSize(QSize(30, labelHeight));
-		winLbl_3->setMaximumSize(QSize(30, labelHeight));
-		winLableList.append(winLbl_3);
-		horizontalLayout_2->addWidget(winLbl_3);
-
-		QLineEdit* PLALbl_3 = new QLineEdit(frame);
-		PLALbl_3->setObjectName(QStringLiteral("PLALbl_3"));
-		sizePolicy.setHeightForWidth(PLALbl_3->sizePolicy().hasHeightForWidth());
-		PLALbl_3->setSizePolicy(sizePolicy);
-		PLALbl_3->setFont(font1);
-		PLALbl_3->setAlignment(Qt::AlignLeft);
-
-		PLALbl_3->setMinimumSize(QSize(30, labelHeight));
-		PLALbl_3->setMaximumSize(QSize(30, labelHeight));
-		plaLableList.append(PLALbl_3);
-		horizontalLayout_2->addWidget(PLALbl_3);
-
-		horizontalLayout_2->setStretch(0, 1);
-		horizontalLayout_2->setStretch(1, 4);
-		horizontalLayout_2->setStretch(2, 3);
-		horizontalLayout_2->setStretch(3, 3);
-
-		ui.verticalLayout_4->addWidget(frame);
-
-
-		
-	}
-
-	QSpacerItem* verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-	ui.verticalLayout_4->addItem(verticalSpacer);
-
-
-	int labelWidth = 35 ;
-	 
-	for (int j = 0; j < 7; j++)
-	{
-		QList<QLineEdit*> list;
-		QHBoxLayout* horizontalLayout_3 = new QHBoxLayout();
-		horizontalLayout_3->setSpacing(0);
-		horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
-  
-		horizontalLayout_3->setContentsMargins(1, 1, 1, 1);
-
-		QLineEdit* qinLbl_1 = new QLineEdit(ui.qinFrame);
-		qinLbl_1->setObjectName(QStringLiteral("qinLbl_1"));
-		QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
-		sizePolicy2.setHorizontalStretch(0);
-		sizePolicy2.setVerticalStretch(0);
-		sizePolicy2.setHeightForWidth(qinLbl_1->sizePolicy().hasHeightForWidth());
-
-		qinLbl_1->setSizePolicy(sizePolicy2);
-
-		qinLbl_1->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_1->setMaximumSize(QSize(labelWidth, 14));
-	//	qinLbl_1->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-
-		list.append(qinLbl_1);
-		horizontalLayout_3->addWidget(qinLbl_1);
-
-		QLineEdit* qinLbl_2 = new QLineEdit(ui.qinFrame);
-		qinLbl_2->setObjectName(QStringLiteral("qinLbl_2"));
-		sizePolicy2.setHeightForWidth(qinLbl_2->sizePolicy().hasHeightForWidth());
-		qinLbl_2->setSizePolicy(sizePolicy2);
-		qinLbl_2->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_2->setMaximumSize(QSize(labelWidth, 14));
-		//qinLbl_2->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_2);
-		horizontalLayout_3->addWidget(qinLbl_2);
-
-		QLineEdit* qinLbl_3 = new QLineEdit(ui.qinFrame);
-		qinLbl_3->setObjectName(QStringLiteral("qinLbl_3"));
-		sizePolicy2.setHeightForWidth(qinLbl_3->sizePolicy().hasHeightForWidth());
-		qinLbl_3->setSizePolicy(sizePolicy2);
-
-		qinLbl_3->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_3->setMaximumSize(QSize(labelWidth, 14));
-		//	qinLbl_3->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_3);
-		horizontalLayout_3->addWidget(qinLbl_3);
-
-		QLineEdit* qinLbl_4 = new QLineEdit(ui.qinFrame);
-		qinLbl_4->setObjectName(QStringLiteral("qinLbl_4"));
-		sizePolicy2.setHeightForWidth(qinLbl_4->sizePolicy().hasHeightForWidth());
-		qinLbl_4->setSizePolicy(sizePolicy2);
-		qinLbl_4->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_4->setMaximumSize(QSize(labelWidth, 14));
-		//qinLbl_4->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_4);
-		horizontalLayout_3->addWidget(qinLbl_4);
-
-		QLineEdit* qinLbl_5 = new QLineEdit(ui.qinFrame);
-		qinLbl_5->setObjectName(QStringLiteral("qinLbl_5"));
-		sizePolicy2.setHeightForWidth(qinLbl_5->sizePolicy().hasHeightForWidth());
-		qinLbl_5->setSizePolicy(sizePolicy2);
-		qinLbl_5->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_5->setMaximumSize(QSize(labelWidth, 14));
-		//	qinLbl_5->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_5);
-		horizontalLayout_3->addWidget(qinLbl_5);
-
-		QLineEdit* qinLbl_6 = new QLineEdit(ui.qinFrame);
-		qinLbl_6->setObjectName(QStringLiteral("qinLbl_6"));
-		sizePolicy2.setHeightForWidth(qinLbl_6->sizePolicy().hasHeightForWidth());
-		qinLbl_6->setSizePolicy(sizePolicy2);
-		qinLbl_6->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_6->setMaximumSize(QSize(labelWidth, 14));
-		//	qinLbl_6->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_6);
-		horizontalLayout_3->addWidget(qinLbl_6);
-
-		QLineEdit* qinLbl_7 = new QLineEdit(ui.qinFrame);
-		qinLbl_7->setObjectName(QStringLiteral("qinLbl_7"));
-		sizePolicy2.setHeightForWidth(qinLbl_7->sizePolicy().hasHeightForWidth());
-		qinLbl_7->setSizePolicy(sizePolicy2);
-		qinLbl_7->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_7->setMaximumSize(QSize(labelWidth, 14));
-		//	qinLbl_7->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_7);
-		horizontalLayout_3->addWidget(qinLbl_7);
-
-		QLineEdit* qinLbl_8 = new QLineEdit(ui.qinFrame);
-		qinLbl_8->setObjectName(QStringLiteral("qinLbl_8"));
-		sizePolicy2.setHeightForWidth(qinLbl_8->sizePolicy().hasHeightForWidth());
-		qinLbl_8->setSizePolicy(sizePolicy2);
-		qinLbl_8->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_8->setMaximumSize(QSize(labelWidth, 14));
-		//qinLbl_8->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_8);
-		horizontalLayout_3->addWidget(qinLbl_8);
-
-		QLineEdit* qinLbl_9 = new QLineEdit(ui.qinFrame);
-		qinLbl_9->setObjectName(QStringLiteral("qinLbl_9"));
-		sizePolicy2.setHeightForWidth(qinLbl_9->sizePolicy().hasHeightForWidth());
-		qinLbl_9->setSizePolicy(sizePolicy2);
-		qinLbl_9->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_9->setMaximumSize(QSize(labelWidth, 14));
-		//qinLbl_9->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_9);
-		horizontalLayout_3->addWidget(qinLbl_9);
-
-		QLineEdit* qinLbl_10 = new QLineEdit(ui.qinFrame);
-		qinLbl_10->setObjectName(QStringLiteral("qinLbl_10"));
-		sizePolicy2.setHeightForWidth(qinLbl_10->sizePolicy().hasHeightForWidth());
-		qinLbl_10->setSizePolicy(sizePolicy2);
-		qinLbl_10->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_10->setMaximumSize(QSize(labelWidth, 14));
-		//	qinLbl_10->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_10);
-		horizontalLayout_3->addWidget(qinLbl_10);
-
-		QLineEdit* qinLbl_11 = new QLineEdit(ui.qinFrame);
-		qinLbl_11->setObjectName(QStringLiteral("qinLbl_11"));
-		sizePolicy2.setHeightForWidth(qinLbl_11->sizePolicy().hasHeightForWidth());
-		qinLbl_11->setSizePolicy(sizePolicy2);
-		qinLbl_11->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_11->setMaximumSize(QSize(labelWidth, 14));
-		//qinLbl_11->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_11);
-		horizontalLayout_3->addWidget(qinLbl_11);
-
-		QLineEdit* qinLbl_12 = new QLineEdit(ui.qinFrame);
-		qinLbl_12->setObjectName(QStringLiteral("qinLbl_12"));
-		sizePolicy2.setHeightForWidth(qinLbl_12->sizePolicy().hasHeightForWidth());
-		qinLbl_12->setSizePolicy(sizePolicy2);
-		qinLbl_12->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_12->setMaximumSize(QSize(labelWidth, 14));
-		//qinLbl_12->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_12);
-		horizontalLayout_3->addWidget(qinLbl_12);
-
-		QLineEdit* qinLbl_13 = new QLineEdit(ui.qinFrame);
-		qinLbl_13->setObjectName(QStringLiteral("qinLbl_13"));
-		sizePolicy2.setHeightForWidth(qinLbl_13->sizePolicy().hasHeightForWidth());
-		qinLbl_13->setSizePolicy(sizePolicy2);
-		qinLbl_13->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_13->setMaximumSize(QSize(labelWidth, 14));
-		//qinLbl_13->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_13);
-		horizontalLayout_3->addWidget(qinLbl_13);
-
-		QLineEdit* qinLbl_14 = new QLineEdit(ui.qinFrame);
-		qinLbl_14->setObjectName(QStringLiteral("qinLbl_14"));
-		sizePolicy2.setHeightForWidth(qinLbl_14->sizePolicy().hasHeightForWidth());
-		qinLbl_14->setSizePolicy(sizePolicy2);
-		qinLbl_14->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_14->setMaximumSize(QSize(labelWidth, 14));
-		//qinLbl_14->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_14);
-		horizontalLayout_3->addWidget(qinLbl_14);
-
-		QLineEdit* qinLbl_15 = new QLineEdit(ui.qinFrame);
-		qinLbl_15->setObjectName(QStringLiteral("qinLbl_15"));
-		sizePolicy2.setHeightForWidth(qinLbl_15->sizePolicy().hasHeightForWidth());
-		qinLbl_15->setSizePolicy(sizePolicy2);
-		qinLbl_15->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_15->setMaximumSize(QSize(labelWidth, 14));
-		//qinLbl_15->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
-		list.append(qinLbl_15);
-		horizontalLayout_3->addWidget(qinLbl_15);
-
-		qinList.append(list);
-		ui.verticalLayout_5->addLayout(horizontalLayout_3);
-	}
+	initUi();
+	
 	 
 
 	//设置版本号 
@@ -386,8 +140,12 @@ OcrControl::OcrControl(QWidget *parent)
 	
 	 
 	// 连接 63台checkbox
-	QObject::connect(Global::mcsNetClient, SIGNAL(clientSocketStateSignal(QAbstractSocket::SocketState socketState)), this, \
+	QObject::connect(bllRealTimeTrans->mcsNetClient, SIGNAL(clientSocketStateSignal(QAbstractSocket::SocketState socketState)), this, \
 		SLOT(getClientSocketState(QAbstractSocket::SocketState socketState)));
+
+	QObject::connect(bllRealTimeTrans1->mcsNetClient, SIGNAL(clientSocketStateSignal(QAbstractSocket::SocketState socketState)), this, \
+		SLOT(getClientSocketState(QAbstractSocket::SocketState socketState)));
+
 
 
 	// 写数据文件
@@ -434,6 +192,12 @@ OcrControl::OcrControl(QWidget *parent)
 	ui.svrIpAddrLineEdit->setText(Global::serverIpAddr);
 	ui.svrPortLineEdit->setText(QString::number(Global::serverPort));
 	
+
+
+	Global::serverIpAddr1 = QString("58.67.161.109");
+	Global::serverPort1 = 9068;
+
+
 	
 }
 
@@ -444,9 +208,21 @@ OcrControl::~OcrControl()
 	{
 		threadRealTime->quit();
 	}
+	//停止实时提交
+	if (threadRealTime1->isRunning())
+	{
+		threadRealTime1->quit();
+	}
+
 	//删除实时网络传输业务
-	if (bllRealTimeTrans!=0)
+	if (bllRealTimeTrans !=0 )
 		delete bllRealTimeTrans;
+
+	//删除实时网络传输业务
+	if (bllRealTimeTrans1 != 0 )
+		delete bllRealTimeTrans1 ;
+
+
 	//删除网络传输线程
 	if (threadRealTime != 0)
 	{
@@ -454,6 +230,15 @@ OcrControl::~OcrControl()
 		threadRealTime->wait();
 		delete threadRealTime;
 	}
+	//删除网络传输线程
+	if (threadRealTime1 != 0)
+	{
+		//threadRealTime->terminate();
+		threadRealTime1->wait();
+		delete threadRealTime1;
+	}
+
+
 	//删除识别算法线程
 	if (threadDataIdentify->isRunning())
 	{
@@ -517,7 +302,10 @@ void OcrControl::getClientSocketState(QAbstractSocket::SocketState socketState)
 */
 void OcrControl::on_connectBtn_clicked()
 {
-	emit connect(Global::serverIpAddr , Global::serverPort);
+	emit connectToServer(Global::serverIpAddr , Global::serverPort);
+
+	emit connectToServer1(Global::serverIpAddr1,Global::serverPort1);
+
 }
 /**
 * @brief 断开服务器
@@ -743,11 +531,34 @@ void OcrControl::on_stopAcqBtn_clicked()
 void OcrControl::on_svrConfigSaveBtn_clicked()
 {
 
-	Global::serverIpAddr = ui.svrIpAddrLineEdit->text();
+	
 
-	QString svrPortStr = ui.svrPortLineEdit->text();
 
-	Global::serverPort = svrPortStr.toInt();
+
+	QString serverName; 
+	serverName = ui.serverNameComboBox->currentText();
+
+	if (serverName == "服务器")
+	{
+
+		QString svrPortStr = ui.svrPortLineEdit->text();
+
+		Global::serverIpAddr = ui.svrIpAddrLineEdit->text();
+		Global::serverPort = svrPortStr.toInt();
+
+
+	}
+	else if (serverName == "服务器1")
+	{
+
+		QString svrPortStr = ui.svrPortLineEdit->text();
+
+		Global::serverIpAddr1 = ui.svrIpAddrLineEdit->text();
+		Global::serverPort1 = svrPortStr.toInt();
+
+
+	}
+
 }
 
 
@@ -1172,7 +983,10 @@ void OcrControl::reConnect()
 	if (ui.reconnectCheckBox->isChecked())
 	{
 		qDebug("识别端：重连服务器 \n");
-		emit connect(Global::serverIpAddr,Global::serverPort);
+		emit connectToServer(Global::serverIpAddr,Global::serverPort);
+
+		emit connectToServer1(Global::serverIpAddr1, Global::serverPort1);
+
 	}
 	else
 	{
@@ -2260,4 +2074,275 @@ void OcrControl::is63TAICheckBoxStateChanged(bool)
 void OcrControl::islockCaliCheckBoxStatusChanged(bool)
 {
 	Global::islockCali = ui.lockCaliCheckBox->isChecked();
+}
+
+
+
+/*
+初始化用户界面
+*/
+void OcrControl::initUi()
+{
+	int labelHeight = 17;
+	//初始化马信息
+	for (int i = 0; i < 14; i++)
+	{
+		QFrame* frame = new QFrame(ui.horseFrame);
+		frame->setObjectName(QStringLiteral("frame"));
+
+		frame->setStyleSheet(QLatin1String("QFrame#frame\n"
+			"{\n"
+			"	border-bottom: 0px solid #9D9D9D;\n"
+			"	border-radius:0px;\n"
+			"    padding:0 0px;\n"
+			"	margin-right: 0px;\n"
+			"\n"
+			"}\n"
+			""));
+		frame->setFrameShape(QFrame::StyledPanel);
+		frame->setFrameShadow(QFrame::Plain);
+		QHBoxLayout* horizontalLayout_2 = new QHBoxLayout(frame);
+		horizontalLayout_2->setSpacing(0);
+		horizontalLayout_2->setContentsMargins(11, 11, 11, 11);
+		horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
+		horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
+		QLineEdit* indexLbel_3 = new QLineEdit(frame);
+		indexLbel_3->setObjectName(QStringLiteral("indexLbel_3"));
+		QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+		sizePolicy.setHorizontalStretch(0);
+		sizePolicy.setVerticalStretch(0);
+		sizePolicy.setHeightForWidth(indexLbel_3->sizePolicy().hasHeightForWidth());
+		indexLbel_3->setSizePolicy(sizePolicy);
+		indexLbel_3->setAlignment(Qt::AlignLeft);
+
+		indexLbel_3->setMinimumSize(QSize(50, labelHeight));
+		indexLbel_3->setMaximumSize(QSize(50, labelHeight));
+		indexLabelList.append(indexLbel_3);
+		horizontalLayout_2->addWidget(indexLbel_3);
+
+		QLineEdit* horseNameEdit_3 = new QLineEdit(frame);
+		horseNameEdit_3->setObjectName(QStringLiteral("horseNameEdit_3"));
+		QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Maximum);
+		sizePolicy1.setHorizontalStretch(0);
+		sizePolicy1.setVerticalStretch(0);
+		sizePolicy1.setHeightForWidth(horseNameEdit_3->sizePolicy().hasHeightForWidth());
+		horseNameEdit_3->setSizePolicy(sizePolicy1);
+		horseNameEdit_3->setMinimumSize(QSize(16777215, labelHeight));
+		horseNameEdit_3->setMaximumSize(QSize(16777215, labelHeight));
+		horseNameEditList.append(horseNameEdit_3);
+		horizontalLayout_2->addWidget(horseNameEdit_3);
+
+		QLineEdit* winLbl_3 = new QLineEdit(frame);
+		winLbl_3->setObjectName(QStringLiteral("winLbl_3"));
+		sizePolicy.setHeightForWidth(winLbl_3->sizePolicy().hasHeightForWidth());
+		winLbl_3->setSizePolicy(sizePolicy);
+		QFont font1;
+		font1.setPointSize(12);
+		winLbl_3->setFont(font1);
+		winLbl_3->setAlignment(Qt::AlignLeft);
+		winLbl_3->setMinimumSize(QSize(30, labelHeight));
+		winLbl_3->setMaximumSize(QSize(30, labelHeight));
+		winLableList.append(winLbl_3);
+		horizontalLayout_2->addWidget(winLbl_3);
+
+		QLineEdit* PLALbl_3 = new QLineEdit(frame);
+		PLALbl_3->setObjectName(QStringLiteral("PLALbl_3"));
+		sizePolicy.setHeightForWidth(PLALbl_3->sizePolicy().hasHeightForWidth());
+		PLALbl_3->setSizePolicy(sizePolicy);
+		PLALbl_3->setFont(font1);
+		PLALbl_3->setAlignment(Qt::AlignLeft);
+
+		PLALbl_3->setMinimumSize(QSize(30, labelHeight));
+		PLALbl_3->setMaximumSize(QSize(30, labelHeight));
+		plaLableList.append(PLALbl_3);
+		horizontalLayout_2->addWidget(PLALbl_3);
+
+		horizontalLayout_2->setStretch(0, 1);
+		horizontalLayout_2->setStretch(1, 4);
+		horizontalLayout_2->setStretch(2, 3);
+		horizontalLayout_2->setStretch(3, 3);
+
+		ui.verticalLayout_4->addWidget(frame);
+
+
+
+	}
+
+	QSpacerItem* verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+	ui.verticalLayout_4->addItem(verticalSpacer);
+
+
+	int labelWidth = 35;
+
+	for (int j = 0; j < 7; j++)
+	{
+		QList<QLineEdit*> list;
+		QHBoxLayout* horizontalLayout_3 = new QHBoxLayout();
+		horizontalLayout_3->setSpacing(0);
+		horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+
+		horizontalLayout_3->setContentsMargins(1, 1, 1, 1);
+
+		QLineEdit* qinLbl_1 = new QLineEdit(ui.qinFrame);
+		qinLbl_1->setObjectName(QStringLiteral("qinLbl_1"));
+		QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
+		sizePolicy2.setHorizontalStretch(0);
+		sizePolicy2.setVerticalStretch(0);
+		sizePolicy2.setHeightForWidth(qinLbl_1->sizePolicy().hasHeightForWidth());
+
+		qinLbl_1->setSizePolicy(sizePolicy2);
+
+		qinLbl_1->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_1->setMaximumSize(QSize(labelWidth, 14));
+		//	qinLbl_1->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+
+		list.append(qinLbl_1);
+		horizontalLayout_3->addWidget(qinLbl_1);
+
+		QLineEdit* qinLbl_2 = new QLineEdit(ui.qinFrame);
+		qinLbl_2->setObjectName(QStringLiteral("qinLbl_2"));
+		sizePolicy2.setHeightForWidth(qinLbl_2->sizePolicy().hasHeightForWidth());
+		qinLbl_2->setSizePolicy(sizePolicy2);
+		qinLbl_2->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_2->setMaximumSize(QSize(labelWidth, 14));
+		//qinLbl_2->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_2);
+		horizontalLayout_3->addWidget(qinLbl_2);
+
+		QLineEdit* qinLbl_3 = new QLineEdit(ui.qinFrame);
+		qinLbl_3->setObjectName(QStringLiteral("qinLbl_3"));
+		sizePolicy2.setHeightForWidth(qinLbl_3->sizePolicy().hasHeightForWidth());
+		qinLbl_3->setSizePolicy(sizePolicy2);
+
+		qinLbl_3->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_3->setMaximumSize(QSize(labelWidth, 14));
+		//	qinLbl_3->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_3);
+		horizontalLayout_3->addWidget(qinLbl_3);
+
+		QLineEdit* qinLbl_4 = new QLineEdit(ui.qinFrame);
+		qinLbl_4->setObjectName(QStringLiteral("qinLbl_4"));
+		sizePolicy2.setHeightForWidth(qinLbl_4->sizePolicy().hasHeightForWidth());
+		qinLbl_4->setSizePolicy(sizePolicy2);
+		qinLbl_4->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_4->setMaximumSize(QSize(labelWidth, 14));
+		//qinLbl_4->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_4);
+		horizontalLayout_3->addWidget(qinLbl_4);
+
+		QLineEdit* qinLbl_5 = new QLineEdit(ui.qinFrame);
+		qinLbl_5->setObjectName(QStringLiteral("qinLbl_5"));
+		sizePolicy2.setHeightForWidth(qinLbl_5->sizePolicy().hasHeightForWidth());
+		qinLbl_5->setSizePolicy(sizePolicy2);
+		qinLbl_5->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_5->setMaximumSize(QSize(labelWidth, 14));
+		//	qinLbl_5->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_5);
+		horizontalLayout_3->addWidget(qinLbl_5);
+
+		QLineEdit* qinLbl_6 = new QLineEdit(ui.qinFrame);
+		qinLbl_6->setObjectName(QStringLiteral("qinLbl_6"));
+		sizePolicy2.setHeightForWidth(qinLbl_6->sizePolicy().hasHeightForWidth());
+		qinLbl_6->setSizePolicy(sizePolicy2);
+		qinLbl_6->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_6->setMaximumSize(QSize(labelWidth, 14));
+		//	qinLbl_6->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_6);
+		horizontalLayout_3->addWidget(qinLbl_6);
+
+		QLineEdit* qinLbl_7 = new QLineEdit(ui.qinFrame);
+		qinLbl_7->setObjectName(QStringLiteral("qinLbl_7"));
+		sizePolicy2.setHeightForWidth(qinLbl_7->sizePolicy().hasHeightForWidth());
+		qinLbl_7->setSizePolicy(sizePolicy2);
+		qinLbl_7->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_7->setMaximumSize(QSize(labelWidth, 14));
+		//	qinLbl_7->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_7);
+		horizontalLayout_3->addWidget(qinLbl_7);
+
+		QLineEdit* qinLbl_8 = new QLineEdit(ui.qinFrame);
+		qinLbl_8->setObjectName(QStringLiteral("qinLbl_8"));
+		sizePolicy2.setHeightForWidth(qinLbl_8->sizePolicy().hasHeightForWidth());
+		qinLbl_8->setSizePolicy(sizePolicy2);
+		qinLbl_8->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_8->setMaximumSize(QSize(labelWidth, 14));
+		//qinLbl_8->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_8);
+		horizontalLayout_3->addWidget(qinLbl_8);
+
+		QLineEdit* qinLbl_9 = new QLineEdit(ui.qinFrame);
+		qinLbl_9->setObjectName(QStringLiteral("qinLbl_9"));
+		sizePolicy2.setHeightForWidth(qinLbl_9->sizePolicy().hasHeightForWidth());
+		qinLbl_9->setSizePolicy(sizePolicy2);
+		qinLbl_9->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_9->setMaximumSize(QSize(labelWidth, 14));
+		//qinLbl_9->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_9);
+		horizontalLayout_3->addWidget(qinLbl_9);
+
+		QLineEdit* qinLbl_10 = new QLineEdit(ui.qinFrame);
+		qinLbl_10->setObjectName(QStringLiteral("qinLbl_10"));
+		sizePolicy2.setHeightForWidth(qinLbl_10->sizePolicy().hasHeightForWidth());
+		qinLbl_10->setSizePolicy(sizePolicy2);
+		qinLbl_10->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_10->setMaximumSize(QSize(labelWidth, 14));
+		//	qinLbl_10->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_10);
+		horizontalLayout_3->addWidget(qinLbl_10);
+
+		QLineEdit* qinLbl_11 = new QLineEdit(ui.qinFrame);
+		qinLbl_11->setObjectName(QStringLiteral("qinLbl_11"));
+		sizePolicy2.setHeightForWidth(qinLbl_11->sizePolicy().hasHeightForWidth());
+		qinLbl_11->setSizePolicy(sizePolicy2);
+		qinLbl_11->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_11->setMaximumSize(QSize(labelWidth, 14));
+		//qinLbl_11->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_11);
+		horizontalLayout_3->addWidget(qinLbl_11);
+
+		QLineEdit* qinLbl_12 = new QLineEdit(ui.qinFrame);
+		qinLbl_12->setObjectName(QStringLiteral("qinLbl_12"));
+		sizePolicy2.setHeightForWidth(qinLbl_12->sizePolicy().hasHeightForWidth());
+		qinLbl_12->setSizePolicy(sizePolicy2);
+		qinLbl_12->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_12->setMaximumSize(QSize(labelWidth, 14));
+		//qinLbl_12->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_12);
+		horizontalLayout_3->addWidget(qinLbl_12);
+
+		QLineEdit* qinLbl_13 = new QLineEdit(ui.qinFrame);
+		qinLbl_13->setObjectName(QStringLiteral("qinLbl_13"));
+		sizePolicy2.setHeightForWidth(qinLbl_13->sizePolicy().hasHeightForWidth());
+		qinLbl_13->setSizePolicy(sizePolicy2);
+		qinLbl_13->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_13->setMaximumSize(QSize(labelWidth, 14));
+		//qinLbl_13->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_13);
+		horizontalLayout_3->addWidget(qinLbl_13);
+
+		QLineEdit* qinLbl_14 = new QLineEdit(ui.qinFrame);
+		qinLbl_14->setObjectName(QStringLiteral("qinLbl_14"));
+		sizePolicy2.setHeightForWidth(qinLbl_14->sizePolicy().hasHeightForWidth());
+		qinLbl_14->setSizePolicy(sizePolicy2);
+		qinLbl_14->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_14->setMaximumSize(QSize(labelWidth, 14));
+		//qinLbl_14->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_14);
+		horizontalLayout_3->addWidget(qinLbl_14);
+
+		QLineEdit* qinLbl_15 = new QLineEdit(ui.qinFrame);
+		qinLbl_15->setObjectName(QStringLiteral("qinLbl_15"));
+		sizePolicy2.setHeightForWidth(qinLbl_15->sizePolicy().hasHeightForWidth());
+		qinLbl_15->setSizePolicy(sizePolicy2);
+		qinLbl_15->setMinimumSize(QSize(labelWidth, 14));
+		qinLbl_15->setMaximumSize(QSize(labelWidth, 14));
+		//qinLbl_15->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
+		list.append(qinLbl_15);
+		horizontalLayout_3->addWidget(qinLbl_15);
+
+		qinList.append(list);
+		ui.verticalLayout_5->addLayout(horizontalLayout_3);
+	}
+
 }

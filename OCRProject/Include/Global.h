@@ -97,7 +97,10 @@ public:
 	//**********控制台网络客户端接口*********//
 	//控制台相对于主控制器、CT-ARS、PET-ARS都是客户端，主动发起连接者.
 	//主控制器网络通讯接口类
-	static Network *mcsNetClient;
+	//static Network *mcsNetClient;
+	//全局客户端状态
+	//static ClientCmdStatus client_cmd_status;
+
 	//**********控制台网络客户端接口*********//
 
 	 
@@ -108,12 +111,16 @@ public:
 
 	static CCycleBuffer * sendDataCCycleBuffer;
 
+
+	//第二条线路
+
+	static CCycleBuffer *sendDataCCycleBuffer1;
+
 	//获取计算机设备名称，参数ComputerId枚举型
 	static QString getComputerDeviceName(Global::ComputerId);
 	//获取计算机设备名称，参数int
 	static QString getComputerDeviceName(int computerId);
-	//全局客户端状态
-	static ClientCmdStatus client_cmd_status;
+	
 
 
 	static IAcq* myIAcq;//采集类
@@ -126,6 +133,10 @@ public:
 
 	static QString serverIpAddr;
 	static qint32  serverPort;
+
+	//第二条线路
+	static QString serverIpAddr1;
+	static qint32 serverPort1;
 
 	/***********比赛数据***********/
 	static qint32 raceId;//比赛唯一识别ID，服务端获得
@@ -149,19 +160,12 @@ public:
 	//通过识别场次号，请求 服务器 全局场次号
 
 	static qint32 requestRaceId; 
-	//提交失败
+	
 
-	static bool serverSubmitFailed;
-
-	//标志连接状态
-	static bool serverNotConnected;
 	// //比赛已经开始了 标志位
 	static qint32 raceHasStarted; 
 	
-	//每次场次号发生反转的时候，必须等待 根据本场场次号 请求到全局场次号后才可以发送 比赛数据
-
-	static bool isSessionRaceIdRequested;
-
+	
 	//最长不超过14场的
 	static bool isThisSessionRaceIDRequested[14];
 	//保存请求到的场次号
