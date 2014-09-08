@@ -1662,6 +1662,33 @@ int DataIdentify::getQINQPLIdentify()
 			if (i == j | j == i + 1)
 				continue;
 
+			if (dataOutput.horseNum < 8)
+			{
+				if (j < 6)
+				{
+					continue;
+				}
+			}
+			//排除掉前面的 如果马的数量不够 8 
+			if (j <= 5 & j >= dataOutput.horseNum - 8)
+			{
+				continue;
+			}
+			if (j >= QIN_QPL_COL + dataOutput.horseNum - 14)
+			{
+				continue;
+			}
+
+			if (j < i)
+			{
+				if (i > HORSENUMBER - dataOutput.horseNum)
+				{
+					continue;
+				}
+			}
+
+
+
 			if (qinQPLPosStruct.rect[i][j].width < 5| qinQPLPosStruct.rect[i][j].height < 5 )
 			{
 				continue;
@@ -3054,7 +3081,7 @@ int  DataIdentify::calculateGraySumYForTrim(Mat &mat, int &x0, int &x1, int roiN
 #ifdef QDEBUG_OUTPUT
 	qDebug("x0 = %d x=%d", x0, x1);
 #endif
-	if (x1 < x0)
+	if (x1 <= x0 | x1 < 0 | x0 < 0)
 	{
 		//Global::AppendLogString(QString("Error:calculateGraySumY :func error happens "), true);
 #ifdef QDEBUG_OUTPUT

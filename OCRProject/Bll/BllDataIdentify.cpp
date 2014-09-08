@@ -793,8 +793,13 @@ int BllDataIdentify::startHistoryDataIdentify(QString fileName, int videoType)
 
 		qDebug("frame count = %d",f);
 		progressPercent = 100 * f / (totalFrames/ videoFps);
-
-		imwrite("ReadframeMat.bmp", frameMat);
+		QString fileName;
+		fileName = QString("ReadFrame") +
+			QString::number(f % 5)
+			+ QString(".bmp");
+		QByteArray ba;
+		ba.append(fileName.toLatin1());
+		imwrite(ba.data(), frameMat);
 	 
 		algorithmExecHistory(videoType, NULL, frameMat, progressPercent);
 
