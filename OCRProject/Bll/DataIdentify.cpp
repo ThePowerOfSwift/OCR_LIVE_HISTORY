@@ -385,7 +385,7 @@ int DataIdentify::identify()
 	{
 		//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("setHorseNameRectPos EXIT this ocr"),
-			SystemLog::INFO_TYPE);
+			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
 	}
 	// 设置 WIN PLA 位置
@@ -395,7 +395,7 @@ int DataIdentify::identify()
 	{
 		//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("setWINPLARectPos EXIT this ocr"),
-			SystemLog::INFO_TYPE);
+			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
 	}
 	// 设置 QIN QPL  同时设置QIN QPL标记位置 
@@ -404,7 +404,7 @@ int DataIdentify::identify()
 	{
 		//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("setQINQPLRectPos EXIT this ocr"),
-			SystemLog::INFO_TYPE);
+			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
 	}
 	//  设置场次号位置
@@ -414,7 +414,7 @@ int DataIdentify::identify()
 	{
 		//写入系统日
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("setSessionRectPos EXIT this ocr"),
-			SystemLog::INFO_TYPE);
+			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
 	}
 	//设置 倒计时位置 
@@ -423,7 +423,7 @@ int DataIdentify::identify()
 	{
 		//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("setCountDownRectPos EXIT this ocr"),
-			SystemLog::INFO_TYPE);
+			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
 	}
 	//识别马名 
@@ -432,7 +432,7 @@ int DataIdentify::identify()
 	{
 		//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("getHorseNameIdentify EXIT this ocr"),
-			SystemLog::INFO_TYPE);
+			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
 	}
 	// 识别 WIN PLA
@@ -1669,11 +1669,7 @@ int DataIdentify::getQINQPLIdentify()
 					continue;
 				}
 			}
-			//排除掉前面的 如果马的数量不够 8 
-			if (j <= 5 & j >= dataOutput.horseNum - 8)
-			{
-				continue;
-			}
+			
 			if (j >= QIN_QPL_COL + dataOutput.horseNum - 14)
 			{
 				continue;
@@ -1681,7 +1677,12 @@ int DataIdentify::getQINQPLIdentify()
 
 			if (j < i)
 			{
-				if (i > HORSENUMBER - dataOutput.horseNum)
+				//排除掉前面的 如果马的数量不够 8 
+				if (j <= 5 & j >= dataOutput.horseNum - 8)
+				{
+					continue;
+				}
+				if (i >(6 + dataOutput.horseNum) - 14)
 				{
 					continue;
 				}
@@ -2562,8 +2563,8 @@ int  DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 		if (calculateGraySumYForQINDotJudge(edge, x, 3) != EXEC_SUCCESS)
 		{
 			x[0] = 0;
-			x[1] = 8;
-			x[2] = 18;
+			x[1] = edge.cols / 3;
+			x[2] = edge.cols * 2 / 3;
 			algorithmState = EXEC_SUCCESS;
 
 		}
@@ -2606,11 +2607,11 @@ int  DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 		{
 			//计算Y向投影通过reverseY设置为 true
 			//calculateGraySumX(halfEdge, y, 3,true);
-			if (calculateGraySumYForQINDotJudge(edge, x, 3) != EXEC_SUCCESS)
+			if (calculateGraySumYForQINDotJudge(halfEdge, x, 3) != EXEC_SUCCESS)
 			{
 				x[0] = 0;
-				x[1] = 8;
-				x[2] = 18;
+				x[1] = halfEdge.cols / 3;
+				x[2] = halfEdge.cols * 2 / 3;
 				algorithmState = EXEC_SUCCESS;
 
 			}

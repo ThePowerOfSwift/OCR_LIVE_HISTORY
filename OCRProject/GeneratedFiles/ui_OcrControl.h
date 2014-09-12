@@ -150,6 +150,7 @@ public:
     QCheckBox *is63TAICheckBox;
     QVBoxLayout *verticalLayout_14;
     QComboBox *videoTypeComboBox;
+    QComboBox *sdkCardVideoSourceComboBox;
     QPushButton *startAcqBtn;
     QPushButton *stopAcqBtn;
     QHBoxLayout *horizontalLayout_5;
@@ -900,6 +901,11 @@ public:
 
         verticalLayout_14->addWidget(videoTypeComboBox);
 
+        sdkCardVideoSourceComboBox = new QComboBox(frame_4);
+        sdkCardVideoSourceComboBox->setObjectName(QStringLiteral("sdkCardVideoSourceComboBox"));
+
+        verticalLayout_14->addWidget(sdkCardVideoSourceComboBox);
+
         startAcqBtn = new QPushButton(frame_4);
         startAcqBtn->setObjectName(QStringLiteral("startAcqBtn"));
 
@@ -1064,6 +1070,12 @@ public:
          << QApplication::translate("OcrControl", "\351\246\231\346\270\25718\345\217\260", 0)
          << QApplication::translate("OcrControl", "\344\272\232\346\264\262\345\217\260", 0)
          << QApplication::translate("OcrControl", "\347\233\264\346\222\255", 0)
+        );
+        sdkCardVideoSourceComboBox->clear();
+        sdkCardVideoSourceComboBox->insertItems(0, QStringList()
+         << QApplication::translate("OcrControl", "AV", 0)
+         << QApplication::translate("OcrControl", "SVIDEO", 0)
+         << QApplication::translate("OcrControl", "\346\226\260\345\273\272\351\241\271\347\233\256", 0)
         );
         startAcqBtn->setText(QApplication::translate("OcrControl", "\345\274\200\345\247\213\351\207\207\351\233\206", 0));
         stopAcqBtn->setText(QApplication::translate("OcrControl", "\345\201\234\346\255\242\351\207\207\351\233\206", 0));

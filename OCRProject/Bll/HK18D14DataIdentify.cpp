@@ -272,14 +272,25 @@ void HK18D14DataIdentify::originPosition()
 	int regionWidth = ORIGINPOSITION_REGIONWIDTH, regionHeight = ORIGINPOSITION_REGIONHEIGHT;
  
 
+
+
 	Mat region(image, Rect(0, 0, regionWidth, regionHeight));
 	Mat regionGray(regionHeight, regionWidth, CV_8UC1, Scalar::all(0));
 
 	cvtColor(image, regionGray, CV_BGR2GRAY);
 
  
-
-
+	for (int c = DELETE_PART.x; c < DELETE_PART.x + DELETE_PART.width; c++)
+	{
+		for (int r = DELETE_PART.y; r < DELETE_PART.y + DELETE_PART.height; r++ )
+		{
+			regionGray.at<uchar>(r, c) = 0;
+		}
+	}
+	/*
+	imshow("regionGray",regionGray);
+	waitKey();
+	*/
 	int* colSum = new int[regionHeight+1];
 	int* rowSum = new int[regionWidth+1];
 
@@ -292,6 +303,7 @@ void HK18D14DataIdentify::originPosition()
 
 		rowSum[i] = rowSum[i] / regionWidth;
 
+		qDebug("rowSum[%d] = %d ", i, rowSum[i]);
  
 	}
 
@@ -305,13 +317,13 @@ void HK18D14DataIdentify::originPosition()
 
 		colSum[i] = colSum[i] / regionHeight;
 
-	//	qDebug("colSum[%d] = %d ",i,colSum[i]);
+		qDebug("colSum[%d] = %d ",i,colSum[i]);
 	}
 
 	// DataIdentify the originX
 	for (int i = 0; i < regionWidth; i++)
 	{
-		if (colSum[i] > 60 ) // 
+		if (colSum[i] > 58 ) //  60 
 		{
 			originX = i - 1;
 			break;
@@ -320,13 +332,13 @@ void HK18D14DataIdentify::originPosition()
 	// DataIdentify the originY
 	for (int i = 0; i < regionHeight; i++)
 	{
-		if (rowSum[i] > 70 )
+		if (rowSum[i] > 59 )
 		{
 			originY = i - 1;
 			break;
 		}
 	}
- 
+	qDebug("the originPosition Func : x =%d, y=%d", originX, originY);
 
 #ifdef QDEBUG_OUTPUT
 	qDebug("the originPosition Func : x =%d, y=%d",originX,originY);
@@ -997,11 +1009,12 @@ int  HK18D14DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 		//计算 识别区域每个 数字之间的Y值
 		if (calculateGraySumXForSetQINQPLRect(mat, y, 6 - rectNum - delataNum) == EXIT_THIS_OCR)
 		{
+			/*
 			//写入系统日志
 			Global::systemLog->append(QString(("HK18D14DataIdentify ")),
 				QString("setEveryQINQPLPos EXIT this ocr"),
 				SystemLog::INFO_TYPE);
-		
+		*/
 		  if (y != NULL)
 			{
 				delete[] y ;
@@ -1818,11 +1831,7 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 					continue;
 				}
 			}
-			//排除掉前面的 如果马的数量不够 8 
-			if (j <= 5 & j >= dataOutput.horseNum - 8)
-			{
-				continue;
-			}
+			
 			if (j >= QIN_QPL_COL + dataOutput.horseNum - 14)
 			{
 				continue;
@@ -1830,7 +1839,12 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 
 			if (j < i)
 			{
-				if (i > HORSENUMBER - dataOutput.horseNum)
+				//排除掉前面的 如果马的数量不够 8 
+				if (j <= 5 & j >= dataOutput.horseNum - 8)
+				{
+					continue;
+				}
+				if (i >(6 + dataOutput.horseNum) - 14)
 				{
 					continue;
 				}
@@ -3266,11 +3280,11 @@ int  HK18D14DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, i
 		return EXIT_THIS_OCR;
 
 	}
-
+	/*
 	//写入系统日志
 	Global::systemLog->append(QString(("calculateGraySumXForSetQINQPLRect")),
 		QString("Enter "),		SystemLog::INFO_TYPE);
-
+		*/
 	//	横向投影
 	int dimension = 0;
 
@@ -3312,11 +3326,12 @@ int  HK18D14DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, i
 #ifdef QDEBUG_OUTPUT
 				qDebug(" calculateGraySumXForSetQINQPLRect : The  y %d is  %d", j, i);
 #endif
+				/*
 				//写入系统日志
 				Global::systemLog->append(QString(("calculateGraySumXForSetQINQPLRect")),
 					QString::number(j) + QString("j =") + QString::number(i),
 					SystemLog::INFO_TYPE);
-
+				*/
 				j++ ;
 				i += 13 ;
 
@@ -3331,7 +3346,7 @@ int  HK18D14DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, i
 						delete[] graySumX;
 						graySumX = NULL;
 					}
-
+					 
 					//写入系统日志
 					Global::systemLog->append(QString(("calculateGraySumXForSetQINQPLRect")),
 						QString::number(j) + QString("j > roiNum") + QString::number(roiNum),

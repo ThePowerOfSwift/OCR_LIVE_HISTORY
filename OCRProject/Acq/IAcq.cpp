@@ -4,7 +4,7 @@ IAcq::IAcq(QObject *parent)
 	: QObject(parent)
 {
 	myAcqDriver = new AcqDriver;
-	init();
+	 
 	setObjectName("IAcq123456");
 }
 

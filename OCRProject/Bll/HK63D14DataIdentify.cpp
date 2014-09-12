@@ -1686,11 +1686,7 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 					continue;
 				}
 			}
-			//排除掉前面的 如果马的数量不够 8 
-			if (j <= 5 & j >= dataOutput.horseNum - 8)
-			{
-				continue;
-			}
+		
 			if (j >= QIN_QPL_COL + dataOutput.horseNum - 14)
 			{
 				continue;
@@ -1698,7 +1694,12 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 
 			if (j < i)
 			{
-				if (i > HORSENUMBER - dataOutput.horseNum)
+				//排除掉前面的 如果马的数量不够 8 
+				if (j <= 5 & j >= dataOutput.horseNum - 8)
+				{
+					continue;
+				}
+				if (i >(6 + dataOutput.horseNum) - 14)
 				{
 					continue;
 				}

@@ -194,7 +194,19 @@ LONG AcqDriver::init()
 
 	//AVerSetVideoWindowPosition(hSDCaptureDevice, rectClient);
 	// 设置视频来源
-	rtValue |= AVerSetVideoSource(hSDCaptureDevice, VIDEOSOURCE_SVIDEO);
+	if (Global::liveCardVideoSource == QString("AV"))
+	{
+		rtValue |= AVerSetVideoSource(hSDCaptureDevice, VIDEOSOURCE_VGA);
+	}
+	else if (Global::liveCardVideoSource == QString("SVIDEO"))
+	{
+		rtValue |= AVerSetVideoSource(hSDCaptureDevice, VIDEOSOURCE_SVIDEO);
+	}
+	else
+	{
+		rtValue |= AVerSetVideoSource(hSDCaptureDevice, VIDEOSOURCE_SVIDEO);
+	}
+	 
 
 	if (rtValue == CAP_EC_SUCCESS)
 		return CAP_EC_SUCCESS;

@@ -42,6 +42,8 @@ ThreadAcq* Global::threadAcq = 0;
 bool Global::stopDataIdentifyTag = false;//模拟采集标志符,开始模拟:false,停止模拟true
 
 
+QString Global::liveCardVideoSource = QString("");
+
 bool Global::pauseDataIdentifyTag = false;//识别标识符
 // 服务器 地址和端口号
 

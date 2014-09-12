@@ -173,6 +173,10 @@ private:
 #define ORIGIN_Y_BASE_HK18D14 26 
 
 
+// 要删除的部分
+
+#define  DELETE_PART cvRect(16,18,24,30)
+
 //场次号位置
 //#define SESSION_POS_RECT_HK18D14 cvRect(240+(originX-ORIGIN_X_BASE_HK18D14),37+(originY-ORIGIN_Y_BASE_HK18D14),259-240,61-37)
 //分钟位置

@@ -122,6 +122,9 @@ public:
 	static QString getComputerDeviceName(int computerId);
 	
 
+	//直播采集卡视频种类
+	static QString liveCardVideoSource;
+
 
 	static IAcq* myIAcq;//采集类
 	static ThreadAcq* threadAcq;//采集线程

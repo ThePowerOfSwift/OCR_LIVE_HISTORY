@@ -63,7 +63,12 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 	horseNameIdDataFile.setFileName(".//dat//horseNameIdDataFile.txt");
 
 	if (!horseNameIdDataFile.open(QIODevice::ReadOnly | QIODevice::Text))
-		return;
+
+	{
+		//写入系统日志
+		Global::systemLog->append(QString(tr("错误")), QString(tr("horseNameIdDataFile 文件打开错误"))
+			+ Global::historyVideoDate, SystemLog::INFO_TYPE);
+	}
 
 	horseNameIdData.setDevice(&horseNameIdDataFile);
 
@@ -78,9 +83,14 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 	horseNameIdStr = horseNameIdStr.mid(20000, horseNameIdStr.size() - 20000);
 	horseNameIdDataFile.close();
 
+	// 历史马匹 名字记录
 	horseNameHistoryDataFile.setFileName(".//dat//horseNameHistoryDataFile.txt");
 	if (!horseNameHistoryDataFile.open(QIODevice::ReadOnly | QIODevice::Text))
-		return;
+	{
+		//写入系统日志
+		Global::systemLog->append(QString(tr("错误")), QString(tr("horseNameHistoryDataFile 文件打开错误"))
+			+ Global::historyVideoDate, SystemLog::INFO_TYPE);
+	}
 
 	horseNameHistoryData.setDevice(&horseNameHistoryDataFile);
 
@@ -92,8 +102,37 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 
 	horseNameIdDataFile.close();
 
-	videoFileDate = QString("");
 
+	// 打开实时直播的文件
+
+	QDateTime liveDate = QDateTime::currentDateTime();//获取系统现在的时间
+	QString liveDateStr  = liveDate.toString("yyyyMMdd"); //设置显示格式
+
+
+
+	QString liveHorseNameFileName;
+	liveHorseNameFileName = liveDateStr + QString("horseName.txt") ;
+
+	liveHorseNameFileName = QString(".//dat//") + liveHorseNameFileName;
+	liveHorseNameFile.setFileName(liveHorseNameFileName);
+
+	
+	if (!liveHorseNameFile.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		//写入系统日志
+		Global::systemLog->append(QString(tr("错误")), QString(tr("liveHorseNameFile 文件打开错误"))
+			+ Global::historyVideoDate, SystemLog::INFO_TYPE);
+	}
+
+	liveHorseNameTs.setDevice(&liveHorseNameFile);
+
+	while (!liveHorseNameTs.atEnd())
+	{
+		liveHorseNameStr += liveHorseNameTs.readLine();
+
+	}
+
+ 
 
 	raceCountDownTime = 0;
 
@@ -157,7 +196,15 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 		 }
 		 
 		//获取马名 由于outputStruct 每次都会清空，所以需要每次都要获取
-		getHorseNameFromDataFile(videoFileName, outputStruct);
+		 if (Global::isHistoryVideo)
+		 {
+			 getHorseNameFromDataFileHistory(videoFileName, outputStruct);
+		 }
+		 else
+		 {
+			 getHorseNameFromDataFileLive(videoFileName, outputStruct);
+
+		 }
 
 		// 日期发生了变化，那么清空一下 
 		if (videoFileDate != Global::historyVideoDate)
@@ -177,7 +224,15 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 	if (Global::isSessioncalibrated)
 	{
 		//获取马名
-		getHorseNameFromDataFile(videoFileName, outputStruct);
+		if (Global::isHistoryVideo)
+		{
+			getHorseNameFromDataFileHistory(videoFileName, outputStruct);
+		}
+		else
+		{
+			getHorseNameFromDataFileLive(videoFileName, outputStruct);
+
+		}
 
 		// 标志位清零
 		Global::isSessioncalibrated = false;
@@ -380,7 +435,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 	//此时没有检测到倒计时 输出 0 
 	if (Global::raceTime == -1 )
 	{
-		Global::raceTime = 0;
+		Global::raceTime = 0 ;
 	}
 	// 
 	sessionChangedDly1 = sessionChanged;
@@ -791,7 +846,13 @@ int BllDataIdentify::startHistoryDataIdentify(QString fileName, int videoType)
 		}
 		myReadHistoryVideo.read(f, frameMat);
 
+		
 		qDebug("frame count = %d",f);
+		//写入系统日志
+		Global::systemLog->append(QString(("BllDataIdentify  ")), QString("frame count")
+			+QString::number(f),
+			SystemLog::INFO_TYPE);
+
 		progressPercent = 100 * f / (totalFrames/ videoFps);
 		QString fileName;
 		fileName = QString("ReadFrame") +
@@ -804,7 +865,7 @@ int BllDataIdentify::startHistoryDataIdentify(QString fileName, int videoType)
 		algorithmExecHistory(videoType, NULL, frameMat, progressPercent);
 
 
-		Sleep(800);
+		Sleep(100);
 		 
 
 		f += Global::frameAccValue;
@@ -1543,14 +1604,140 @@ void BllDataIdentify::start(QString fileName, int videoType)
 
 }
 
-
 /*
 获取马名
 Race Date 	20060101
 Start one Session 	 02
 Toal horse number 12
 */
-void BllDataIdentify::getHorseNameFromDataFile(QString fileName,DataOutput &outputStruct)
+
+void BllDataIdentify::getHorseNameFromDataFileLive(QString fileName, DataOutput &outputStruct)
+{
+
+	//清空list
+
+	horseNameList.clear();
+	horseIdList.clear();
+	
+
+
+	QDateTime liveDate = QDateTime::currentDateTime();//获取系统现在的时间
+	QString liveDateStr = liveDate.toString("yyyyMMdd"); //设置显示格式
+
+
+
+	QString searchLabel;
+	searchLabel = liveDateStr + QString("Start one Session \t ");
+
+	
+	searchLabel += QString::number(Global::session);
+
+	int oneSessionStrPos;
+	oneSessionStrPos = liveHorseNameStr.indexOf(searchLabel);
+
+
+	if (oneSessionStrPos < 1)
+	{
+		//写入系统日志
+		Global::systemLog->append(QString(tr("错误")), QString(tr("日期错误"))
+			+ liveDateStr, SystemLog::INFO_TYPE);
+	}
+
+	QString oneSessionStr;
+	oneSessionStr = liveHorseNameStr.mid(oneSessionStrPos, 140);
+
+	int horseNum = 0;
+	QString horseNumsStr = oneSessionStr.mid(48, 1);
+	horseNum = horseNumsStr.toInt();
+
+	QString horseNamePartStr;
+	horseNamePartStr = oneSessionStr.mid(49, 96);
+
+	QString oneHorseName;
+	QString cha;
+
+	int horseCount = 0;
+	for (int i = 0; i < horseNamePartStr.size(); i++)
+	{
+
+		cha = horseNamePartStr.mid(i, 1);
+		if (cha > "z")
+		{
+			oneHorseName += cha;
+		}
+
+
+		if ((cha >= QString("1") & cha <= QString("9")) | cha == QString("E"))
+		{
+			if (oneHorseName.size() >= 2)
+			{
+				if (oneHorseName.size() != 2 & oneHorseName.size() != 3
+					& oneHorseName.size() != 4)
+				{
+					//写入系统日志
+					Global::systemLog->append(QString(tr("ERROR")), QString(tr("马名 超出有效值范围.")) + oneHorseName,
+						SystemLog::ERROR_TYPE);
+
+				}
+
+				horseNameList.append(oneHorseName);
+
+				wchar_t * encodedName;
+				oneHorseName.toWCharArray(outputStruct.mHorseInfo.horseName[horseCount]);
+
+				int pos = horseNameIdStr.indexOf(oneHorseName);
+
+				QString idStr;
+
+				idStr = horseNameIdStr.mid(pos - 7, 7);
+				int horseId;
+				QString oneNum;
+				for (int index = 0; index < idStr.size(); index++)
+				{
+					QString bitOne;
+					bitOne = idStr.mid(index, 1);
+					if (bitOne >= QString("0") &
+						bitOne <= QString("9"))
+					{
+						oneNum += idStr.mid(index, 1);
+
+					}
+
+					if (idStr.mid(index, 1) == QString("\t"))
+					{
+
+						horseId = oneNum.toInt();
+
+						if (horseId > 10558 | horseId < 0)
+						{
+							//写入系统日志
+							Global::systemLog->append(QString(tr("ERROR")), tr("Horse Id 超出有效值范围."), SystemLog::ERROR_TYPE);
+
+						}
+
+						outputStruct.mHorseInfo.horseID[horseCount] = horseId;
+						//	horseIdList.append(horseId);
+						break;
+					}
+				}
+				oneHorseName = QString("");
+
+				horseCount++;
+
+			}
+
+		}
+
+
+	}
+}
+/*
+获取马名
+Race Date 	20060101
+Start one Session 	 02
+Toal horse number 12
+*/
+void BllDataIdentify::getHorseNameFromDataFileHistory(QString fileName,DataOutput &outputStruct)
 {
 
 	//清空list
@@ -1579,28 +1766,29 @@ void BllDataIdentify::getHorseNameFromDataFile(QString fileName,DataOutput &outp
 				break;
 			}
 		}
-		Global::historyVideoDate = fileName.mid(startPos+1, 8);
-		/*
-		Global::historyVideoDate = fileName.mid(startPos + 1, 4);
-		Global::historyVideoDate.append(QString("-"));
-		Global::historyVideoDate += fileName.mid(startPos + 5, 2);
-		Global::historyVideoDate.append(QString("-"));
-		Global::historyVideoDate += fileName.mid(startPos + 7, 2);
-
-		*/
+		//日期发生了变化
+		if (Global::historyVideoDate != fileName.mid(startPos + 1, 8))
+		{
+			Global::historyVideoDate = fileName.mid(startPos + 1, 8);
+			//写入系统日志
+			Global::systemLog->append(QString(tr("信息")), QString(tr("当前识别历史文件日期为"))
+				+ Global::historyVideoDate, SystemLog::INFO_TYPE);
+		}
+		 
 	}
 	else
 	{
 		labelPos = fileName.indexOf("01N");
-
-		Global::historyVideoDate = fileName.mid(labelPos + 3, 8);
-		/*
-		Global::historyVideoDate = fileName.mid(labelPos + 3, 4);
-		Global::historyVideoDate.append(QString("-"));
-		Global::historyVideoDate += fileName.mid(labelPos + 7, 2);
-		Global::historyVideoDate.append(QString("-"));
-		Global::historyVideoDate += fileName.mid(labelPos + 9, 2);
-		*/
+		//日期发生了变化
+		if (Global::historyVideoDate != fileName.mid(labelPos + 3, 8))
+		{
+			Global::historyVideoDate = fileName.mid(labelPos + 3, 8);
+			//写入系统日志
+			Global::systemLog->append(QString(tr("信息")), QString(tr("当前识别历史文件日期为"))
+				+ Global::historyVideoDate, SystemLog::INFO_TYPE);
+		}
+		
+	 
 	}
 	//如果直播，那么日期值小于 4 
 	if (Global::historyVideoDate.size() < 4 )
@@ -1621,13 +1809,7 @@ void BllDataIdentify::getHorseNameFromDataFile(QString fileName,DataOutput &outp
 	oneSessionStrPos = horseNameHistoryStr.indexOf(searchLabel);
 
 
-	if (oneSessionStrPos >  1 )
-	{
-		//写入系统日志
-		Global::systemLog->append(QString(tr("信息")), QString(tr("当前识别历史文件日期为")) 
-			+ Global::historyVideoDate,SystemLog::INFO_TYPE);
-	}
-	else
+	if (oneSessionStrPos <  1 ) 
 	{
 		//写入系统日志
 		Global::systemLog->append(QString(tr("错误")), QString(tr("日期错误"))
@@ -1734,47 +1916,7 @@ void BllDataIdentify::writeDataFile(DataOutput &dataOutput)
  
 	QString logStr;
 
-	//QTextStream logContentOut(&logFile);
-	/*
-	logStr = QString("第") + QString::number(bmpCount) + QString("幅图像");
-	logContentOut << logStr << "\n";
-	logContentOut << " WIN			PLA \n";
-	// 写WIN PLA
-	for (int i = 0; i < 14; i++)
-	{
-		 
-		logContentOut << QString::number(dataOutput.WIN[i]) << "	";
-
-		logContentOut << QString::number(dataOutput.WIN[i] - priDataOutput.WIN[i]) << "		";
-
-		logContentOut << QString::number(dataOutput.PLA[i]) << "\n" ;
-		logContentOut << QString::number(dataOutput.PLA[i] - priDataOutput.PLA[i]) << "		";
  
-	}
-
-	logContentOut << "QIN or QPL ";
-	for (int j = 0; j < 15; j++)
-	{
-		logContentOut << "	";
-		logContentOut << QString::number(j) ;
-	}
-	logContentOut << " \n ";
-	for (int i = 0; i < 7; i++)
-	{
-		logContentOut <<QString::number(i) ;
-		logContentOut << "		";
-		for (int j = 0; j < 15; j++)
-		{
-			logContentOut << dataOutput.QPL_QIN[i][j];
-			logContentOut << " ";
-			logContentOut << (dataOutput.QPL_QIN[i][j] - priDataOutput.QPL_QIN[i][j]);
-
-			logContentOut << "	";
-		}
-		logContentOut << "\n";
-	}
-	
- */
 	writeHistoryData( dataOutput);
 }
 
@@ -2035,7 +2177,7 @@ void BllDataIdentify::initGlobal()
 	/***********比赛数据***********/
 	Global::raceId;//比赛唯一识别ID，服务端获得
 	
-	Global::session = 0;//比赛场次号
+	Global::session = 1;//比赛场次号
 
 	Global::raceTime = 0;//比赛时间
 

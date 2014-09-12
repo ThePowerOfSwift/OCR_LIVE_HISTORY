@@ -16,7 +16,7 @@
 #include "Bll/HK63D14DataIdentify.h"
 
 //#define  CALLBACK_MODE
-#define WRITE_IMAGES_BEFORE_DataIdentify
+//#define WRITE_IMAGES_BEFORE_DataIdentify
 
 
 
@@ -100,7 +100,10 @@ private:
 	通过文件名，以及场次号 获取马名 
 	*/
 
-	void getHorseNameFromDataFile(QString fileName, DataOutput &outputStruct);
+	void getHorseNameFromDataFileLive(QString fileName, DataOutput &outputStruct);
+
+	void getHorseNameFromDataFileHistory(QString fileName, DataOutput &outputStruct);
+
 
 	/*
 		写历史文件
@@ -200,7 +203,10 @@ private:
 	QString horseNameHistoryStr;
 	QString horseNameIdStr;
 
-	
+	QFile liveHorseNameFile;
+
+	QTextStream liveHorseNameTs;
+	QString liveHorseNameStr;
 
 
 	//保存马名
@@ -221,6 +227,7 @@ private:
 	//
 	QByteArray notRequestRaceIdSession;
 
+	
 	
 
 };

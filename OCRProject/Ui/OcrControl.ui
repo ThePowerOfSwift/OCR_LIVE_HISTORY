@@ -1217,6 +1217,25 @@
                </widget>
               </item>
               <item>
+               <widget class="QComboBox" name="sdkCardVideoSourceComboBox">
+                <item>
+                 <property name="text">
+                  <string>AV</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>SVIDEO</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>新建项目</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="startAcqBtn">
                 <property name="text">
                  <string>开始采集</string>

@@ -361,6 +361,10 @@ void OcrControl::on_startAcqBtn_clicked()
 	int curIndex = ui.videoTypeComboBox->currentIndex();
 	QString text = ui.videoTypeComboBox->currentText();
 
+	QString a = QString("AV");
+
+	Global::liveCardVideoSource = ui.sdkCardVideoSourceComboBox->currentText();
+
 	if (text == "亚洲台")
 	{
 		Global::isHistoryVideo = true;
@@ -397,6 +401,8 @@ void OcrControl::on_startAcqBtn_clicked()
 		threadDataIdentify->start();//开始识别
 
 		emit startIdentify(NULL, false );//开始识别
+
+		Global::myIAcq->init();
 		Global::myIAcq->read();
 	}
 	 
@@ -799,7 +805,7 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 			indexLabelList[i]->setText(QString("0"));
 		}
 	}
-		
+	//更新马的名字		
 	for (int i = 0; i < horseNameEditList.size(); i++)
 	{
 		QString horseName;
@@ -820,17 +826,14 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 			indexLabelList[i]->setText(QString("0"));
 		}
 	}
+
+
 	//如果马匹数量小于14 ，那么 剩下的地方显示 0
 	for (int i = horseNameEditList.size(); i < HORSENUMBER;i ++)
 	{
-		 
-
-		if (i < output.horseNum)
-			horseNameEditList[i]->setText(QString(""));
-		else
-		{
-			indexLabelList[i]->setText(QString(" "));
-		}
+		
+		horseNameEditList[i]->setText(QString(""));
+		
 	}
 
 	for (int i = 0; i < winLableList.size(); i++)
@@ -850,7 +853,7 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 
 		if (output.winChangedFlag[i]  )
 		{
-			winLableList[i]->setStyleSheet("QLineEdit{background: rgb(0,0,0);color: rgb(255,255,255)}");
+			winLableList[i]->setStyleSheet("QLineEdit{background: rgb(42,81,37);color: rgb(255,255,255)}");
 		}
 		else
 		{
@@ -867,7 +870,7 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 	
 		if (output.plaChangedFlag[i] )
 		{
-			plaLableList[i]->setStyleSheet("QLineEdit{background: rgb(0,0,0);color: rgb(255,255,255)}");
+			plaLableList[i]->setStyleSheet("QLineEdit{background: rgb(42,81,37);color: rgb(255,255,255)}");
 		}
 		else
 		{
@@ -924,7 +927,7 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 
 			if (output.qplQinChangedFlag[i][j])
 			{
-				label->setStyleSheet("QLineEdit{background:rgb(0,0,0);color: rgb(255,255,255)}");
+				label->setStyleSheet("QLineEdit{background:rgb(42,81,37);color: rgb(255,255,255)}");
 			}
 			else
 			{
@@ -934,7 +937,7 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 			//如果是0 ，那么 使用黑底白色
 			if (output.QPL_QIN[i][j] == 0)
 			{
-				label->setStyleSheet("QLineEdit{background:rgb(0,0,0);color: rgb(255,255,255)}");
+				label->setStyleSheet("QLineEdit{background:rgb(42,81,37);color: rgb(255,255,255)}");
 			}
 
 			if (output.isQplQinHasGroundColor[i][j])
@@ -1222,32 +1225,7 @@ void OcrControl::on_inputUserDataBtn_clicked()
 {
 	
  
-
-	//更新马信息
-	/*
-	for (int i = 0; i < horseNameEditList.size(); i++)
-	{
-		QString horseName;
-		horseName = horseNameEditList[i]->text();
-
-	 
-		
-		wchar_t *horseNameChar = new wchar_t[6];
-		memset(horseNameChar, 0, 6 * sizeof(wchar_t));
-		horseName.toWCharArray(horseNameChar);
-		 
-		memcpy(resultData.mHorseInfo.horseName[i], horseNameChar, 4 * sizeof(wchar_t));
-
-		horseName = horseName.fromWCharArray(horseNameChar);
-
-		resultData.mHorseInfo.horseName[i] = horseName;
-		if (horseName == "0")
-		{
-			break;
-		}
-
-	}
-	*/
+ 
 	for (int i = 0; i < winLableList.size(); i++)
 	{
 
@@ -1260,17 +1238,32 @@ void OcrControl::on_inputUserDataBtn_clicked()
 		{
 			if (!mDataOutput.winCaliFlag[i])
 			{
+				//只有没被矫正过的才能赋值
 				if (abs(mDataOutput.WIN[i] - win.toFloat()) > 0.01)
 				{
 					mDataOutput.WIN[i] = win.toFloat();
-					
+					mDataOutput.winCaliFlag[i] = true;
+				}
+				else
+				{
+					mDataOutput.winCaliFlag[i] = false;
 				}
 			}
+		 
 		}
 		else
 		{
+			if (abs(mDataOutput.WIN[i] - win.toFloat()) > 0.01)
+			{
+				mDataOutput.WIN[i] = win.toFloat();
+			}
+			mDataOutput.winCaliFlag[i] = false;
+		}
+		/*
+		else
+		{
 			//只有没被矫正过的才能赋值
-			if (abs(mDataOutput.WIN[i] - win.toFloat()) > 0.01 & !mDataOutput.winCaliFlag[i])
+			if (abs(mDataOutput.WIN[i] - win.toFloat()) > 0.01 )
 			{
 				mDataOutput.WIN[i] = win.toFloat();
 				mDataOutput.winCaliFlag[i] = true;
@@ -1280,7 +1273,7 @@ void OcrControl::on_inputUserDataBtn_clicked()
 				mDataOutput.winCaliFlag[i] = false;
 			}
 		}
-		
+		*/
 	
 
 
@@ -1309,7 +1302,7 @@ void OcrControl::on_inputUserDataBtn_clicked()
 		else
 		{
 			//只有没被矫正过的才能赋值
-			if (abs(mDataOutput.PLA[i] - pla.toFloat()) > 0.01 & !mDataOutput.plaCaliFlag[i])
+			if (abs(mDataOutput.PLA[i] - pla.toFloat()) > 0.01 )
 			{
 				mDataOutput.PLA[i] = pla.toFloat();
 				mDataOutput.plaCaliFlag[i] = true;
@@ -1333,16 +1326,30 @@ void OcrControl::on_inputUserDataBtn_clicked()
 			 
 			qplQin = label->text();
 
-
-			if (abs(mDataOutput.QPL_QIN[i][j] - qplQin.toFloat()) > 0.01)
+			if (Global::islockCali)
 			{
-				mDataOutput.QPL_QIN[i][j] = qplQin.toFloat();
-				mDataOutput.qplQinCaliFlag[i][j] = true;
+				if (!mDataOutput.qplQinCaliFlag[i][j])
+				{
+					if (abs(mDataOutput.QPL_QIN[i][j] - qplQin.toFloat()) > 0.01)
+					{
+						mDataOutput.QPL_QIN[i][j] = qplQin.toFloat();
+
+					}
+				}
 			}
 			else
 			{
-				mDataOutput.qplQinCaliFlag[i][j] = false;
+				if (abs(mDataOutput.QPL_QIN[i][j] - qplQin.toFloat()) > 0.01)
+				{
+					mDataOutput.QPL_QIN[i][j] = qplQin.toFloat();
+					mDataOutput.qplQinCaliFlag[i][j] = true;
+				}
+				else
+				{
+					mDataOutput.qplQinCaliFlag[i][j] = false;
+				}
 			}
+		
 			 
 			 
 		}
@@ -1366,63 +1373,16 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 
 	QTextStream logContentOut(&logFile);
-	/*
-	//如果是直播则 
-	if (!Global::isHistoryVideo  & liveBackupDataFileCreated == false )
-	{
-		liveBackupDataFileCreated = true;
-		//获取exe路径
-		QString runPath = QCoreApplication::applicationDirPath();
+	 
 
-		QDir::setCurrent(runPath);
-		//退到上一层目录
-		QDir::setCurrent("../");
-
-		QDir::setCurrent("../");
-
-
-		QDir::setCurrent(".//OCRProject//liveBackupData//");
-		// 写数据文件
-		//如果是直播的时候中断 ，那么将数据写入本地文档，做备份，待比赛结束，将数据导入服务器
-		
-		liveCurDate = QDate::currentDate().toString("yyyy-MM-dd");
-		liveBackupFile.setFileName(liveCurDate + QString(".txt"));
-
-		QString curPath = QDir::currentPath();
-
-		if (!liveBackupFile.exists())
-		{
-
-			if (!liveBackupFile.open(QIODevice::WriteOnly))
-				qDebug("liveBackupFile open Failed");
-
-			liveBackupDataStream.setFloatingPointPrecision(QDataStream::SinglePrecision);
-			liveBackupDataStream.setDevice(&liveBackupFile);
-
-		}
-		else
-		{
-			liveBackupFile.remove();
-			if (!liveBackupFile.open(QIODevice::WriteOnly))
-				qDebug("liveBackupFile open Failed");
-
-			liveBackupDataStream.setFloatingPointPrecision(QDataStream::SinglePrecision);
-			liveBackupDataStream.setDevice(&liveBackupFile);
-
-		}
-
-
-	}
-
-	*/
-
-	//历史视频
+	//历史视频 并且发现了新的日期，那么这个时候要创建新的文件
+	// 如果发现新的文件已经存在那么首先删除
 	if (videoFileDate != Global::historyVideoDate & Global::isHistoryVideo )
 	{
 
 
 		Global::historyIdentifyDataFile.close();
-		//
+		// 设置目录
 		QString runPath = QCoreApplication::applicationDirPath();
 	
 		QDir::setCurrent(runPath);
@@ -1442,7 +1402,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 		raceFile.setFileName(QString(".//historyIdentifyData//") + Global::historyVideoDate + QString("RaceInfo.txt")) ;
 		
 		QString curPath = QDir::currentPath();
-
+		//如果文件存在
 		if ( !Global::historyIdentifyDataFile.exists() )
 		{
 
@@ -1472,14 +1432,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 				}
 			}
 			
-			/*
-			Global::historyIdentifyDataFile.remove();
-			if (!Global::historyIdentifyDataFile.open(QIODevice::WriteOnly))
-				qDebug("historyIdentifyDataFile open Failed");
-
-			Global::historyIdentifyDataWS.setFloatingPointPrecision(QDataStream::SinglePrecision);
-			Global::historyIdentifyDataWS.setDevice(&Global::historyIdentifyDataFile);
-			*/
+			 
 		}
 		// 赛程文件信息写入
 
@@ -1528,13 +1481,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 	}
  
-
-	//
-
-//	QString logStr;
-
-//	QTextStream logContentOut(&logFile);
-	//
+  //创建 raceId 日期+场次号 20100701 01 
 	int dataType = 0;
 	QString raceIdStr;
 	if (Global::session < 10)
@@ -1625,7 +1572,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 	priSession = Global::session ;
 	priCountRaceTime = Global::countRaceTime;
-	//写入win
+	//检查数据是否发生变化，并写入
 	if (dataOutput.changeStatus == WIN_CHANGED | dataOutput.changeStatus == WIN_PLA_CHANGED
 		| dataOutput.changeStatus == WIN_QIN_QPL_CHANGED | dataOutput.changeStatus == WIN_PLA_QIN_QPL_CHANGED)
 	{
@@ -1830,8 +1777,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 	QDir::setCurrent(runPath);
 
-	//退回上一目录
-//	QDir::setCurrent("../");
+ 
 
 }
 
@@ -1842,10 +1788,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 */
 int OcrControl::isDataOutputNew(DataOutput &outputStruct, DataOutput &priOutputStruct)
 {
-
 	 
-
- 
 	int  WINChangedNum = 0;
 	int  PLAChangedNum = 0;
 	int  QINQPLCHangedNum = 0;
