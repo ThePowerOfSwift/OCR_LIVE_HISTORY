@@ -16,7 +16,7 @@
 #include "Bll/HK63D14DataIdentify.h"
 
 //#define  CALLBACK_MODE
-//#define WRITE_IMAGES_BEFORE_DataIdentify
+#define WRITE_IMAGES_BEFORE_DataIdentify
 
 
 

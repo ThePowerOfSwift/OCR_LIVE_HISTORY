@@ -785,7 +785,7 @@ int BllDataIdentify::saveToLocalFile(char *data, QString path)
 
 		QString bmpFileName;
 		bmpFileName = QString(".bmp");
-		bmpFileName.prepend(QString::number(bmpCount % 100));
+		bmpFileName.prepend(QString::number(bmpCount  ));
   
 		// 转换RGB888 到QIMAGE
 		for (int h = 0; h < IMAGE_HEIGHT; h++) {
@@ -794,8 +794,17 @@ int BllDataIdentify::saveToLocalFile(char *data, QString path)
 				IMAGE_WIDTH * 3);
 		}
  
-		//QString curPath = QDir::currentPath();
-		QDir::setCurrent(path);
+		// 设置目录
+		QString runPath = QCoreApplication::applicationDirPath();
+
+		QDir::setCurrent(runPath);
+		//退到上一层目录
+		QDir::setCurrent("../");
+
+		QDir::setCurrent("../");
+
+
+		QDir::setCurrent(".//OCRProject//liveImageData");
 #ifndef OFFLINE_DEBUG
 
 		myImage.save(bmpFileName);
@@ -809,9 +818,10 @@ int BllDataIdentify::saveToLocalFile(char *data, QString path)
 		}*/
 		qDebug("读入第 %d 幅图像 \n", bmpCount);
 #endif
-		//退到上一层目录
-		QDir::setCurrent("../");
-		QString curPath = QDir::currentPath();
+		// 设置目录
+		runPath = QCoreApplication::applicationDirPath();
+
+		QDir::setCurrent(runPath);
  
 #endif
 
@@ -1281,7 +1291,14 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 	 
 
 	int rtValue = dataIdentifyClass.identify();
+	//获取算法数据
+	DataOutput outputStruct = dataIdentifyClass.dataOutput;
 
+	if (rtValue == EXIT_THIS_OCR )
+	{
+		emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
+		return EXIT_THIS_OCR ;
+	}
 	if (dataIdentifyClass.haveDataFlag == false) //广告
 	{
 		//显示图片，但是不输出结果
@@ -1299,8 +1316,7 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 		Global::systemLog->append(QString(tr("信息")), tr("数据为比赛数据"),
 			 SystemLog::INFO_TYPE);
 
-		//获取算法数据
-		DataOutput outputStruct = dataIdentifyClass.dataOutput;
+		
 		//数据处理，屏蔽无效数据为-1
 
 		isDataOutputNew(outputStruct);
@@ -1565,7 +1581,7 @@ int  BllDataIdentify::startLiveDataIdentify(int videoType)
 			Global::S_CCycleBuffer->read((char*)data, IMAGE_BUFF_LENGTH);
 
 			QString path = "./acqImages/";
-			//saveToLocalFile((char*)data, path);
+			saveToLocalFile((char*)data, path);
 
 			//算法
 			algorithmExecLive(videoType, data, Mat());
@@ -1580,7 +1596,7 @@ int  BllDataIdentify::startLiveDataIdentify(int videoType)
 	}
 
 	delete[] data;
-	qDebug() << "【BllDataIdentify】退出识别";
+	
 	return 1;
 }
 /**
@@ -1629,8 +1645,12 @@ void BllDataIdentify::getHorseNameFromDataFileLive(QString fileName, DataOutput 
 	QString searchLabel;
 	searchLabel = liveDateStr + QString("Start one Session \t ");
 
-	
-	searchLabel += QString::number(Global::session);
+	if (Global::session < 10 )
+	{
+		searchLabel += QString::number(0) + QString::number(Global::session);
+	}
+	else 
+		searchLabel += QString::number(Global::session);
 
 	int oneSessionStrPos;
 	oneSessionStrPos = liveHorseNameStr.indexOf(searchLabel);

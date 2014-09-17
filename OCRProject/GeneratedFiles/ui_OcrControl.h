@@ -168,7 +168,7 @@ public:
     {
         if (OcrControl->objectName().isEmpty())
             OcrControl->setObjectName(QStringLiteral("OcrControl"));
-        OcrControl->resize(1051, 877);
+        OcrControl->resize(1051, 891);
         horizontalLayout_15 = new QHBoxLayout(OcrControl);
         horizontalLayout_15->setSpacing(6);
         horizontalLayout_15->setContentsMargins(11, 11, 11, 11);
@@ -1066,16 +1066,14 @@ public:
         is63TAICheckBox->setText(QApplication::translate("OcrControl", "63\345\217\260", 0));
         videoTypeComboBox->clear();
         videoTypeComboBox->insertItems(0, QStringList()
+         << QApplication::translate("OcrControl", "\347\233\264\346\222\255", 0)
          << QApplication::translate("OcrControl", "\351\246\231\346\270\25718\345\217\260D14", 0)
          << QApplication::translate("OcrControl", "\351\246\231\346\270\25718\345\217\260", 0)
-         << QApplication::translate("OcrControl", "\344\272\232\346\264\262\345\217\260", 0)
-         << QApplication::translate("OcrControl", "\347\233\264\346\222\255", 0)
         );
         sdkCardVideoSourceComboBox->clear();
         sdkCardVideoSourceComboBox->insertItems(0, QStringList()
-         << QApplication::translate("OcrControl", "AV", 0)
          << QApplication::translate("OcrControl", "SVIDEO", 0)
-         << QApplication::translate("OcrControl", "\346\226\260\345\273\272\351\241\271\347\233\256", 0)
+         << QApplication::translate("OcrControl", "AV", 0)
         );
         startAcqBtn->setText(QApplication::translate("OcrControl", "\345\274\200\345\247\213\351\207\207\351\233\206", 0));
         stopAcqBtn->setText(QApplication::translate("OcrControl", "\345\201\234\346\255\242\351\207\207\351\233\206", 0));
@@ -1083,7 +1081,6 @@ public:
         serverNameComboBox->insertItems(0, QStringList()
          << QApplication::translate("OcrControl", "\346\234\215\345\212\241\345\231\250", 0)
          << QApplication::translate("OcrControl", "\346\234\215\345\212\241\345\231\2501", 0)
-         << QApplication::translate("OcrControl", "\346\234\215\345\212\241\345\231\2502", 0)
         );
         label_39->setText(QApplication::translate("OcrControl", "\347\253\257\345\217\243", 0));
         label_40->setText(QString());

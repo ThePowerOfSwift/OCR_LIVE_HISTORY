@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1051</width>
-    <height>877</height>
+    <height>891</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1196,6 +1196,11 @@
                <widget class="QComboBox" name="videoTypeComboBox">
                 <item>
                  <property name="text">
+                  <string>直播</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
                   <string>香港18台D14</string>
                  </property>
                 </item>
@@ -1204,25 +1209,10 @@
                   <string>香港18台</string>
                  </property>
                 </item>
-                <item>
-                 <property name="text">
-                  <string>亚洲台</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>直播</string>
-                 </property>
-                </item>
                </widget>
               </item>
               <item>
                <widget class="QComboBox" name="sdkCardVideoSourceComboBox">
-                <item>
-                 <property name="text">
-                  <string>AV</string>
-                 </property>
-                </item>
                 <item>
                  <property name="text">
                   <string>SVIDEO</string>
@@ -1230,7 +1220,7 @@
                 </item>
                 <item>
                  <property name="text">
-                  <string>新建项目</string>
+                  <string>AV</string>
                  </property>
                 </item>
                </widget>
@@ -1265,11 +1255,6 @@
                   <item>
                    <property name="text">
                     <string>服务器1</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>服务器2</string>
                    </property>
                   </item>
                  </widget>

@@ -2,6 +2,8 @@
 #include <QTimer>
 #include "Include/Global.h"
 
+
+
 AcqDriver::AcqDriver(QObject *parent)
 : QObject(parent)
 {
@@ -20,7 +22,7 @@ AcqDriver::AcqDriver(QObject *parent)
 	timerCount = 0;
 #ifdef OFFLINE_DEBUG
 		
-	count = 4180  ;
+	count = 0  ;
 #endif
 
  
@@ -40,22 +42,20 @@ void AcqDriver::createFalseData()
 
 
 	fileName = QString(".bmp");
-	fileName.prepend(QString::number(count, 10));
-	//fileName.prepend(QString("0"));
-	//fileName.prepend(QString("Number_orignal_"));
-	//fileName.prepend(QString("./imageSamples/"));
-	
-	//fileName = (QString("F://1197.bmp") );
 
-	fileName.prepend(QString("F://BaiduYunDownload//20140706//"));	
-	
-	//fileName.prepend(QString("E://RDBS_Yp//OCRProject0627//OCRProject//OCRProject//acqImages//"));
-	//fileName.prepend(QString("D://20140701-2//")) ;
-	//fileName.prepend(QString("E://RDBS_yp//Wrong0706//"));
-	localImage.load(fileName);
-	//localImage.load(QString("D://20140701-2//2.bmp"));
+//	count = 204 ;
+	fileName.prepend(QString::number(count, 10));
  
-	localImage = localImage.convertToFormat(QImage::Format_RGB888);
+	
+	//fileName = (QString("17.bmp") );
+	fileName.prepend(QString("G://BaiduYunDownload//liveImageData2//"));
+	
+	//fileName.prepend(QString("F://BaiduYunDownload//20140706//"));	
+	
+	 
+	localImage.load(fileName);
+ 
+ 	localImage = localImage.convertToFormat(QImage::Format_RGB888);
 	pbData = (char *)localImage.bits();
 
 	testImgFileName = fileName;
@@ -66,14 +66,14 @@ void AcqDriver::createFalseData()
 	qDebug("AcqDriver 第%d 帧 图片.当前计时器运行次数为 %d \n ",count,timerCount);
 	
 	//写入系统日志
-	Global::systemLog->append(QString(tr("AcqDriver当前计时器运行次数为 ")), QString::number(count),
-		SystemLog::INFO_TYPE);
+	//Global::systemLog->append(QString(tr("AcqDriver当前计时器运行次数为 ")), QString::number(count),
+	//	SystemLog::INFO_TYPE);
 
 	if (pbData == NULL)
 	{
 		logDataStr =  QString( " AcqDriver::createFalseData() :pbData is NULL err!");
 		//Global::AppendLogString(logDataStr, true);
-		 count += 10 ;
+		 count += 1 ;
 		return ;
 
 	}
@@ -230,7 +230,7 @@ LONG AcqDriver::open()
 
 #endif
 #ifdef OFFLINE_DEBUG
-	m_timerId = startTimer(1000);
+	m_timerId = startTimer(TIME_CYCLE);
 #endif // OFFLINE_DEBUG
 
 	// 开始视频流	

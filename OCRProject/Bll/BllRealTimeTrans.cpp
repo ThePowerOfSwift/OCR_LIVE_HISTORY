@@ -492,8 +492,12 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 		{
 			//读入结构体
 			mSendDataBuffer->read((char *)&mDataOutput, sizeof(DataOutput));
+			
 		}
-		
+		else
+		{	//直接返回
+			return;
+		}
 		if (mDataOutput.session != priSession )
 		{
 			isSessionChanged = true;

@@ -16,6 +16,7 @@
 
 #define	OFFLINE_DEBUG 
 //#define CALLBACK_MODE 
+#define TIME_CYCLE 2000  // 2s 
 
 class AcqDriver :public QObject
 {

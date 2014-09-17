@@ -194,7 +194,7 @@ OcrControl::OcrControl(QWidget *parent)
 	
 
 
-	Global::serverIpAddr1 = QString("58.67.161.109");
+	Global::serverIpAddr1 = QString("120.24.103.168");
 	Global::serverPort1 = 9068;
 
 
@@ -1113,10 +1113,17 @@ void OcrControl::on_caliSessionCountDownBtn_clicked()
 	Global::isSessioncalibrated = true;
 
 	QString raceTimeStr;
-	raceTimeStr = ui.CountRaceTimeLineEdit->text();
+	raceTimeStr = ui.raceTimeLineEdit->text();
 
 	//更新全局时间
 	Global::raceTime = raceTimeStr.toInt();
+
+
+	//
+	QString countRaceTime;
+	countRaceTime = Global::countRaceTime;
+
+	Global::countRaceTime = countRaceTime.toInt();
 
 	/*
 	//更新顺计时

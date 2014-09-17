@@ -6,7 +6,7 @@
 //实时直播
 
 #include <QString>
- 
+
 //#include "svm.h"
 #include "./Include/HorseDataStruct.h"
 # include "./Bll/algorithmParam.h"
@@ -17,12 +17,12 @@ using namespace cv;
 
 //#define  WRITE_SESSION_CLASSIFY_SAMPELS 
 //#define  WRITE_MINUTE_CLASSIFY_SAMPELS
-//#define		QDEBUG_OUTPUT
-//#define WRITE_ROI_SMAPLES_TEMP
+//#define  QDEBUG_OUTPUT
+#define  WRITE_ROI_SMAPLES_TEMP
 //#define		WRITE_ROI_SMAPLES_CLASS_INFO1
-//#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
- 
- 
+#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
+
+
 
 class DataIdentify
 {
@@ -31,13 +31,13 @@ public:
 	~DataIdentify();
 
 	// 对外的接口参数
- 
+
 	DataOutput dataOutput;
- 
-																// -1 processed,but no data, 0 processing, 1 processed
+
+	// -1 processed,but no data, 0 processing, 1 processed
 	bool isHistoryVideo;															// true: history video, false: live video 
 	bool haveDataFlag;																// DataIdentify the frame has data or not
- 	 
+
 
 	bool read(Mat &srcMat, uchar* data, int length, int height = 480, int width = 640);		// return the error type, if all right, then return 0
 	void haveData();
@@ -80,7 +80,7 @@ private:
 	// true:QPL, false:QIN
 	int algorithmState;
 
-	
+
 
 
 	//设置马名位置，获得所有马名的rect 
@@ -104,7 +104,7 @@ private:
 
 	//计算灰度和
 
-	int calculateGraySum(Mat srcMa,int &length);
+	int calculateGraySum(Mat srcMa, int &length);
 	// 获取 WIN PLA 识别
 
 	int getWINPLAIdentify();
@@ -155,52 +155,56 @@ private:
 
 };
 
- 
 
+
+//定义原点位置为 
+
+#define ORIGIN_X_BASE_LIVE 58
+#define ORIGIN_Y_BASE_LIVE 39 
 //场次号位置
-#define SESSION_POS_RECT_LIVE cvRect(267,38,285-267,60-38)
+#define SESSION_POS_RECT_LIVE cvRect(267+(originX-ORIGIN_X_BASE_LIVE),38+(originY-ORIGIN_Y_BASE_LIVE),285-267,60-38)
 //分钟位置
 // 十位数
-#define  COUNTDOWNMINUTE_POS_RECT1_LIVE cvRect(567,37,575-567,54-37)
+#define  COUNTDOWNMINUTE_POS_RECT1_LIVE cvRect(567+(originX-ORIGIN_X_BASE_LIVE),37+(originY-ORIGIN_Y_BASE_LIVE),575-567,54-37)
 //个位数
-#define  COUNTDOWNMINUTE_POS_RECT2_LIVE cvRect(576,37,587-576,54-37)
+#define  COUNTDOWNMINUTE_POS_RECT2_LIVE cvRect(576+(originX-ORIGIN_X_BASE_LIVE),37+(originY-ORIGIN_Y_BASE_LIVE),587-576,54-37)
 
 // WIN PLA
-#define  WIN_POS_RECT_LIVE cvRect(136,65,38,363-65)
+#define  WIN_POS_RECT_LIVE cvRect(136+(originX-ORIGIN_X_BASE_LIVE),65+(originY-ORIGIN_Y_BASE_LIVE),38,363-65)
 // PLA 
-#define  PLA_POS_RECT_LIVE cvRect(216,65,38,363-65)
+#define  PLA_POS_RECT_LIVE cvRect(216+(originX-ORIGIN_X_BASE_LIVE),65+(originY-ORIGIN_Y_BASE_LIVE),38,363-65)
 
 //QIN QPL标签位置
-#define  QINQPL_LABEL_POS_RECT_LIVE cvRect(126,381,12,17)
+#define  QINQPL_LABEL_POS_RECT_LIVE cvRect(126+(originX-ORIGIN_X_BASE_LIVE),381+(originY-ORIGIN_Y_BASE_LIVE),12,17)
 
 // QIN QPL 位置
-#define		WHOLE_QINQPL_POS_RECT_LIVE  cvRect(9, 376, 697, 197)
+#define		WHOLE_QINQPL_POS_RECT_LIVE  cvRect(9+(originX-ORIGIN_X_BASE_LIVE), 378+(originY-ORIGIN_Y_BASE_LIVE), 697, 197)
 #define		QINQPL_POS_RECT_LIVE cvRect(69, 22, 563, 137)
- 
-#define  LB_REGION1_RECT_LIVE cvRect(0, 19, 43, 116)
+
+#define  LB_REGION1_RECT_LIVE cvRect(4, 19, 35, 116)
 #define  LB_REGION2_RECT_LIVE cvRect(42, 38, 36, 99)
-#define  LB_REGION3_RECT_LIVE cvRect(77, 56, 38, 79)
-#define  LB_REGION4_RECT_LIVE cvRect(114, 74, 38, 62)
-#define  LB_REGION5_RECT_LIVE cvRect(149, 95, 186 - 149 + 1, 40)
-#define  LB_REGION6_RECT_LIVE cvRect(188, 111, 225 - 188 + 1, 24)
+#define  LB_REGION3_RECT_LIVE cvRect(77, 56, 35, 79)
+#define  LB_REGION4_RECT_LIVE cvRect(114, 74, 35, 62)
+#define  LB_REGION5_RECT_LIVE cvRect(149, 95,35 , 40)
+#define  LB_REGION6_RECT_LIVE cvRect(188, 111, 35 , 24)
 
 #define RU_REGION1_RECT_LIVE  cvRect(81, 0, 36, 21)
-#define RU_REGION2_RECT_LIVE  cvRect(117, 0, 38, 40)
-#define RU_REGION3_RECT_LIVE  cvRect(154, 0, 190 - 154 + 1, 60)
-#define RU_REGION4_RECT_LIVE  cvRect(190, 0, 227 - 190 + 1, 78)
-#define RU_REGION5_RECT_LIVE  cvRect(227, 0, 263 - 227 + 1, 96)
-#define RU_REGION6_RECT_LIVE  cvRect(263, 0, 302 - 263 + 1, 115)
+#define RU_REGION2_RECT_LIVE  cvRect(117, 0, 35 , 40)
+#define RU_REGION3_RECT_LIVE  cvRect(154, 0, 35 , 60)
+#define RU_REGION4_RECT_LIVE  cvRect(190, 0, 35 , 78)
+#define RU_REGION5_RECT_LIVE  cvRect(227, 0, 35 , 96)
+#define RU_REGION6_RECT_LIVE  cvRect(263, 0, 35 , 115)
 
-#define R_REGION1_RECT_LIVE  cvRect(300, 0, 36 + 1, 136)
-#define R_REGION2_RECT_LIVE cvRect(336, 0, 36, 136)
-#define R_REGION3_RECT_LIVE cvRect(373, 0, 37, 136)
-#define R_REGION4_RECT_LIVE cvRect(409, 0, 447 - 409 + 1, 136)
-#define R_REGION5_RECT_LIVE cvRect(447, 0, 481 - 447 , 136)
+#define R_REGION1_RECT_LIVE  cvRect(300, 0, 35 , 136)
+#define R_REGION2_RECT_LIVE cvRect(336, 0, 35 , 136)
+#define R_REGION3_RECT_LIVE cvRect(373, 0, 35 , 136)
+#define R_REGION4_RECT_LIVE cvRect(409, 0, 35 , 136)
+#define R_REGION5_RECT_LIVE cvRect(447, 0, 35 , 136)
 #define R_REGION6_RECT_LIVE cvRect(481, 0, 36 , 136)
-#define R_REGION7_RECT_LIVE cvRect(517, 0, 557 - 519 , 136)
+#define R_REGION7_RECT_LIVE cvRect(517, 0, 35 , 136)
 
 // 马名位置 
-#define HORSENAME_REGION_RECT_LIVE cvRect(69,65,134-69,370-65)
+#define HORSENAME_REGION_RECT_LIVE cvRect(69+(originX-ORIGIN_X_BASE_LIVE),65+(originY-ORIGIN_Y_BASE_LIVE),134-69,370-65)
 
 
 
@@ -208,4 +212,4 @@ private:
 #define  NUMBER_WIDTH_LIVE 36
 
 
- #endif
+#endif
