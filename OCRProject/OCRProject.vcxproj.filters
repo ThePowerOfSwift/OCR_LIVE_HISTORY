@@ -230,6 +230,9 @@
     <ClCompile Include="Bll\HK63D14DataIdentify.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Ui\MLineEdit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Net\NetServerThread.h">
@@ -340,6 +343,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Bll\HK63D14DataIdentify.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ui\MLineEdit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

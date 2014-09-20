@@ -43,12 +43,12 @@ OcrControl::OcrControl(QWidget *parent)
 	QObject::connect(this, SIGNAL(login()), bllRealTimeTrans1, SLOT(clientLogin()));//登录+
 
 
-	QObject::connect(bllRealTimeTrans->mcsNetClient, SIGNAL(disConnectToHostSuccessSignal()), 
-		this, SLOT(reConnect()));//断开重连
+	//QObject::connect(bllRealTimeTrans->mcsNetClient, SIGNAL(disConnectToHostSuccessSignal()), 
+	//	this, SLOT(reConnect()));//断开重连
 
 
-	QObject::connect(bllRealTimeTrans1->mcsNetClient, SIGNAL(disConnectToHostSuccessSignal()),
-		this, SLOT(reConnect()));//断开重连
+//	QObject::connect(bllRealTimeTrans1->mcsNetClient, SIGNAL(disConnectToHostSuccessSignal()),
+//		this, SLOT(reConnect()));//断开重连
 
 
 
@@ -69,6 +69,16 @@ OcrControl::OcrControl(QWidget *parent)
 
 
 	QObject::connect(bllDataIdentify, SIGNAL(readyRead(DataOutput, QByteArray, int, int)), bllRealTimeTrans, SLOT(submitRealData(DataOutput, QByteArray,int, int)));//开始发送
+	
+	//发送比赛时长 当前比赛时间+倒计时 atTime + raceTime  atTime 为CountRaceTime
+	QObject::connect(bllDataIdentify, SIGNAL(submitRaceTimeSig(qint32)), bllRealTimeTrans1, SLOT(submitRaceTime(qint32)));
+
+
+
+	QObject::connect(bllDataIdentify, SIGNAL(readyRead(DataOutput, QByteArray, int, int)), bllRealTimeTrans1, SLOT(submitRealData(DataOutput, QByteArray,int, int)));//开始发送
+	
+
+
 	QObject::connect(bllDataIdentify, SIGNAL(readyRead(DataOutput, QByteArray,int,int)), this, SLOT(updateData(DataOutput, QByteArray,int,int)));//停止计算
 
 	//显示广告	
@@ -94,6 +104,9 @@ OcrControl::OcrControl(QWidget *parent)
 	// 发送缓存区数据
 	QObject::connect(bllDataIdentify, SIGNAL(sendBufferDataSig()), 
 					 bllRealTimeTrans, SLOT(sendBufferDataToServer()) );
+
+	QObject::connect(bllDataIdentify, SIGNAL(sendBufferDataSig()),
+		bllRealTimeTrans1, SLOT(sendBufferDataToServer()));
 
 
 	
@@ -198,9 +211,38 @@ OcrControl::OcrControl(QWidget *parent)
 	Global::serverPort1 = 9068;
 
 
+
+	//绑定combox 信号槽
+
+	connect(ui.serverNameComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(upDateSvrLineEdit(QString)));
+	
 	
 }
 
+void OcrControl::upDateSvrLineEdit(QString serverName)
+{
+
+
+	//QString serverName;
+	serverName = ui.serverNameComboBox->currentText();
+
+	if (serverName == "服务器")
+	{
+		ui.svrPortLineEdit->setText(QString::number(Global::serverPort));
+		ui.svrIpAddrLineEdit->setText((Global::serverIpAddr));
+
+	
+	}
+	else if (serverName == "服务器1")
+	{
+
+		ui.svrPortLineEdit->setText(QString::number(Global::serverPort1));
+		ui.svrIpAddrLineEdit->setText((Global::serverIpAddr1));
+
+	}
+
+
+}
 OcrControl::~OcrControl()
 {
 	//停止实时提交
@@ -598,6 +640,7 @@ void OcrControl::updateADData(DataOutput  output, QByteArray  array,int imageWid
 		curFileName = curFileName.mid(curFileName.count() - 9, 9);
 		ui.imageFileNameLabel->setText(curFileName);
  
+		/*
 		if (ui.videoTypeComboBox->currentText() != QString("直播"))
 		{
 			//更新进度条
@@ -607,7 +650,10 @@ void OcrControl::updateADData(DataOutput  output, QByteArray  array,int imageWid
 		}
 		else 
 			myImage = myImage.scaled(518, 432);
-		
+
+		*/
+	//	myImage.scaled(ui.imageLbl->width(), ui.imageLbl->height());
+		myImage = myImage.scaled(518, 432);
 		pixmap = pixmap.fromImage(myImage);
 		ui.imageLbl->setPixmap(pixmap);
 		delete[] buffer;
@@ -643,21 +689,27 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 		//写入系统日志
 		Global::systemLog->append(QString(tr("历史数据 ")), QString(""),
 			SystemLog::INFO_TYPE);
-		for (int i = 0; i < HORSENUMBER; i++)
+
+		//如果QPL QIN发生切换那么，就不要在继续保持数值了
+		if (mDataOutput.isQPL == output.isQPL )
 		{
-			output.winCaliFlag[i] = mDataOutput.winCaliFlag[i];
-			output.plaCaliFlag[i] = mDataOutput.plaCaliFlag[i];
-
-			if (mDataOutput.winCaliFlag[i])
+			for (int i = 0; i < HORSENUMBER; i++)
 			{
-				output.WIN[i] = mDataOutput.WIN[i];
-			}
-			if (mDataOutput.plaCaliFlag[i])
-			{
-				output.PLA[i] = mDataOutput.PLA[i];
-			}
+				output.winCaliFlag[i] = mDataOutput.winCaliFlag[i];
+				output.plaCaliFlag[i] = mDataOutput.plaCaliFlag[i];
 
+				if (mDataOutput.winCaliFlag[i])
+				{ 
+					output.WIN[i] = mDataOutput.WIN[i];
+				}
+				if (mDataOutput.plaCaliFlag[i])
+				{
+					output.PLA[i] = mDataOutput.PLA[i];
+				}
+
+			}
 		}
+	
 
 		for (int i = 0; i < qinList.size(); i++)
 		{
@@ -712,7 +764,7 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 				imageWidth * 3);
 		}
  
-
+		/*
 		if (ui.videoTypeComboBox->currentText() != QString("直播"))
 		{
 			//更新进度条
@@ -722,6 +774,11 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 		}
 		else
 			myImage = myImage.scaled(518, 432);
+		
+		*/
+
+		//myImage.scaled(ui.imageLbl->width(), ui.imageLbl->height());
+		myImage = myImage.scaled(518, 432);
 
 		pixmap = pixmap.fromImage(myImage);
 		ui.imageLbl->setPixmap(pixmap);
@@ -1096,11 +1153,12 @@ QString OcrControl::takeTopFile(int row)
 		return NULL;
 
 }
+
 /**
 * @brief 校正场次号 倒计时 
 */
 
-void OcrControl::on_caliSessionCountDownBtn_clicked()
+void OcrControl::on_caliSessionBtn_clicked()
 {
 
 	QString sessionStr;
@@ -1110,7 +1168,31 @@ void OcrControl::on_caliSessionCountDownBtn_clicked()
 	ui.sessionLineEdit->setText(QString::number(Global::session));//更新全局场次号
 
 
-	Global::isSessioncalibrated = true;
+	if (Global::session == sessionStr.toInt())
+	{
+		Global::isSessioncalibrated = false ;
+		Global::isSessionChanged	= false ;
+	}
+	else
+	{
+		Global::isSessioncalibrated = true ;
+		Global::isSessionChanged	= true ;
+	}
+
+
+
+
+
+}
+
+
+/**
+* @brief 校正场次号 倒计时
+*/
+
+void OcrControl::on_caliCountDownBtn_clicked()
+{
+
 
 	QString raceTimeStr;
 	raceTimeStr = ui.raceTimeLineEdit->text();
@@ -1121,10 +1203,11 @@ void OcrControl::on_caliSessionCountDownBtn_clicked()
 
 	//
 	QString countRaceTime;
-	countRaceTime = Global::countRaceTime;
+	countRaceTime = ui.CountRaceTimeLineEdit->text();
 
 	Global::countRaceTime = countRaceTime.toInt();
 
+	Global::isCountTimeCalied = true;
 	/*
 	//更新顺计时
 	QString raceTimeStr;
@@ -1138,8 +1221,6 @@ void OcrControl::on_caliSessionCountDownBtn_clicked()
 
 
 }
-
-
 
 /*
 历史视频快进1min
@@ -1378,6 +1459,8 @@ void OcrControl::on_inputUserDataBtn_clicked()
 void OcrControl::writeHistoryData(DataOutput &dataOutput)
 {
 
+	QDateTime currentDateTime = QDateTime::currentDateTime();
+	QString currentDate = currentDateTime.toString("yyyy-MM-dd hh:mm:ss ddd");
 
 	QTextStream logContentOut(&logFile);
 	 
@@ -1419,6 +1502,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 			Global::historyIdentifyDataWS.setFloatingPointPrecision(QDataStream::SinglePrecision);
 			Global::historyIdentifyDataWS.setDevice(&Global::historyIdentifyDataFile);
 
+			appendStatus(QString("创建历史数据文件成功 文件名为") + Global::historyIdentifyDataFile.fileName() + currentDate);
 		}
 		else
 		{
@@ -1435,6 +1519,8 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 					Global::historyIdentifyDataWS.setFloatingPointPrecision(QDataStream::SinglePrecision);
 					Global::historyIdentifyDataWS.setDevice(&Global::historyIdentifyDataFile);
 					//退出
+					appendStatus(QString("创建历史数据文件成功 文件名为")
+						+ Global::historyIdentifyDataFile.fileName() + currentDate);
 					break;
 				}
 			}
@@ -1469,6 +1555,8 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 
 					raceDataStream.setFloatingPointPrecision(QDataStream::SinglePrecision);
 					raceDataStream.setDevice(&raceFile);
+					appendStatus(QString("创建历史赛程信息文件成功 文件名为") + raceFile.fileName() 
+						+currentDate);
 					//退出
 					break;
 				}
@@ -1583,11 +1671,10 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 	if (dataOutput.changeStatus == WIN_CHANGED | dataOutput.changeStatus == WIN_PLA_CHANGED
 		| dataOutput.changeStatus == WIN_QIN_QPL_CHANGED | dataOutput.changeStatus == WIN_PLA_QIN_QPL_CHANGED)
 	{
-
+		appendStatus(QString("输入WIN 数据") + currentDate );
 		for (int i = 0; i < dataOutput.horseNum; i++)
 		{
-			dataType = WINTYPE;
-
+			dataType = WINTYPE;			
 			//封装一个WIN
 			TagWPDataInfo WPData;
 
@@ -1634,9 +1721,11 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 		| dataOutput.changeStatus == PLA_QIN_QPL_CHANGED | dataOutput.changeStatus == WIN_PLA_QIN_QPL_CHANGED
 		)
 	{
+		appendStatus(QString("输入 PLA 数据") + currentDate);
 		for (int i = 0; i < dataOutput.horseNum; i++)
 		{
 			dataType = PLATYPE;
+			
 			//封装一个PLA
 			TagWPDataInfo WPData;
 
@@ -1689,9 +1778,14 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 		if (dataOutput.isQPL)
 		{
 			dataType = QPLTYPE;
+			appendStatus(QString("输入 QPL 数据") + currentDate );
 		}
 		else
+		{
+			appendStatus(QString("输入 QIN 数据") + currentDate );
 			dataType = QINTYPE;
+		}
+			
 
 		for (int i = 1; i <= dataOutput.horseNum; i++)
 		{
@@ -2033,7 +2127,11 @@ void OcrControl::islockCaliCheckBoxStatusChanged(bool)
 */
 void OcrControl::initUi()
 {
-	int labelHeight = 17;
+	int labelHeight = 18;
+
+	int labelWidth = 40;
+
+
 	//初始化马信息
 	for (int i = 0; i < 14; i++)
 	{
@@ -2056,7 +2154,9 @@ void OcrControl::initUi()
 		horizontalLayout_2->setContentsMargins(11, 11, 11, 11);
 		horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
 		horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
+
 		QLineEdit* indexLbel_3 = new QLineEdit(frame);
+		
 		indexLbel_3->setObjectName(QStringLiteral("indexLbel_3"));
 		QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 		sizePolicy.setHorizontalStretch(0);
@@ -2065,8 +2165,8 @@ void OcrControl::initUi()
 		indexLbel_3->setSizePolicy(sizePolicy);
 		indexLbel_3->setAlignment(Qt::AlignLeft);
 
-		indexLbel_3->setMinimumSize(QSize(50, labelHeight));
-		indexLbel_3->setMaximumSize(QSize(50, labelHeight));
+		indexLbel_3->setMinimumSize(QSize(labelWidth, labelHeight));
+		indexLbel_3->setMaximumSize(QSize(labelWidth, labelHeight));
 		indexLabelList.append(indexLbel_3);
 		horizontalLayout_2->addWidget(indexLbel_3);
 
@@ -2090,8 +2190,8 @@ void OcrControl::initUi()
 		font1.setPointSize(12);
 		winLbl_3->setFont(font1);
 		winLbl_3->setAlignment(Qt::AlignLeft);
-		winLbl_3->setMinimumSize(QSize(30, labelHeight));
-		winLbl_3->setMaximumSize(QSize(30, labelHeight));
+		winLbl_3->setMinimumSize(QSize(labelWidth, labelHeight));
+		winLbl_3->setMaximumSize(QSize(labelWidth, labelHeight));
 		winLableList.append(winLbl_3);
 		horizontalLayout_2->addWidget(winLbl_3);
 
@@ -2102,8 +2202,8 @@ void OcrControl::initUi()
 		PLALbl_3->setFont(font1);
 		PLALbl_3->setAlignment(Qt::AlignLeft);
 
-		PLALbl_3->setMinimumSize(QSize(30, labelHeight));
-		PLALbl_3->setMaximumSize(QSize(30, labelHeight));
+		PLALbl_3->setMinimumSize(QSize(labelWidth, labelHeight));
+		PLALbl_3->setMaximumSize(QSize(labelWidth, labelHeight));
 		plaLableList.append(PLALbl_3);
 		horizontalLayout_2->addWidget(PLALbl_3);
 
@@ -2123,7 +2223,6 @@ void OcrControl::initUi()
 	ui.verticalLayout_4->addItem(verticalSpacer);
 
 
-	int labelWidth = 35;
 
 	for (int j = 0; j < 7; j++)
 	{

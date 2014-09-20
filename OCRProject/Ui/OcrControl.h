@@ -14,8 +14,9 @@
 
 #include "HorseNameTrain/HorseNameTrain.h"
 
+#include "MLineEdit.h"
 //#define  VERSION_NUM "版本:1.0 2014/9/2  离线模式 yp " //
-#define  VERSION_NUM "版本:1.0 2014/9/2  直播模式 yp " //
+#define  VERSION_NUM "版本:1.0 2014/9/17  直播模式 yp " //
 #define  SHOW_ADBMP 1
 
 class OcrControl : public QWidget
@@ -83,8 +84,14 @@ public slots:
 	/**
 	* @brief 校正场次号 倒计时 按钮按下 
 	*/
-	void on_caliSessionCountDownBtn_clicked();
+	void on_caliSessionBtn_clicked();
 
+
+	/*
+	
+	*/
+
+	void on_caliCountDownBtn_clicked();
 
 	/* 
 	* @brief 开始处理历史视频
@@ -135,6 +142,11 @@ public slots:
 
 	void on_svrConfigSaveBtn_clicked();
 
+
+	/*
+	 依据不同的 combox选择项，即不同的服务器，显示不同的地址配置
+	*/
+	void upDateSvrLineEdit(QString);
 
 	/*
 		获取今天马匹排位表

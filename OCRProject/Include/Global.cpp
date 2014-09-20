@@ -103,6 +103,9 @@ bool Global::isSessioncalibrated = false ;
 //是否 场次号发生了变化
 
 bool Global::isSessionChanged = false;
+
+bool Global::isCountTimeCalied = false;
+
  // 保存请求到的场次号 
 bool Global::isThisSessionRaceIDRequested[14];
 

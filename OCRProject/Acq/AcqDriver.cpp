@@ -22,7 +22,7 @@ AcqDriver::AcqDriver(QObject *parent)
 	timerCount = 0;
 #ifdef OFFLINE_DEBUG
 		
-	count = 0  ;
+	count = 1000  ;
 #endif
 
  
@@ -202,10 +202,18 @@ LONG AcqDriver::init()
 	{
 		rtValue |= AVerSetVideoSource(hSDCaptureDevice, VIDEOSOURCE_SVIDEO);
 	}
-	else
+	else if (Global::liveCardVideoSource == QString("YB"))
 	{
-		rtValue |= AVerSetVideoSource(hSDCaptureDevice, VIDEOSOURCE_SVIDEO);
+		rtValue |= AVerSetVideoSource(hSDCaptureDevice, VIDEOSOURCE_COMPOSITE);
 	}
+	else if (Global::liveCardVideoSource == QString("COMPONET"))
+	{
+		rtValue |= AVerSetVideoSource(hSDCaptureDevice, VIDEOSOURCE_COMPONENT);
+
+	}
+	else 
+		rtValue |= AVerSetVideoSource(hSDCaptureDevice, VIDEOSOURCE_VGA);
+
 	 
 
 	if (rtValue == CAP_EC_SUCCESS)
@@ -379,6 +387,13 @@ LONG AcqDriver::ccbRead(char * buffer, int size)
 //定时器周期响应函数
 void AcqDriver::timerEvent(QTimerEvent *event)
 {
+	if (Global::isCountTimeCalied )
+	{
+		Global::timerCount = Global::countRaceTime * 60;
+
+		Global::isCountTimeCalied = false;
+	}
+	
 	//计时分钟数 
 	Global::countRaceTime = Global::timerCount / 60;
 

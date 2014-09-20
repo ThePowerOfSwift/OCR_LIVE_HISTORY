@@ -227,7 +227,7 @@ private:
 	//
 	QByteArray notRequestRaceIdSession;
 
-	
+	bool bmpCountIsSet;
 	
 
 };

@@ -138,7 +138,8 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 
 	QINQPLTransformed = false;
 
-
+	// 未设置bmp count
+	bmpCountIsSet = false;
 }
 
 BllDataIdentify::~BllDataIdentify()
@@ -775,25 +776,9 @@ int BllDataIdentify::saveToLocalFile(char *data, QString path)
 {
  
 #ifdef WRITE_IMAGES_BEFORE_DataIdentify
-		Mat mat_temp(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC3, data);
+		
+	
 
-		bmpCount++;
-		QPixmap pixmap;
-		QImage myImage;
-		myImage = QImage(IMAGE_WIDTH, IMAGE_HEIGHT, QImage::Format_RGB888);
-
-
-		QString bmpFileName;
-		bmpFileName = QString(".bmp");
-		bmpFileName.prepend(QString::number(bmpCount  ));
-  
-		// 转换RGB888 到QIMAGE
-		for (int h = 0; h < IMAGE_HEIGHT; h++) {
-			// scanLine returns a ptr to the start of the data for that row 
-			memcpy(myImage.scanLine(h), (data + IMAGE_WIDTH * 3 * h),
-				IMAGE_WIDTH * 3);
-		}
- 
 		// 设置目录
 		QString runPath = QCoreApplication::applicationDirPath();
 
@@ -805,17 +790,102 @@ int BllDataIdentify::saveToLocalFile(char *data, QString path)
 
 
 		QDir::setCurrent(".//OCRProject//liveImageData");
+
+		if (!bmpCountIsSet)
+		{
+			QDir dir;
+			path = dir.currentPath();
+			path.append("/");
+			QDir dirNew(path);
+
+			QFileInfoList fileInfoList = dirNew.entryInfoList();
+
+			QFileInfo fileInfo = fileInfoList.at(fileInfoList.count() - 1);
+
+			QString fileNameOri = fileInfo.fileName();
+
+			int fileNum;
+			int max = 0;
+			for (int i = 0; i < fileInfoList.count(); i++)
+			{
+
+				QFileInfo fileInfo = fileInfoList.at(i);;
+				QString fileName = fileInfo.fileName();
+
+				if (fileName == "." | fileName == "..")
+				{
+					continue;
+				}
+				fileName = fileName.mid(0, fileName.size() - 4);
+				fileNum = fileName.toInt();
+
+				if (fileNum > max)
+				{
+					max = fileNum;
+				}
+			}
+			bmpCount = max;
+			bmpCountIsSet = true;
+
+		}
+
+		Mat mat_temp(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC3, data);
+
+		bmpCount++;
+		QPixmap pixmap;
+		QImage myImage;
+		myImage = QImage(IMAGE_WIDTH, IMAGE_HEIGHT, QImage::Format_RGB888);
+
+
+		QString bmpFileName;
+		bmpFileName = QString(".bmp");
+		bmpFileName.prepend(QString::number(bmpCount));
+
+		// 转换RGB888 到QIMAGE
+		for (int h = 0; h < IMAGE_HEIGHT; h++) {
+			// scanLine returns a ptr to the start of the data for that row 
+			memcpy(myImage.scanLine(h), (data + IMAGE_WIDTH * 3 * h),
+				IMAGE_WIDTH * 3);
+		}
+
+		/*
+		QDir *temp = new QDir;
+		bool exist = temp->exists(".//liveImageData1");
+		if (exist)
+			qDebug("exit");
+		else
+		{
+			bool ok = temp->mkdir(".//liveImageData1");
+			if (ok)
+				qDebug("mkdir success ");
+		}
+		QFile bmpFile ;
+		QString oriFileName = bmpFileName;
+		bmpFile.setFileName(bmpFileName) ;
+		for (int i = 0; bmpFile.exists(); i++)
+		{
+		bmpFileName = oriFileName;
+		bmpFileName.prepend("_");
+		bmpFileName.prepend(QString::number(i));
+		bmpFile.setFileName(bmpFileName);
+		if (!bmpFile.exists())
+		{
+		break;
+		}
+
+		}
+		*/
+	
+		
+	
+		myImage.save(bmpFileName);
 #ifndef OFFLINE_DEBUG
 
 		myImage.save(bmpFileName);
 
 #endif // !OFFLINE_DEBUG
 #ifdef OFFLINE_DEBUG 
-	/*	myImage.save("acq.bmp");
-		if (bmpCount == 14)
-		{
-			qDebug("Debug MARK");
-		}*/
+	 
 		qDebug("读入第 %d 幅图像 \n", bmpCount);
 #endif
 		// 设置目录
@@ -1312,11 +1382,7 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 	}
 	else if (dataIdentifyClass.haveDataFlag == true)
 	{
-		//写入系统日志
-		Global::systemLog->append(QString(tr("信息")), tr("数据为比赛数据"),
-			 SystemLog::INFO_TYPE);
-
-		
+	
 		//数据处理，屏蔽无效数据为-1
 
 		isDataOutputNew(outputStruct);

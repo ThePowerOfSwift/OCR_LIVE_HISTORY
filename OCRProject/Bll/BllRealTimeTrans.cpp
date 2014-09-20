@@ -299,7 +299,10 @@ void BllRealTimeTrans::requestRaceID( int session )
 	{
 		
 		emit statuChanged(QString("服务器 %1,识别端：错误，请求RaceID指令失败。").arg(serverNo));
-
+ 
+		serverSubmitFailed = false;
+ 
+ 
 	}
 		
 
@@ -386,6 +389,7 @@ void BllRealTimeTrans::submitRaceTime(qint32 raceTime)
 		mcsNetClient->readAllMessage(result, descriptor);//读取数据
 		handleSubmitRaceTime(result, descriptor);//处理login返回数据
 
+		serverSubmitFailed = false  ;
 		//写入系统日志
 		Global::systemLog->append(QString(tr("信息")),QString("服务器")+QString::number(serverNo)
 			+ QString(tr("服务端：回复，提交比赛时长"))
@@ -395,7 +399,7 @@ void BllRealTimeTrans::submitRaceTime(qint32 raceTime)
 	else
 	{
 		emit statuChanged("识别端：错误，提交比赛时长指令失败。");
-
+		serverSubmitFailed = true ;
 		//写入系统日志
 		Global::systemLog->append(QString(tr("错误")), QString("服务器") + QString::number(serverNo) +
 			QString(tr("识别端：错误，提交比赛时长指令失败"))
@@ -423,12 +427,17 @@ void BllRealTimeTrans::handleSubmitRaceTime(QByteArray result, int descriptor)
 	QString reply = result.data();
 
 	emit statuChanged(QString("服务器 %2,服务端：回复，提交比赛时长指令，%1").arg(reply).arg(serverNo));
-
 	
-
+	 
 	if (reply == "OK")
 	{
 		Global::isThisTotalSessionTimeSumbit[Global::session] = true;
+		serverSubmitFailed = false ;
+	}
+	else
+	{
+		
+		serverSubmitFailed = true ;
 	}
 }
 
@@ -454,6 +463,7 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 		qDebug("test re connect ");
 
 		serverNotConnected = true  ;
+		
 		connectCount++;
 		if (connectCount == 30 )
 		{
@@ -462,12 +472,13 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 		}
 		
 	}
-	else
+	else //有链接 
 	{
+		serverSubmitFailed = false ;
 		//只有提交成功而才能设置为真
 		if (!serverSubmitFailed)
 		{
-			serverNotConnected = false;
+		//	serverNotConnected = false;
 		}
 		
 	}
@@ -495,7 +506,21 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 			
 		}
 		else
-		{	//直接返回
+		{	
+			//如果此时获取到了新场次号了，那么继续读取数据
+			if (stopReadBuffData == true)
+			{
+				if (Global::isThisSessionRaceIDRequested[mDataOutput.session])
+				{
+					stopReadBuffData = false;
+				}
+				//如果服务器处于连接模式 ，那么请求raceId
+				if (!serverNotConnected)
+				{
+					requestRaceID(mDataOutput.session);
+				}
+			}
+			//直接返回
 			return;
 		}
 		if (mDataOutput.session != priSession )
@@ -730,7 +755,8 @@ void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct, QString type)
 			//****************************************************//
 			mcsNetClient->sendData(sendBlock, false);//发送数据，且不需要关闭socket
 			emit statuChanged(QString("服务器 %2 服务端：回复，提交实时数据-%1").arg(type).arg(serverNo));
-
+			
+			serverSubmitFailed = true;
 
 			//**若对方有回复****//
 			//bool success = Global::mcsNetClient->waitForReadyRead(3000);//阻塞等待
@@ -757,7 +783,7 @@ void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct, QString type)
 		emit statuChanged(QString("服务器 %1 ，识别端：错误，提交实时数据指令失败.").arg(serverNo));
 
 		serverNotConnected = true;
-
+		serverSubmitFailed = true ;
 		//写入系统日志
 		Global::systemLog->append(QString(tr("错误")), QString("服务器 %1").arg(serverNo)
 			+QString(tr("识别端：错误，提交实时数据指令失败"))
@@ -879,6 +905,7 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput &ouputStruct, QString type)
 			mcsNetClient->sendData(sendBlock, false);//发送数据，且不需要关闭socket
 			emit statuChanged(QString("服务器 %2 识别端：正常，提交实时数据-%1，14个.").arg(type).arg(serverNo));
 
+			serverSubmitFailed = true;
 
 			//**若对方有回复****//
 			//bool success = Global::mcsNetClient->waitForReadyRead(3000);//阻塞等待
@@ -902,7 +929,8 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput &ouputStruct, QString type)
 	{
 		//将数据写入文件
 		serverNotConnected = true;
-	
+		serverSubmitFailed = true ;
+
 		emit statuChanged(QString("服务器 %2 识别端：错误，提交实时数据指令-%1,失败.").arg(type).arg(serverNo));
 
 

@@ -15,9 +15,9 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_15">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="16,5,4">
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="8,8,4">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout" stretch="5">
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
        <item>
         <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
          <property name="spacing">
@@ -59,6 +59,13 @@
                       </widget>
                      </item>
                      <item>
+                      <widget class="QPushButton" name="caliSessionBtn">
+                       <property name="text">
+                        <string>矫正场次号</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
                       <widget class="QLabel" name="label_2">
                        <property name="text">
                         <string>倒计时</string>
@@ -87,9 +94,9 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="caliSessionCountDownBtn">
+                      <widget class="QPushButton" name="caliCountDownBtn">
                        <property name="text">
-                        <string>校正</string>
+                        <string>校正时间</string>
                        </property>
                       </widget>
                      </item>
@@ -1221,6 +1228,16 @@
                 <item>
                  <property name="text">
                   <string>AV</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>YB</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>COMPONET</string>
                  </property>
                 </item>
                </widget>

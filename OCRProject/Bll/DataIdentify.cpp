@@ -1240,12 +1240,12 @@ int DataIdentify::isHorseNameChanged()
 	if (Global::isSessioncalibrated)
 	{
 		dataOutput.horseNameChangedNum = Global::session;
-		Global::isSessionChanged = true;
+		
 		//定时器清零 。新的场次号。 如果是历史视频通过 计算帧数来实现
 
-		Global::timerCount = 0;
+		//Global::timerCount = 0;
 
-		Global::countRaceTime = 0;
+		//Global::countRaceTime = 0;
 	}
 	delete[] graySum;
 
@@ -2170,9 +2170,37 @@ int DataIdentify::getCountDownIdentify()
 	//个位数
 	Mat minuteRoi2(image, countDownMinutePosStruct.rect[1]);
 
-
-
 	cvtColor(minuteRoi1, minuteRoi1, CV_RGB2GRAY);
+	cvtColor(minuteRoi2, minuteRoi2, CV_RGB2GRAY);
+
+	//灰度阈值
+
+	for (int r = 0; r < minuteRoi1.rows;r++)
+	{
+		for (int c = 0; c < minuteRoi1.cols;c++)
+		{
+			if (minuteRoi1.at<uchar>(r,c) < 100 )
+			{
+				minuteRoi1.at<uchar>(r, c) = 0;
+			}
+		}
+	}
+
+
+	for (int r = 0; r < minuteRoi2.rows; r++)
+	{
+		for (int c = 0; c < minuteRoi2.cols; c++)
+		{
+			if (minuteRoi2.at<uchar>(r, c) < 100)
+			{
+				minuteRoi2.at<uchar>(r, c) = 0;
+			}
+		}
+	}
+
+	imwrite("minute1.bmp", minuteRoi1);
+	imwrite("minute2.bmp", minuteRoi2);
+	
 	resize(minuteRoi1, minuteRoi1, hog.winSize);
 	hog.compute(minuteRoi1, descriptorVector, winStride, padding);
 	for (int m = 0; m < HOGFEATURENUMBER; m++)
@@ -2180,7 +2208,7 @@ int DataIdentify::getCountDownIdentify()
 
 	float result1 = raceTimeSvm.predict(hogMat);
 
-	cvtColor(minuteRoi2, minuteRoi2, CV_RGB2GRAY);
+	
 	resize(minuteRoi2, minuteRoi2, hog.winSize);
 	hog.compute(minuteRoi2, descriptorVector, winStride, padding);
 	for (int m = 0; m < HOGFEATURENUMBER; m++)
@@ -2279,11 +2307,11 @@ int DataIdentify::calculateGraySumXForSetWINPLARect(Mat &mat, int *y, int &horse
 		qDebug("calculateGraySumXForSetHorseNameRect %d = %d \n", pixelY, graySumX[pixelY]);
 #endif
 		//写入系统日志
-		Global::systemLog->append(QString(("HK18D14DataIdentify  ")),
-			QString("calculateGraySumXForSetWINPLARect func pixel y ") +
-			QString::number(pixelY) + QString("graySUm") +
-			QString::number(graySumX[pixelY]),
-			SystemLog::INFO_TYPE);
+	//	Global::systemLog->append(QString(("DataIdentify  ")),
+	//		QString("calculateGraySumXForSetWINPLARect func pixel y ") +
+	//		QString::number(pixelY) + QString("graySUm") +
+	//		QString::number(graySumX[pixelY]),
+	//		SystemLog::INFO_TYPE);
 	}
 	int j = 0;
 	int THEREHOLD = 300;
@@ -3270,9 +3298,9 @@ int  DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int roiN
 
 #endif
 			//写入系统日志
-			Global::systemLog->append(QString(("calculateGraySumXForSetQINQPLRect")),
-				QString::number(j) + QString("j =") + QString::number(i),
-				SystemLog::INFO_TYPE);
+		//	Global::systemLog->append(QString(("calculateGraySumXForSetQINQPLRect")),
+			//	QString::number(j) + QString("j =") + QString::number(i),
+		//		SystemLog::INFO_TYPE);
 
 			j++;
 

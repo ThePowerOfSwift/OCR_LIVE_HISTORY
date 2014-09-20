@@ -47,11 +47,12 @@ public:
     QHBoxLayout *horizontalLayout_2;
     QLabel *label;
     QLineEdit *sessionLineEdit;
+    QPushButton *caliSessionBtn;
     QLabel *label_2;
     QLineEdit *raceTimeLineEdit;
     QLabel *label_20;
     QLineEdit *CountRaceTimeLineEdit;
-    QPushButton *caliSessionCountDownBtn;
+    QPushButton *caliCountDownBtn;
     QGroupBox *groupBox_3;
     QVBoxLayout *verticalLayout_12;
     QHBoxLayout *horizontalLayout_yp;
@@ -216,6 +217,11 @@ public:
 
         horizontalLayout_2->addWidget(sessionLineEdit);
 
+        caliSessionBtn = new QPushButton(groupBox_2);
+        caliSessionBtn->setObjectName(QStringLiteral("caliSessionBtn"));
+
+        horizontalLayout_2->addWidget(caliSessionBtn);
+
         label_2 = new QLabel(groupBox_2);
         label_2->setObjectName(QStringLiteral("label_2"));
 
@@ -238,10 +244,10 @@ public:
 
         horizontalLayout_2->addWidget(CountRaceTimeLineEdit);
 
-        caliSessionCountDownBtn = new QPushButton(groupBox_2);
-        caliSessionCountDownBtn->setObjectName(QStringLiteral("caliSessionCountDownBtn"));
+        caliCountDownBtn = new QPushButton(groupBox_2);
+        caliCountDownBtn->setObjectName(QStringLiteral("caliCountDownBtn"));
 
-        horizontalLayout_2->addWidget(caliSessionCountDownBtn);
+        horizontalLayout_2->addWidget(caliCountDownBtn);
 
 
         verticalLayout_18->addLayout(horizontalLayout_2);
@@ -499,7 +505,6 @@ public:
 
         horizontalLayout->addLayout(verticalLayout);
 
-        horizontalLayout->setStretch(0, 5);
 
         verticalLayout_2->addLayout(horizontalLayout);
 
@@ -981,8 +986,8 @@ public:
 
         verticalLayout_2->addWidget(frame_4);
 
-        verticalLayout_2->setStretch(0, 16);
-        verticalLayout_2->setStretch(1, 5);
+        verticalLayout_2->setStretch(0, 8);
+        verticalLayout_2->setStretch(1, 8);
         verticalLayout_2->setStretch(2, 4);
 
         horizontalLayout_15->addLayout(verticalLayout_2);
@@ -998,9 +1003,10 @@ public:
         OcrControl->setWindowTitle(QApplication::translate("OcrControl", "OcrControl", 0));
         groupBox_2->setTitle(QString());
         label->setText(QApplication::translate("OcrControl", "\345\234\272\346\254\241\345\217\267\357\274\232", 0));
+        caliSessionBtn->setText(QApplication::translate("OcrControl", "\347\237\253\346\255\243\345\234\272\346\254\241\345\217\267", 0));
         label_2->setText(QApplication::translate("OcrControl", "\345\200\222\350\256\241\346\227\266", 0));
         label_20->setText(QApplication::translate("OcrControl", "\351\241\272\350\256\241\346\227\266", 0));
-        caliSessionCountDownBtn->setText(QApplication::translate("OcrControl", "\346\240\241\346\255\243", 0));
+        caliCountDownBtn->setText(QApplication::translate("OcrControl", "\346\240\241\346\255\243\346\227\266\351\227\264", 0));
         groupBox_3->setTitle(QString());
         label_4->setText(QApplication::translate("OcrControl", "\345\272\217\345\217\267", 0));
         label_5->setText(QApplication::translate("OcrControl", "\351\251\254\345\220\215", 0));
@@ -1074,6 +1080,8 @@ public:
         sdkCardVideoSourceComboBox->insertItems(0, QStringList()
          << QApplication::translate("OcrControl", "SVIDEO", 0)
          << QApplication::translate("OcrControl", "AV", 0)
+         << QApplication::translate("OcrControl", "YB", 0)
+         << QApplication::translate("OcrControl", "COMPONET", 0)
         );
         startAcqBtn->setText(QApplication::translate("OcrControl", "\345\274\200\345\247\213\351\207\207\351\233\206", 0));
         stopAcqBtn->setText(QApplication::translate("OcrControl", "\345\201\234\346\255\242\351\207\207\351\233\206", 0));

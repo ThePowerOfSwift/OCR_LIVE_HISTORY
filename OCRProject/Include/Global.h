@@ -186,6 +186,9 @@ public:
 
 	static bool isSessionChanged;
 
+	//是否时间相关数值被矫正，倒计时，顺计时
+
+	static bool isCountTimeCalied;
 	//历史视频比赛日期
 
 	static QString historyVideoDate;
