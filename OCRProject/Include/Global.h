@@ -175,10 +175,13 @@ public:
 	static bool requestedRaceID[14];
 	//保存每一场的所有时间
 
-	static int totalSessionTime[14];
+	static int totalSessionTime[14] ;
 
 	static bool isThisTotalSessionTimeSumbit[14];
 
+	//保存总计时 
+
+	static int oneSessionTotalRaceTime;
 	// 是否 用户矫正了 场次号
 	static bool isSessioncalibrated;
 	
@@ -239,6 +242,16 @@ signals:
 	void startAcq();
 
 private:
+};
+
+enum QAbstractSocketState
+{
+	UnconnectedState = 0,
+	HostLookupState = 1,
+	ConnectingState = 3,
+	BoundState = 4,
+	ClosingState = 6,
+	ListeningState = 5
 };
 
 #endif // Global_H

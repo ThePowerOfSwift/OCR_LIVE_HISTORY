@@ -4,7 +4,6 @@
 
 
 //#define  CALLBACK_MODE
-using namespace std;
 
 
 DataIdentify::DataIdentify()
@@ -16,34 +15,7 @@ DataIdentify::DataIdentify()
 	memset(sampleCount, 0, sizeof(sampleCount));
 
 	algorithmState = EXEC_SUCCESS;
-	qinQplSubRect = new CvRect[19];
-	{
-		qinQplSubRect[0] = LB_REGION1_RECT_LIVE;
-		qinQplSubRect[1] = LB_REGION2_RECT_LIVE;
-		qinQplSubRect[2] = LB_REGION3_RECT_LIVE;
-		qinQplSubRect[3] = LB_REGION4_RECT_LIVE;
-		qinQplSubRect[4] = LB_REGION5_RECT_LIVE;
-		qinQplSubRect[5] = LB_REGION6_RECT_LIVE;
-
-		qinQplSubRect[6] = RU_REGION1_RECT_LIVE;
-		qinQplSubRect[7] = RU_REGION2_RECT_LIVE;
-		qinQplSubRect[8] = RU_REGION3_RECT_LIVE;
-		qinQplSubRect[9] = RU_REGION4_RECT_LIVE;
-		qinQplSubRect[10] = RU_REGION5_RECT_LIVE;
-		qinQplSubRect[11] = RU_REGION6_RECT_LIVE;
-
-
-		qinQplSubRect[12] = R_REGION1_RECT_LIVE;
-		qinQplSubRect[13] = R_REGION2_RECT_LIVE;
-		qinQplSubRect[14] = R_REGION3_RECT_LIVE;
-		qinQplSubRect[15] = R_REGION4_RECT_LIVE;
-		qinQplSubRect[16] = R_REGION5_RECT_LIVE;
-		qinQplSubRect[17] = R_REGION6_RECT_LIVE;
-		qinQplSubRect[18] = R_REGION7_RECT_LIVE;
-
-
-	}
-
+	
 	//initLengthHeightComp();
 
 	// initialize the HorseInfo
@@ -295,21 +267,34 @@ void DataIdentify::haveData()
 
 // get the origin position
 // return the coodinate of the origin
-void DataIdentify::originPosition()
+int DataIdentify::originPosition()
 {
 	int regionWidth = ORIGINPOSITION_REGIONWIDTH, regionHeight = ORIGINPOSITION_REGIONHEIGHT;
 	// 
 	// 	imshow("a",image);
 	// 	waitKey();
 	// regionWidth regionHeight 没有用上。
-	Mat region(image, Rect(0, 0, regionWidth, regionHeight));
+	Mat imageTemp;
+	image.copyTo(imageTemp);
+	Mat region(imageTemp, Rect(0, 0, regionWidth, regionHeight));
 	Mat regionGray(regionHeight, regionWidth, CV_8UC1, Scalar::all(0));
 
-	cvtColor(image, regionGray, CV_BGR2GRAY);
+	cvtColor(imageTemp, regionGray, CV_BGR2GRAY);
 
-	//	imshow("a", regionGray);
-	//	waitKey();
+	for (int c = 0; c < regionGray.cols; c++)
+	{
+		for (int r = 0; r < regionGray.rows; r++)
+		{
+			if (regionGray.at<uchar>(r, c) < 190)
+			{
+				regionGray.at<uchar>(r, c) = 0;
 
+			}			 
+
+		}
+	}
+
+	 
 	int* colSum = new int[regionHeight + 1];
 	int* rowSum = new int[regionWidth + 1];
 
@@ -321,6 +306,10 @@ void DataIdentify::originPosition()
 			rowSum[i] += regionGray.at<uchar>(i, j);
 
 		rowSum[i] = rowSum[i] / regionWidth;
+
+#ifdef QDEBUG_OUTPUT
+		qDebug("rowSum[%d] = %d ",i,rowSum[i]);
+#endif
 	}
 
 
@@ -332,12 +321,15 @@ void DataIdentify::originPosition()
 			colSum[i] += regionGray.at<uchar>(j, i);
 
 		colSum[i] = colSum[i] / regionHeight;
+#ifdef QDEBUG_OUTPUT
+		qDebug("rowSum[%d] = %d ", i, colSum[i]);
+#endif
 	}
 
 	// DataIdentify the originX
 	for (int i = 0; i < regionWidth; i++)
 	{
-		if (colSum[i]>ORIGINPOSITION_COLSUM_THRESHOLD)
+		if (colSum[i]>10 )
 		{
 			originX = i - 1;
 			break;
@@ -346,7 +338,7 @@ void DataIdentify::originPosition()
 	// DataIdentify the originY
 	for (int i = 0; i < regionHeight; i++)
 	{
-		if (rowSum[i]>ORIGINPOSITION_ROWSUM_THRESHOLD)
+		if (rowSum[i]> 10 )
 		{
 			originY = i - 1;
 			break;
@@ -356,6 +348,17 @@ void DataIdentify::originPosition()
 #ifdef QDEBUG_OUTPUT
 	qDebug("the originPosition Func : x =%d, y=%d", originX, originY);
 #endif
+	//如果偏离预设的原点太多，那么直接退出程序
+	if (abs(originX - ORIGIN_X_BASE_LIVE) > 10 | abs((originY-ORIGIN_X_BASE_LIVE) > 10 ) )
+	{
+
+		//写入系统日志
+		Global::systemLog->append(QString(("Error :DataIdentify  ")), QString("Get OriginX Y wrong！"),
+			SystemLog::ERROR_TYPE);
+
+		algorithmState = EXIT_THIS_OCR;
+		return EXIT_THIS_OCR;
+	}
 	if (colSum != NULL)
 	{
 		delete[] colSum;
@@ -368,7 +371,7 @@ void DataIdentify::originPosition()
 	}
 
 
-	return;
+	return EXEC_SUCCESS ;
 }
 
 int DataIdentify::identify()
@@ -382,6 +385,15 @@ int DataIdentify::identify()
 		return EXIT_THIS_OCR;
 	}
 	originPosition();
+
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		//写入系统日志
+		Global::systemLog->append(QString(("DataIdentify  ")), QString("originPosition func EXIT this ocr"),
+			SystemLog::ERROR_TYPE);
+		return EXIT_THIS_OCR;
+	}
+
 	//设置马名位置
 
 	setHorseNameRectPos();
@@ -507,7 +519,7 @@ int DataIdentify::setHorseNameRectPos()
 			delete[] y;
 			y = NULL;
 		}
-
+		algorithmState = EXIT_THIS_OCR;
 		return EXIT_THIS_OCR;
 	}
 
@@ -780,8 +792,37 @@ int DataIdentify::setQINQPLRectPos()
 	Mat image_temp;
 	image.copyTo(image_temp);
 	cvtColor(image_temp, image_temp, CV_RGB2GRAY);
-	Mat imageInfo2Mat(image_temp, WHOLE_QINQPL_POS_RECT_LIVE);
-	Mat imageInfo2RegionSub1(imageInfo2Mat, QINQPL_POS_RECT_LIVE);
+//	Mat imageInfo2Mat(image_temp, WHOLE_QINQPL_POS_RECT_LIVE);
+//	Mat imageInfo2RegionSub1(imageInfo2Mat, QINQPL_POS_RECT_LIVE);
+
+	qinQplSubRect = new CvRect[19];
+	{
+		qinQplSubRect[0] = LB_REGION1_RECT_LIVE;
+		qinQplSubRect[1] = LB_REGION2_RECT_LIVE;
+		qinQplSubRect[2] = LB_REGION3_RECT_LIVE;
+		qinQplSubRect[3] = LB_REGION4_RECT_LIVE;
+		qinQplSubRect[4] = LB_REGION5_RECT_LIVE;
+		qinQplSubRect[5] = LB_REGION6_RECT_LIVE;
+
+		qinQplSubRect[6] = RU_REGION1_RECT_LIVE;
+		qinQplSubRect[7] = RU_REGION2_RECT_LIVE;
+		qinQplSubRect[8] = RU_REGION3_RECT_LIVE;
+		qinQplSubRect[9] = RU_REGION4_RECT_LIVE;
+		qinQplSubRect[10] = RU_REGION5_RECT_LIVE;
+		qinQplSubRect[11] = RU_REGION6_RECT_LIVE;
+
+
+		qinQplSubRect[12] = R_REGION1_RECT_LIVE;
+		qinQplSubRect[13] = R_REGION2_RECT_LIVE;
+		qinQplSubRect[14] = R_REGION3_RECT_LIVE;
+		qinQplSubRect[15] = R_REGION4_RECT_LIVE;
+		qinQplSubRect[16] = R_REGION5_RECT_LIVE;
+		qinQplSubRect[17] = R_REGION6_RECT_LIVE;
+		qinQplSubRect[18] = R_REGION7_RECT_LIVE;
+
+
+	}
+
 
 
 #ifdef WRITE_ROI_SMAPLES_TEMP
@@ -807,9 +848,11 @@ int DataIdentify::setQINQPLRectPos()
 			}
 		}
 		Mat imageInfo2RoiEdge;
-		Mat imageInfo2Roi(imageInfo2RegionSub1, qinQplSubRect[i]);
+		Mat imageInfo2Roi(image_temp, qinQplSubRect[i]);
 		Canny(imageInfo2Roi, imageInfo2RoiEdge, 500, 450, 3, true);
 
+
+		//去除条纹
 
 
 #ifdef WRITE_ROI_SMAPLES_TEMP
@@ -819,7 +862,6 @@ int DataIdentify::setQINQPLRectPos()
 		QString path = QString(".//temp//");
 
 		writeSamples(fileName, imageInfo2RoiEdge, path);
-
 
 #endif
 		if (setEveryQINQPLPos(imageInfo2RoiEdge, i) == EXIT_THIS_OCR)
@@ -837,6 +879,8 @@ int DataIdentify::setQINQPLRectPos()
 
 	}
 
+
+
 	return EXEC_SUCCESS;
 
 
@@ -851,7 +895,7 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 {
 
 #ifdef QDEBUG_OUTPUT
-	qDebug("getImageInfo2Rect func \n");
+	qDebug("setEveryQINQPLPos func \n");
 #endif
 	if (algorithmState == EXIT_THIS_OCR)
 	{
@@ -945,7 +989,14 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			qinQPLPosStruct.rect[i][rectNum].x = qinQplSubRect[rectNum].x + x0 - 2;
 			qinQPLPosStruct.rect[i][rectNum].width = x1 - x0 + 4;
 			//向上增加一个像素
-			qinQPLPosStruct.rect[i][rectNum].y = qinQplSubRect[rectNum].y + y[i - rectNum - 1] - 1;
+			if (y[i - rectNum - 1] - 1 >= 0)
+			{
+				qinQPLPosStruct.rect[i][rectNum].y = qinQplSubRect[rectNum].y + y[i - rectNum - 1] - 1;
+
+			}
+			else
+				qinQPLPosStruct.rect[i][rectNum].y = qinQplSubRect[rectNum].y + y[i - rectNum - 1];
+
 			if (i == 6 - delataNum)
 			{
 				qinQPLPosStruct.rect[i][rectNum].height = 19;
@@ -1014,7 +1065,7 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			qinQPLPosStruct.rect[i][rectNum - 4].x = qinQplSubRect[rectNum].x + x0 - 2;
 			qinQPLPosStruct.rect[i][rectNum - 4].width = x1 - x0 + 4;
 			//向上增加一个像素
-			qinQPLPosStruct.rect[i][rectNum - 4].y = qinQplSubRect[rectNum].y + y[i] - 1;
+			qinQPLPosStruct.rect[i][rectNum - 4].y = qinQplSubRect[rectNum].y + y[i] -1;
 			if (i == roiNum - 1)
 			{
 				qinQPLPosStruct.rect[i][rectNum - 4].height = 19;
@@ -1627,7 +1678,7 @@ int DataIdentify::getQINQPLIdentify()
 {
 
 #ifdef QDEBUG_OUTPUT
-	qDebug("getImageInfo2_live func \n");
+	qDebug("getQINQPLIdentify func \n");
 #endif
 	judgeQINQPL();
 
@@ -1653,6 +1704,10 @@ int DataIdentify::getQINQPLIdentify()
 	int dotFlag;
 	Mat imageInfo2Mat(image, WHOLE_QINQPL_POS_RECT_LIVE);
 	Mat imageInfo2RegionSub1(imageInfo2Mat, QINQPL_POS_RECT_LIVE);
+
+	Mat imageTemp ;
+
+	image.copyTo(imageTemp) ;
 
 	//
 	rect[0][0].x = 0;	rect[0][1].x = 9;		rect[0][2].x = 23;			// for two number with dot	
@@ -1730,19 +1785,8 @@ int DataIdentify::getQINQPLIdentify()
 				}
 
 			}
-
-
-			if (imageInfo2RegionSub1.cols < (qinQPLPosStruct.rect[i][j].x + qinQPLPosStruct.rect[i][j].width))
-			{
-				algorithmState = EXIT_THIS_OCR;
-				return EXIT_THIS_OCR;
-			}
-			if (imageInfo2RegionSub1.rows < (qinQPLPosStruct.rect[i][j].y + qinQPLPosStruct.rect[i][j].height))
-			{
-				algorithmState = EXIT_THIS_OCR;
-				return EXIT_THIS_OCR;
-			}
-			Mat roi(imageInfo2RegionSub1, qinQPLPosStruct.rect[i][j]);
+ 
+			Mat roi(imageTemp, qinQPLPosStruct.rect[i][j]);
 
 			CvSize roiSize;
 			roiSize.height = qinQPLPosStruct.rect[i][j].height;
@@ -2317,9 +2361,13 @@ int DataIdentify::calculateGraySumXForSetWINPLARect(Mat &mat, int *y, int &horse
 	int THEREHOLD = 300;
 	for (int i = 0; i < dimension - 2; i++)
 	{
-
+		if (graySumX[0] > 300 & i == 0 )
+		{
+			y[j] = i;
+			j++;
+		}
 		//设置为 300 过滤掉 部分数字的底色
-		if ((graySumX[i] < 300 && graySumX[i + 1] > 300
+		else if ((graySumX[i] < 300 && graySumX[i + 1] > 300
 			&& graySumX[i + 2] > 300))
 		{
 			y[j] = i;
@@ -2332,7 +2380,7 @@ int DataIdentify::calculateGraySumXForSetWINPLARect(Mat &mat, int *y, int &horse
 			{
 				//Global::AppendLogString(QString("Error:calculateGraySumX :Func error  j != roiNum"), true);
 #ifdef QDEBUG_OUTPUT
-				qDebug("calculateGraySumXForSetHorseNameRect :Func error  j != roiNum \n ");
+				qDebug("calculateGraySumXForSetHorseNameRect :Func error  j %d > HORSENUMBER %d\n ", j, HORSENUMBER);
 #endif
 				if (graySumX != NULL)
 				{
@@ -2405,9 +2453,13 @@ int DataIdentify::calculateGraySumXForSetHorseNameRect(Mat &mat, int *y, int &ho
 	int THEREHOLD = 300;
 	for (int i = 0; i < dimension - 2; i++)
 	{
-
+		if (graySumX[0] >300 & i == 0 )
+		{
+			y[0] = i;
+			j++;
+		}
 		//设置为 300 过滤掉 部分数字的底色
-		if ((graySumX[i] < 300 && graySumX[i + 1] > 300
+		else if ((graySumX[i] < 300 && graySumX[i + 1] > 300
 			&& graySumX[i + 2] > 300))
 		{
 			y[j] = i;
@@ -2428,7 +2480,7 @@ int DataIdentify::calculateGraySumXForSetHorseNameRect(Mat &mat, int *y, int &ho
 
 				//Global::AppendLogString(QString("Error:calculateGraySumX :Func error  j != roiNum"), true);
 #ifdef QDEBUG_OUTPUT
-				qDebug("calculateGraySumXForSetHorseNameRect :Func error  j != roiNum \n ");
+				qDebug("calculateGraySumXForSetHorseNameRect :Func error  j%d != roiNum %d \n ",j,HORSENUMBER);
 #endif
 
 				algorithmState = EXIT_THIS_OCR;
@@ -2834,13 +2886,87 @@ int DataIdentify::judgeQINQPL()
 		return EXIT_THIS_OCR;
 	}
 
-	Mat roi(image, QINQPL_LABEL_POS_RECT_LIVE);
-	// 	imshow("a", roi);
-	// 	waitKey();
+	//Mat roi(image, QINQPL_LABEL_POS_RECT_LIVE);
+
+	Mat qinQPL(image,QINQPL_LABEL_POS_RECT_LIVE) ;
 
 
-	cvtColor(roi, roi, CV_RGB2GRAY);
 
+	cvtColor(qinQPL, qinQPL, CV_RGB2GRAY);
+
+	Mat qinQPLOri;
+	qinQPL.copyTo(qinQPLOri);
+
+	int frontIndex;
+	int backIndex;
+	int *graySum = new int[qinQPL.cols+1];
+
+	memset(graySum, 0, (qinQPL.cols + 1 )* sizeof(int));
+
+	for (int c = 0; c < qinQPL.cols; c++)
+	{
+		for (int r = 0; r < qinQPL.rows; r++)
+		{
+			if (qinQPL.at<uchar>(r,c) < 200 )
+			{
+				qinQPL.at<uchar>(r, c) = 0;
+			}
+			graySum[c] += qinQPL.at<uchar>(r, c);
+
+		}
+
+		
+	}
+
+	imwrite("qinQPL.bmp", qinQPL);
+	
+	for (int i = 0; i < qinQPL.cols; i ++ )
+	{
+		if (graySum[i] > 300 )
+		{
+			frontIndex = i; 
+			break;
+		}
+	}
+
+	for (int i = qinQPL.cols ; i> 0 ; i -- )
+	{
+		if (graySum[i] > 300)
+		{
+			backIndex = i;
+			break;
+		}
+	}
+
+
+	if (graySum != NULL )
+	{
+		delete[] graySum;
+	}
+
+	CvRect newSize;
+	newSize.x = frontIndex;
+	newSize.width = backIndex - frontIndex + 1;
+
+	if (newSize.width < 0 )
+	{
+		return EXIT_THIS_OCR ;
+	}
+	newSize.y = 0;
+	newSize.height = qinQPL.rows;
+
+
+	Mat roiWhole(qinQPLOri, newSize);
+ 
+	CvRect newSize1;
+	newSize1.x = roiWhole.cols - 12;
+	newSize1.width = 12;
+	newSize1.y = 0;
+	newSize1.height = roiWhole.rows;
+
+	Mat roi(roiWhole, newSize1);
+	imwrite("qinQPLroi.bmp", roi);
+	 
 	resize(roi, roi, hog.winSize, 0, 0, INTER_CUBIC);
 	hog.compute(roi, descriptorVector, winStride, padding);
 	for (int m = 0; m < HOGFEATURENUMBER; m++)
@@ -3130,7 +3256,7 @@ int  DataIdentify::calculateGraySumYForQINDotJudge(Mat &mat, int  *x, int roiNum
 	{
 		//Global::AppendLogString(QString("Error:calculategraySumX :Func error  j != roiNum\n "), true);
 #ifdef QDEBUG_OUTPUT
-		qDebug("calculateGraySumYForQINDotJudge :Func error  j != roiNum \n ");
+		qDebug("calculateGraySumYForQINDotJudge :Func error  j %d != roiNum %d \n ",j,roiNum);
 #endif
 		algorithmState = EXIT_THIS_OCR;
 		if (graySumX != NULL)
@@ -3286,9 +3412,13 @@ int  DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int roiN
 	int THEREHOLD = 200;
 	for (int i = 0; i < dimension - 2; i++)
 	{
-
+		if (graySumX[0] > THEREHOLD & i ==0 )
+		{
+			y[j] = i;
+			j++;
+		}
 		//设置为 300 过滤掉 部分数字的底色
-		if ((graySumX[i] < THEREHOLD && graySumX[i + 1] > THEREHOLD
+		else if ((graySumX[i] < THEREHOLD && graySumX[i + 1] > THEREHOLD
 			&& graySumX[i + 2] > THEREHOLD))
 		{
 			y[j] = i;
@@ -3310,7 +3440,7 @@ int  DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int roiN
 			{
 				//Global::AppendLogString(QString("Error:calculateGraySumXForSetRect2 :Func error j>roiNum "), true);
 #ifdef QDEBUG_OUTPUT
-				qDebug("calculateGraySumXForSetRect2 :Func error j>roiNum \n ");
+				qDebug("calculateGraySumXForSetRect2 :Func error j %d >roiNum %d \n ",j,roiNum);
 #endif		
 				if (graySumX != NULL)
 				{
@@ -3343,7 +3473,7 @@ int  DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int roiN
 	{
 		//Global::AppendLogString(QString("Error:calculateGraySumX :Func error  j != roiNum"), true);
 #ifdef QDEBUG_OUTPUT
-		qDebug("calculateGraySumXForSetRect2 :Func error  j != roiNum \n ");
+		qDebug("calculateGraySumXForSetRect2 :Func error  j %d != roiNum %d \n ",j,roiNum);
 #endif
 
 		//写入系统日志

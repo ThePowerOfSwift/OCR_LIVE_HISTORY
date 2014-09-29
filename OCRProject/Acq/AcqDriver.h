@@ -12,6 +12,8 @@
 #include "Include/CCycleBuffer.h"
 #include <QTimerEvent>
 
+#include <QFile>
+#include <QTextStream>
 #include "bll/ReadHistoryVideo.h"
 
 #define	OFFLINE_DEBUG 
@@ -77,7 +79,12 @@ public:
 		LONG lLength, __int64 tRefTime, LONG lUserData);
 
  
-	QString testImgFileName;
+	QString testImgFileName ;
+
+	QFile liveTestConfigFile ;
+
+	QString liveTestConfigStr;
+	QTextStream liveTestConfigTs;
 protected:
 	//定时器
 	int m_timerId;

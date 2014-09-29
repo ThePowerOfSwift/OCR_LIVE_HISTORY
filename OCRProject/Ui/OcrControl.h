@@ -8,15 +8,21 @@
 #include "Bll/BllRealTimeTrans.h"
 #include "Include/HorseDataStruct.h"
 #include "Bll/ThreadRealTime.h"
+#include "Bll/BllRealTimeTrans1.h"
 #include "Include/Global.h"
 #include "Bll/BllDataIdentify.h"
 #include "Bll/ThreadDataIdentify.h"
 
 #include "HorseNameTrain/HorseNameTrain.h"
 
-#include "MLineEdit.h"
-//#define  VERSION_NUM "版本:1.0 2014/9/2  离线模式 yp " //
-#define  VERSION_NUM "版本:1.0 2014/9/17  直播模式 yp " //
+#include "../ui/MLineEdit.h"
+
+#define  VERSION_NUM "版本:1.0 2014/9/20  离线模式 yp " //
+
+
+//#define  VERSION_NUM "版本:1.0 2014/9/25  直播模式 yp " //
+
+//#define  VERSION_NUM "版本:1.0 2014/9/20  直播录制模式 yp " //
 #define  SHOW_ADBMP 1
 
 class OcrControl : public QWidget
@@ -217,7 +223,7 @@ private:
 	BllRealTimeTrans* bllRealTimeTrans;//实时传输
 	ThreadRealTime* threadRealTime;//实时传输 
 	//第二个服务器 发送数据 
-	BllRealTimeTrans *bllRealTimeTrans1;
+	BllRealTimeTrans1 *bllRealTimeTrans1;
 	ThreadRealTime *threadRealTime1;
 
 
@@ -234,15 +240,15 @@ private:
 	QString videoFileDate;
 
 	//***马信息**//
-	QList<QLineEdit*> indexLabelList;
-	QList<QLineEdit*> horseNameEditList;
-	QList<QLineEdit*> winLableList;
-	QList<QLineEdit*> plaLableList;
+	QList<MLineEdit*> indexLabelList;
+	QList<MLineEdit*> horseNameEditList;
+	QList<MLineEdit*> winLableList;
+	QList<MLineEdit*> plaLableList;
 
 	//QIN信息
-	QList<QList<QLineEdit*>> qinList;
+	QList<QList<MLineEdit*>> qinList;
 	//QPL信息
-	QList<QList<QLineEdit*>> qplList;
+	QList<QList<MLineEdit*>> qplList;
 
 
 	// 马名样本采集训练

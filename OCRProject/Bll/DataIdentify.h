@@ -13,15 +13,18 @@
 #include <QDir>
 #include "Include/Global.h"
 
+using namespace std;
+ 
 using namespace cv;
 
 //#define  WRITE_SESSION_CLASSIFY_SAMPELS 
 //#define  WRITE_MINUTE_CLASSIFY_SAMPELS
 //#define  QDEBUG_OUTPUT
-//#define  WRITE_ROI_SMAPLES_TEMP
-//#define		WRITE_ROI_SMAPLES_CLASS_INFO1
-//#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
-
+/*
+#define  WRITE_ROI_SMAPLES_TEMP
+#define		WRITE_ROI_SMAPLES_CLASS_INFO1
+#define		WRITE_ROI_SMAPLES_CLASS_INFO2 
+*/
 
 
 class DataIdentify
@@ -44,7 +47,7 @@ public:
 
 	void isReady();												//return the error type, if all right, then return 0
 
-	void originPosition(/*void* imageData, int x, int y*/);							// return the position of the image origin
+	int originPosition(/*void* imageData, int x, int y*/);							// return the position of the image origin
 
 	// ===============================
 	int identify();
@@ -159,49 +162,52 @@ private:
 
 //定义原点位置为 
 
-#define ORIGIN_X_BASE_LIVE 58
-#define ORIGIN_Y_BASE_LIVE 39 
+#define ORIGIN_X_BASE_LIVE 60
+#define ORIGIN_Y_BASE_LIVE 37 
 //场次号位置
 #define SESSION_POS_RECT_LIVE cvRect(267+(originX-ORIGIN_X_BASE_LIVE),38+(originY-ORIGIN_Y_BASE_LIVE),285-267,60-38)
 //分钟位置
 // 十位数
-#define  COUNTDOWNMINUTE_POS_RECT1_LIVE cvRect(564+(originX-ORIGIN_X_BASE_LIVE),46+(originY-ORIGIN_Y_BASE_LIVE),8,14)
+#define  COUNTDOWNMINUTE_POS_RECT1_LIVE cvRect(560+(originX-ORIGIN_X_BASE_LIVE),41+(originY-ORIGIN_Y_BASE_LIVE),10,16)
 //个位数
-#define  COUNTDOWNMINUTE_POS_RECT2_LIVE cvRect(571+(originX-ORIGIN_X_BASE_LIVE),46+(originY-ORIGIN_Y_BASE_LIVE),10,14)
+#define  COUNTDOWNMINUTE_POS_RECT2_LIVE cvRect(569+(originX-ORIGIN_X_BASE_LIVE),41+(originY-ORIGIN_Y_BASE_LIVE),10,16)
 
 // WIN PLA
 #define  WIN_POS_RECT_LIVE cvRect(136+(originX-ORIGIN_X_BASE_LIVE),65+(originY-ORIGIN_Y_BASE_LIVE),38,363-65)
 // PLA 
 #define  PLA_POS_RECT_LIVE cvRect(216+(originX-ORIGIN_X_BASE_LIVE),65+(originY-ORIGIN_Y_BASE_LIVE),38,363-65)
 
-//QIN QPL标签位置
-#define  QINQPL_LABEL_POS_RECT_LIVE cvRect(126+(originX-ORIGIN_X_BASE_LIVE),381+(originY-ORIGIN_Y_BASE_LIVE),12,17)
+//QIN QPL标签位置 
+#define  QINQPL_LABEL_POS_RECT_LIVE cvRect(91+(originX-ORIGIN_X_BASE_LIVE),377+(originY-ORIGIN_Y_BASE_LIVE),50,20 )
 
 // QIN QPL 位置
 #define		WHOLE_QINQPL_POS_RECT_LIVE  cvRect(9+(originX-ORIGIN_X_BASE_LIVE), 378+(originY-ORIGIN_Y_BASE_LIVE), 697, 197)
 #define		QINQPL_POS_RECT_LIVE cvRect(69, 22, 563, 137)
 
-#define  LB_REGION1_RECT_LIVE cvRect(4, 19, 35, 116)
-#define  LB_REGION2_RECT_LIVE cvRect(42, 38, 36, 99)
-#define  LB_REGION3_RECT_LIVE cvRect(77, 56, 35, 79)
-#define  LB_REGION4_RECT_LIVE cvRect(114, 74, 35, 62)
-#define  LB_REGION5_RECT_LIVE cvRect(149, 95,35 , 40)
-#define  LB_REGION6_RECT_LIVE cvRect(188, 111, 35 , 24)
+#define  RE_BASE_X 78+(originX-ORIGIN_X_BASE_LIVE)
+#define  RE_BASE_Y 400+(originY-ORIGIN_Y_BASE_LIVE)
 
-#define RU_REGION1_RECT_LIVE  cvRect(81, 0, 36, 21)
-#define RU_REGION2_RECT_LIVE  cvRect(117, 0, 35 , 40)
-#define RU_REGION3_RECT_LIVE  cvRect(154, 0, 35 , 60)
-#define RU_REGION4_RECT_LIVE  cvRect(190, 0, 35 , 78)
-#define RU_REGION5_RECT_LIVE  cvRect(227, 0, 35 , 96)
-#define RU_REGION6_RECT_LIVE  cvRect(263, 0, 35 , 115)
+#define  LB_REGION1_RECT_LIVE cvRect(4+RE_BASE_X, 19+RE_BASE_Y, 35, 116)
+#define  LB_REGION2_RECT_LIVE cvRect(42+RE_BASE_X, 38+RE_BASE_Y, 36, 99)
+#define  LB_REGION3_RECT_LIVE cvRect(77+RE_BASE_X, 56+RE_BASE_Y, 35, 79)
+#define  LB_REGION4_RECT_LIVE cvRect(114+RE_BASE_X, 74+RE_BASE_Y, 35, 62)
+#define  LB_REGION5_RECT_LIVE cvRect(149+RE_BASE_X, 95+RE_BASE_Y,35 , 40)
+#define  LB_REGION6_RECT_LIVE cvRect(188+RE_BASE_X, 111+RE_BASE_Y, 35 , 24)
 
-#define R_REGION1_RECT_LIVE  cvRect(300, 0, 35 , 136)
-#define R_REGION2_RECT_LIVE cvRect(336, 0, 35 , 136)
-#define R_REGION3_RECT_LIVE cvRect(373, 0, 35 , 136)
-#define R_REGION4_RECT_LIVE cvRect(409, 0, 35 , 136)
-#define R_REGION5_RECT_LIVE cvRect(447, 0, 35 , 136)
-#define R_REGION6_RECT_LIVE cvRect(481, 0, 36 , 136)
-#define R_REGION7_RECT_LIVE cvRect(517, 0, 35 , 136)
+#define RU_REGION1_RECT_LIVE  cvRect(81+RE_BASE_X, 0+RE_BASE_Y, 36, 21)
+#define RU_REGION2_RECT_LIVE  cvRect(117+RE_BASE_X, 0+RE_BASE_Y, 35 , 40)
+#define RU_REGION3_RECT_LIVE  cvRect(154+RE_BASE_X, 0+RE_BASE_Y, 35 , 60)
+#define RU_REGION4_RECT_LIVE  cvRect(190+RE_BASE_X, 0+RE_BASE_Y, 35 , 78)
+#define RU_REGION5_RECT_LIVE  cvRect(227+RE_BASE_X, 0+RE_BASE_Y, 35 , 96)
+#define RU_REGION6_RECT_LIVE  cvRect(263+RE_BASE_X, 0+RE_BASE_Y, 35 , 115)
+
+#define R_REGION1_RECT_LIVE  cvRect(300+RE_BASE_X, 0+RE_BASE_Y, 35 , 136)
+#define R_REGION2_RECT_LIVE cvRect(336+RE_BASE_X, 0+RE_BASE_Y, 35 , 136)
+#define R_REGION3_RECT_LIVE cvRect(373+RE_BASE_X, 0+RE_BASE_Y, 35 , 136)
+#define R_REGION4_RECT_LIVE cvRect(409+RE_BASE_X, 0+RE_BASE_Y, 35 , 136)
+#define R_REGION5_RECT_LIVE cvRect(447+RE_BASE_X, 0+RE_BASE_Y, 35 , 136)
+#define R_REGION6_RECT_LIVE cvRect(481+RE_BASE_X, 0+RE_BASE_Y, 36 , 136)
+#define R_REGION7_RECT_LIVE cvRect(517+RE_BASE_X, 0+RE_BASE_Y, 35 , 136)
 
 // 马名位置 
 #define HORSENAME_REGION_RECT_LIVE cvRect(69+(originX-ORIGIN_X_BASE_LIVE),65+(originY-ORIGIN_Y_BASE_LIVE),134-69,370-65)

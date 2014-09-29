@@ -44,7 +44,9 @@ BllRealTimeTrans::BllRealTimeTrans(QObject *parent)
 
 	mSendDataBuffer = new CCycleBuffer();
 	
+	curServerState = false;
 
+	priServerState = false;
 }
 
 BllRealTimeTrans::~BllRealTimeTrans()
@@ -288,6 +290,7 @@ void BllRealTimeTrans::requestRaceID( int session )
 	bool success = mcsNetClient->waitForReadyRead(3000);//阻塞等待
 	if (success)
 	{
+		serverSubmitFailed = false;
 		QByteArray result;
 		int descriptor;
 		mcsNetClient->readAllMessage(result, descriptor);//读取数据
@@ -456,14 +459,14 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 
 	}
 #endif
-	 
-	//没有连接，此时请求连接
-	if (mcsNetClient->clientIsValid() != ConnectingState)
+	priServerState = curServerState;
+	//没有连接，此时请求连接 ,提交失败标志真，未连接状态为真 
+	if (mcsNetClient->clientIsValid() != ConnectingState )
 	{
+		//标记连接状态
+		curServerState = false;
 		qDebug("test re connect ");
-
-		serverNotConnected = true  ;
-		
+		serverNotConnected = true;		
 		connectCount++;
 		if (connectCount == 30 )
 		{
@@ -471,20 +474,27 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 			connectCount = 0 ;
 		}
 		
-	}
-	else //有链接 
+	} // 连接 但是 submit failed  
+	else 	 
 	{
-		serverSubmitFailed = false ;
-		//只有提交成功而才能设置为真
-		if (!serverSubmitFailed)
-		{
-		//	serverNotConnected = false;
-		}
-		
+		curServerState = true;
+		serverNotConnected = false ;
+		serverSubmitFailed = false;
 	}
-		
-	 
-	 
+	/*
+	//之前没连接，现在连接上了
+	if (priServerState & !curServerState)
+	{
+		//提交未失败
+		serverSubmitFailed = false;
+	}
+
+ 	 //提交失败，那么也要终止发送
+	if (serverSubmitFailed & !serverNotConnected )
+	{
+		return;
+	}
+	*/
 	//读取buffer
 	if (serverNo == 0 )
 	{
@@ -498,8 +508,8 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 	
 	if (usedSize >= sizeof(DataOutput ))
 	{
-		//必须连接才可以读取数据
-		if (!stopReadBuffData & !serverNotConnected)
+		//必须连接才可以读取数据 stopReadBuffData ，用于标志是否 获取了相应的raceID
+		if (!stopReadBuffData & !serverNotConnected & !serverSubmitFailed )
 		{
 			//读入结构体
 			mSendDataBuffer->read((char *)&mDataOutput, sizeof(DataOutput));
@@ -756,7 +766,7 @@ void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct, QString type)
 			mcsNetClient->sendData(sendBlock, false);//发送数据，且不需要关闭socket
 			emit statuChanged(QString("服务器 %2 服务端：回复，提交实时数据-%1").arg(type).arg(serverNo));
 			
-			serverSubmitFailed = true;
+			serverSubmitFailed = false ;
 
 			//**若对方有回复****//
 			//bool success = Global::mcsNetClient->waitForReadyRead(3000);//阻塞等待
@@ -905,7 +915,7 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput &ouputStruct, QString type)
 			mcsNetClient->sendData(sendBlock, false);//发送数据，且不需要关闭socket
 			emit statuChanged(QString("服务器 %2 识别端：正常，提交实时数据-%1，14个.").arg(type).arg(serverNo));
 
-			serverSubmitFailed = true;
+			serverSubmitFailed = false ;
 
 			//**若对方有回复****//
 			//bool success = Global::mcsNetClient->waitForReadyRead(3000);//阻塞等待

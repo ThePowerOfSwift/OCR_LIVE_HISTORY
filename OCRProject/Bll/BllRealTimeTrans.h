@@ -30,6 +30,10 @@ private:
 
 	bool serverSubmitFailed;
 
+	//标记服务器连接状态
+
+	bool curServerState;
+	bool priServerState;
 	
 public slots:
 
@@ -141,14 +145,5 @@ private:
 	bool stopReadBuffData;
 };
 
-enum QAbstractSocketState
-{
-	UnconnectedState = 0 ,
-	HostLookupState = 1 ,
-	ConnectingState = 3 ,
-	BoundState = 4 ,
-	ClosingState = 6 ,
-	ListeningState = 5 
-};
  
 #endif // BLLREALTIMETRANS_H

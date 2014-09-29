@@ -169,7 +169,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 	//每次都执行
 	if (Global::session >= 1 )
 	{
-		
+		//如果场次号发生变化 那么清空结构体
 		 if (Global::isSessionChanged)
 		 {
 			//清空
@@ -191,6 +191,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 
 			 Global::raceTime = 0;
 			 Global::countRaceTime = 0;
+			 Global::oneSessionTotalRaceTime = 0;
 
 			 raceCountDownTime = 0;
 		 	
@@ -277,9 +278,11 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 	}
 	else
 	{
-		//最大内容出现计数次数
+		//最大内容出现计数次数 
 		int maxContentCount;
 		int maxContent;
+		/*
+		
 		maxContentCount = myRaceNumberStruct[0].contentCount;
 		maxContent = myRaceNumberStruct[0].content;
 		//判决输出
@@ -309,6 +312,8 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 			Global::timerCount = 0;
 		}
 			
+		*/
+
 		//挑出来 应该输出的  倒计时时间 
 		maxContentCount = myRaceTimeStruct[0].contentCount;
 		maxContent = myRaceTimeStruct[0].content;
@@ -324,99 +329,68 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 
 		}
 		dataNewCount = 0;
- 
+  
+		/* 
+		if (isRightRaceTimeCountDownDetected == true)
 		{
-			
-			if (isRightRaceTimeCountDownDetected == true)
+			//取个位数 倒计时
+			if (raceTimeCountDownNear9 == true)
 			{
-				//取个位数 倒计时
-				if (raceTimeCountDownNear9 == true)
+				if (Global::raceTime - maxContent <= 3 & Global::raceTime - maxContent % 10 >= 0)
 				{
-					if (Global::raceTime - maxContent % 10 <= 3 & Global::raceTime - maxContent % 10 >= 0)
-					{
-						Global::raceTime = maxContent % 10;
 
-						//总时长
-						if (Global::totalSessionTime[Global::session] != Global::raceTime + Global::countRaceTime)
-						{
-							emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
-							// 保存计时
-							Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
-						}
-						
-					}
-					//如果出现次数很多，强行赋值
-					else if (maxContentCount >= 10 )
-					{
-						 
-						Global::raceTime = maxContent % 10;
-							 
-						//总时长
-						if (Global::totalSessionTime[Global::session] != Global::raceTime + Global::countRaceTime)
-						{
-							emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
-							// 保存计时
-							Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
-						}
-					}
-
-				}
-				else
-				{
-					if (Global::raceTime - maxContent <= 3 & Global::raceTime - maxContent >= 0)
-					{
-						Global::raceTime = maxContent;
-						//总时长
-						if (Global::totalSessionTime[Global::session] != Global::raceTime + Global::countRaceTime)
-						{
-							emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
-							// 保存计时
-							Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
-						}
-
-					}
-						//如果出现次数很多，强行赋值
-					else if (maxContentCount >= 10)
-					{
-						//排除掉-1
-						if (maxContent > 0 )
-						{
-							Global::raceTime = maxContent;
-						}
-							 
-						
-						//总时长
-						if (Global::totalSessionTime[Global::session] != Global::raceTime + Global::countRaceTime)
-						{
-							emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
-							// 保存计时
-							Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
-						}
-						
-						 
-					}
-				}
-			}
-
-			//第一次一定要检测到倒计时 发生了递减1 才能认为识别正确了倒计时
-			if (maxContent >= 10 & isRightRaceTimeCountDownDetected == false)
-			{
-				//第一次一定要检测到倒计时 发生了递减1 才能认为识别正确了倒计时
-				if (raceCountDownTime - maxContent == 1)
-				{
-					isRightRaceTimeCountDownDetected = true ;
-					Global::raceTime = maxContent ;
 					//总时长
-					emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
-					// 保存计时
-					Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
+					if (Global::totalSessionTime[Global::session] != Global::raceTime + Global::countRaceTime)
+					{
+						 
+						// 保存计时
+					 	//Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
+					}
+
+					Global::raceTime = maxContent % 10;
+ 
 				}
-				raceCountDownTime = maxContent ;
+				
 
 			}
+			else
+			{
+				if (Global::raceTime - maxContent <= 3 & Global::raceTime - maxContent >= 0)
+				{
+					Global::raceTime = maxContent;
+					//总时长
+					if (Global::totalSessionTime[Global::session] != Global::raceTime + Global::countRaceTime)
+					{
+						 
+						// 保存计时
+						Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
+					}
 
-
+				}
+				 
+			}
 		}
+		*/
+		//
+		//第一次一定要检测到倒计时 发生了递减1 才能认为识别正确了倒计时
+		if (maxContentCount >= 6 &maxContent > 10 & isRightRaceTimeCountDownDetected == false)
+		{
+			//第一次一定要检测到倒计时 发生了递减1 才能认为识别正确了倒计时
+			if (Global::raceTime - maxContent == 1)
+			{
+				isRightRaceTimeCountDownDetected = true ;
+				Global::raceTime = maxContent ;
+				//总时长
+				emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+				// 保存计时
+				Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
+			}
+			raceCountDownTime = maxContent ;
+
+			Global::raceTime = maxContent;
+		}
+		
+		 
 		 
 			//检测到 比赛时间 到10min 了，这时 
 		if (maxContent == 10 )
@@ -424,7 +398,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 			raceTimeCountDownNear9 = true;
 		}
 		
-
+		//清空
 		memset(myRaceNumberStruct, 0, sizeof(raceNumTimeStruct));
 		memset(myRaceTimeStruct, 0, sizeof(raceNumTimeStruct));
 
@@ -432,17 +406,12 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 
 	}
 	
- 
-	//此时没有检测到倒计时 输出 0 
-	if (Global::raceTime == -1 )
-	{
-		Global::raceTime = 0 ;
-	}
-	// 
+  
+
 	sessionChangedDly1 = sessionChanged;
 
 	 
-	return 1;
+	return EXEC_SUCCESS ;
 
 }
 
@@ -929,10 +898,7 @@ int BllDataIdentify::startHistoryDataIdentify(QString fileName, int videoType)
 		
 		qDebug("frame count = %d",f);
 		//写入系统日志
-		Global::systemLog->append(QString(("BllDataIdentify  ")), QString("frame count")
-			+QString::number(f),
-			SystemLog::INFO_TYPE);
-
+	 
 		progressPercent = 100 * f / (totalFrames/ videoFps);
 		QString fileName;
 		fileName = QString("ReadFrame") +
@@ -945,7 +911,7 @@ int BllDataIdentify::startHistoryDataIdentify(QString fileName, int videoType)
 		algorithmExecHistory(videoType, NULL, frameMat, progressPercent);
 
 
-		Sleep(100);
+		Sleep(1200);
 		 
 
 		f += Global::frameAccValue;
@@ -1388,23 +1354,16 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 		isDataOutputNew(outputStruct);
 
 		//数据有改变才会发送信号
-		if (outputStruct.changeStatus >= 0)
+		if (outputStruct.changeStatus > 0)
 		{
 			//一直写入 ，在发送的时候会检查是否获取了raceID			 
 			{
 				writeOutputDataIntoBuffer( outputStruct );
-
-			 
-				
+ 
 			}
-		//	else
-			{
-			//	qDebug("not requested ");
-			}
-			
+	 
 			emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
-
-
+ 
 		}
 		else //如果没有改变，那么此时可以发送缓存未发送的数据
 		{
@@ -1413,15 +1372,9 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 			{ 
 				emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
 			}
-
-		 
-			//写入系统日志
-			Global::systemLog->append(QString(tr("信息")), tr("数据为广告"),
-				SystemLog::INFO_TYPE);
-
-		}
-		
  
+		}
+		 
 	}
 
 	return 1;
@@ -1649,8 +1602,10 @@ int  BllDataIdentify::startLiveDataIdentify(int videoType)
 			QString path = "./acqImages/";
 			saveToLocalFile((char*)data, path);
 
+#ifndef ONLY_SAVE_IMAGES
 			//算法
 			algorithmExecLive(videoType, data, Mat());
+#endif
 		}
 
 		while (Global::pauseDataIdentifyTag)

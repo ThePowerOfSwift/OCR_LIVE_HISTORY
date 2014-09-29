@@ -114,6 +114,10 @@ bool Global::isThisSessionRaceIDRequested[14];
 int Global::totalSessionTime[14];
 bool Global::isThisTotalSessionTimeSumbit[14];
 
+// 一场比赛总时长
+
+ int Global::oneSessionTotalRaceTime = 0;
+
 //历史视频比赛日期
 
 QString Global::historyVideoDate = "";

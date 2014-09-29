@@ -20,12 +20,24 @@ AcqDriver::AcqDriver(QObject *parent)
 	pbData = new char[IMAGE_BUFF_LENGTH]();
 	m_timerId = 0 ;//初始化
 	timerCount = 0;
+
 #ifdef OFFLINE_DEBUG
 		
-	count = 1000  ;
+	count = 100  ;
 #endif
 
- 
+	//打开配置文件
+	liveTestConfigFile.setFileName("liveTest.Config");
+	if (!liveTestConfigFile.open(QIODevice::ReadOnly | QIODevice::Text))
+		qDebug("liveTestConfigFile open Failed \n");
+
+	liveTestConfigTs.setDevice(&liveTestConfigFile);
+
+	while (!liveTestConfigTs.atEnd())
+	{
+		liveTestConfigStr += liveTestConfigTs.readLine();
+
+	}
 
 }
 
@@ -35,7 +47,7 @@ AcqDriver::AcqDriver(QObject *parent)
 
 void AcqDriver::createFalseData()
 {
-	if (count < 16000 )
+	if (count < 41000 )
 		count += 1 ;
 	else
 		count = 0 ;
@@ -43,16 +55,16 @@ void AcqDriver::createFalseData()
 
 	fileName = QString(".bmp");
 
-//	count = 204 ;
-	fileName.prepend(QString::number(count, 10));
  
+	fileName.prepend(QString::number(count, 10));
+	//fileName.prepend(QString::number(4));
 	
-	//fileName = (QString("17.bmp") );
-	fileName.prepend(QString("G://BaiduYunDownload//liveImageData2//"));
+	fileName = (QString("3615.bmp") );
+	//fileName.prepend(QString("G://BaiduYunDownload//liveImageData2//"));
 	
-	//fileName.prepend(QString("F://BaiduYunDownload//20140706//"));	
+	fileName.prepend(liveTestConfigStr);
+	//fileName = (QString("G://BaiduYunDownload//12.bmp"));	
 	
-	 
 	localImage.load(fileName);
  
  	localImage = localImage.convertToFormat(QImage::Format_RGB888);
