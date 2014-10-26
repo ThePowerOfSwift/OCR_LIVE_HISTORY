@@ -85,9 +85,6 @@ qint32 Global::requestRaceId = 0;
 
 
 
-//本场场次号的全局id 已经请求 标志位
-
-bool Global:: requestedRaceID[14];
 
 //比赛已经开始标志
 qint32 Global::raceHasStarted = 0 ;
@@ -105,6 +102,11 @@ bool Global::isSessioncalibrated = false ;
 bool Global::isSessionChanged = false;
 
 bool Global::isCountTimeCalied = false;
+
+
+//本场场次号的全局id 已经请求 标志位
+
+int Global::requestedRaceID[14];
 
  // 保存请求到的场次号 
 bool Global::isThisSessionRaceIDRequested[14];

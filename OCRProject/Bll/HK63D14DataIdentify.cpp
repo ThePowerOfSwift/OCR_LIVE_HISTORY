@@ -46,8 +46,12 @@ HK63D14DataIdentify::HK63D14DataIdentify()
 	}
 	for (int i = 0; i < 7; i++)
 	{
-		for (int j = 0; j < 12; j++)
-			dataOutput.QPL_QIN[i][j] = 0;
+		for (int j = 0; j < 15; j++)
+		{
+			dataOutput.QPL[i][j] = 0;
+			dataOutput.QIN[i][j] = 0;
+			 
+		}
 	}
 
  
@@ -114,7 +118,9 @@ bool HK63D14DataIdentify::read(Mat &srcMat, uchar* data, int length, int height,
 
 	memset(dataOutput.WIN, 0, sizeof(float)*14);
 	memset(dataOutput.PLA, 0, sizeof(float)* 14);
-	memset(dataOutput.QPL_QIN, 0, sizeof(float)* 15*7);
+	memset(dataOutput.QPL, 0, sizeof(float)* 15*7);
+	memset(dataOutput.QIN, 0, sizeof(float)* 15 * 7);
+
 
 	// 历史数据读入为Mat ，实时直播读入为 data 指针
 	if (data != NULL)
@@ -1717,12 +1723,14 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 			{
 				if ( dataOutput.mHorseInfo.isSCR[i] == true )
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					dataOutput.QPL[i][j] = -1;
+					dataOutput.QIN[i][j] = -1;
 					continue; 
 				}
 				if (dataOutput.mHorseInfo.isSCR[j-1] == true)
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					dataOutput.QPL[i][j] = -1;
+					dataOutput.QIN[i][j] = -1;
 					continue;
 				}
 			}
@@ -1731,13 +1739,15 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 				
 				if (dataOutput.mHorseInfo.isSCR[j+7] == true)
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					dataOutput.QPL[i][j] = -1;
+					dataOutput.QIN[i][j] = -1;
 					continue;
 				}
 
 				if (dataOutput.mHorseInfo.isSCR[i + 7] == true)
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					dataOutput.QPL[i][j] = -1;
+					dataOutput.QIN[i][j] = -1;
 					continue;
 				}
 
@@ -2014,7 +2024,15 @@ int HK63D14DataIdentify::getQINQPLIdentify()
 					tempSum += result * factor[2][k];
 				}
 			}
-			dataOutput.QPL_QIN[i][j] = tempSum;
+			if (dataOutput.isQPL)
+			{
+				dataOutput.QPL[i][j] = tempSum;
+
+			}
+			else
+			{
+				dataOutput.QIN[i][j] = tempSum;
+			}
 
 			if (x != NULL)
 			{

@@ -16,9 +16,8 @@
 #include "Bll/HK63D14DataIdentify.h"
 
 //#define  CALLBACK_MODE
-#define WRITE_IMAGES_BEFORE_DataIdentify
 
-//#define  ONLY_SAVE_IMAGES
+
 
 /*
 算法色彩说明 

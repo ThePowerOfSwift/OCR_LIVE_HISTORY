@@ -358,6 +358,9 @@ void Network::clientSocketConnectSuccess(int descriptor)
 	//Global::systemLog->append(tr("客户端连接远程主机成功"), clientName + QString(tr("客户端连接远程主机成功,computername = %1,ip = %2, port = %3.")).arg(remoteHostName).arg(remoteHostIp).arg(remoteHostPort), SystemLog::INFO);
 
 	qDebug() << "network:客户端连接远程主机成功";
+
+	clientSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+
 }
 /**
 *函数介绍:客户端socket断开连接成功

@@ -43,8 +43,13 @@ DataIdentify::DataIdentify()
 	}
 	for (int i = 0; i < 7; i++)
 	{
-		for (int j = 0; j < 12; j++)
-			dataOutput.QPL_QIN[i][j] = 0;
+		for (int j = 0; j < 15; j++)
+		{
+		
+			dataOutput.QPL[i][j] = 0;
+			dataOutput.QIN[i][j] = 0;
+
+		}
 	}
 
 
@@ -173,6 +178,8 @@ void DataIdentify::haveData()
 	//imshow("a", image_temp);
 	//waitKey();
 
+
+
 	cvtColor(image, image_temp, CV_RGB2BGR);
 
 
@@ -269,6 +276,8 @@ void DataIdentify::haveData()
 // return the coodinate of the origin
 int DataIdentify::originPosition()
 {
+	originX = 0;
+	originY = 0;
 	int regionWidth = ORIGINPOSITION_REGIONWIDTH, regionHeight = ORIGINPOSITION_REGIONHEIGHT;
 	// 
 	// 	imshow("a",image);
@@ -348,12 +357,14 @@ int DataIdentify::originPosition()
 #ifdef QDEBUG_OUTPUT
 	qDebug("the originPosition Func : x =%d, y=%d", originX, originY);
 #endif
+
+
 	//如果偏离预设的原点太多，那么直接退出程序
 	if (abs(originX - ORIGIN_X_BASE_LIVE) > 10 | abs((originY-ORIGIN_X_BASE_LIVE) > 10 ) )
 	{
 
 		//写入系统日志
-		Global::systemLog->append(QString(("Error :DataIdentify  ")), QString("Get OriginX Y wrong！"),
+		Global::systemLog->append(QString(("Error :DataIdentify  ")), QString("Get OriginX Y Wrong！"),
 			SystemLog::ERROR_TYPE);
 
 		algorithmState = EXIT_THIS_OCR;
@@ -370,6 +381,16 @@ int DataIdentify::originPosition()
 		rowSum = NULL;
 	}
 
+	CvRect newRect;
+	newRect.x = originX;
+	newRect.y = originY;
+
+	newRect.width = imageTemp.cols - originX;
+	newRect.height = imageTemp.rows - originY;
+
+	Mat newMat;
+	newMat = Mat(imageTemp, newRect);
+	imwrite("originTrim.bmp", newMat);
 
 	return EXEC_SUCCESS ;
 }
@@ -382,12 +403,16 @@ int DataIdentify::identify()
 		return EXEC_SUCCESS ;
 	if (algorithmState == EXIT_THIS_OCR )
 	{
+		dataOutput.haveDataFlag = false;
+		haveDataFlag = false;
 		return EXIT_THIS_OCR;
 	}
 	originPosition();
 
 	if (algorithmState == EXIT_THIS_OCR)
 	{
+		dataOutput.haveDataFlag = false;
+		haveDataFlag = false;
 		//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("originPosition func EXIT this ocr"),
 			SystemLog::ERROR_TYPE);
@@ -582,8 +607,41 @@ int DataIdentify::setWINPLARectPos()
 	Mat edgeWin;
 
 
-	Canny(winRegion, edgeWin, 450, 400, 3, true);
-	Canny(plaRegion, edgePla, 450, 400, 3, true);
+	//Canny(winRegion, edgeWin, 450, 400, 3, true);
+	//Canny(plaRegion, edgePla, 450, 400, 3, true);
+
+
+
+	for (int c = 0; c < winRegion.cols; c++)
+	{
+		for (int r = 0; r < winRegion.rows; r++)
+		{
+			if (winRegion.at<uchar>(r, c) < 203)
+			{
+				winRegion.at<uchar>(r, c) = 0;
+			}
+		}
+	}
+
+	edgeWin = winRegion;
+
+	
+
+	for (int c = 0; c < plaRegion.cols; c++)
+	{
+		for (int r = 0; r < plaRegion.rows; r++)
+		{
+			if (plaRegion.at<uchar>(r, c) < 203)
+			{
+				plaRegion.at<uchar>(r, c) = 0;
+			}
+		}
+	}
+
+	edgePla = plaRegion;
+
+	//去除条纹
+
 	int *yWin = new int[HORSENUMBER + 4];
 	int *yPla = new int[HORSENUMBER + 4];
 
@@ -849,9 +907,22 @@ int DataIdentify::setQINQPLRectPos()
 		}
 		Mat imageInfo2RoiEdge;
 		Mat imageInfo2Roi(image_temp, qinQplSubRect[i]);
-		Canny(imageInfo2Roi, imageInfo2RoiEdge, 500, 450, 3, true);
+		
+		
+		//Canny(imageInfo2Roi, imageInfo2RoiEdge, 500, 450, 3, true);
 
+		for (int c = 0; c < imageInfo2Roi.cols; c++ )
+		{
+			for (int r = 0; r < imageInfo2Roi.rows; r++)
+			{
+				if (imageInfo2Roi.at<uchar>(r,c) < 203 )
+				{
+					imageInfo2Roi.at<uchar>(r, c) = 0;
+				}
+			}
+		}
 
+		imageInfo2RoiEdge = imageInfo2Roi;
 		//去除条纹
 
 
@@ -1274,15 +1345,32 @@ int DataIdentify::isHorseNameChanged()
 		qDebug("  horseNameChangedNum = %d \n",
 			dataOutput.horseNameChangedNum);
 #endif
-		Global::session++;
-		//赋值场次号
+		if (Global::session == 0 )
+		{
+			Global::session++;
+			//赋值场次号
+			//定时器清零 。新的场次号。 如果是历史视频通过 计算帧数来实现
+			Global::timerCount = 0;
 
-		//定时器清零 。新的场次号。 如果是历史视频通过 计算帧数来实现
-		Global::timerCount = 0;
+			Global::countRaceTime = 0;
 
-		Global::countRaceTime = 0;
+			Global::isSessionChanged = true;
+		}
+		//必须 顺计时大于 15 分钟，才可以改变场次号
+		else if (Global::countRaceTime  > 15 )
+		{
+			Global::session++;
+			//赋值场次号
+			//定时器清零 。新的场次号。 如果是历史视频通过 计算帧数来实现
+			Global::timerCount = 0;
 
-		Global::isSessionChanged = true;
+			Global::countRaceTime = 0;
+
+			Global::isSessionChanged = true;
+
+		}
+	
+	
 
 	}
 	dataOutput.session = Global::session;
@@ -1292,11 +1380,8 @@ int DataIdentify::isHorseNameChanged()
 	{
 		dataOutput.horseNameChangedNum = Global::session;
 		
-		//定时器清零 。新的场次号。 如果是历史视频通过 计算帧数来实现
+ 
 
-		//Global::timerCount = 0;
-
-		//Global::countRaceTime = 0;
 	}
 	delete[] graySum;
 
@@ -1384,30 +1469,6 @@ int DataIdentify::getWINPLAIdentify()
 		{
 			Mat roi(image, winPlaPosStruct.rect[i][j]);
 
-			CvSize roiSize;
-			roiSize.height = winPlaPosStruct.rect[i][j].height;
-			roiSize.width = winPlaPosStruct.rect[i][j].width;
-
-			for (int t = 0; t < 3; t++)													// set the rect for single number in number region
-			{
-				if (t == 2)
-				{
-					rectNoDot[t].width = roi.cols - rectNoDot[t].x;
-					rectDot[t].width = roi.cols - rectDot[t].x;
-				}
-
-				rectNoDot[t].width = 9;
-				rectDot[t].width = 9;
-
-				rectDot[t].y = 0;
-
-				rectDot[t].height = roiSize.height;
-
-				rectNoDot[t].y = 0;
-
-				rectNoDot[t].height = roiSize.height;
-			}
-
 
 			Mat roiThreshold;
 
@@ -1431,6 +1492,10 @@ int DataIdentify::getWINPLAIdentify()
 				}
 			}
 
+			if (i == 0 & j == 0 )
+			{
+				int temp = 0;
+			}
 			//专门用于 小数点检测
 			//cvtColor(roiThreshold, roiThreshold, CV_RGB2GRAY);
 
@@ -1441,6 +1506,9 @@ int DataIdentify::getWINPLAIdentify()
 
 
 			trimRoiBlankPart(roiThreshold, roiForDotJudge, roiNewSize);
+
+			
+
 			if (algorithmState == EXIT_THIS_OCR)
 			{
 				return EXIT_THIS_OCR;
@@ -1452,6 +1520,35 @@ int DataIdentify::getWINPLAIdentify()
 				algorithmState = EXIT_THIS_OCR;
 				return EXIT_THIS_OCR;
 			}
+
+
+
+			CvSize roiSize;
+			roiSize.height = winPlaPosStruct.rect[i][j].height;
+			roiSize.width = winPlaPosStruct.rect[i][j].width;
+
+			for (int t = 0; t < 3; t++)													// set the rect for single number in number region
+			{
+				if (t == 2)
+				{
+					rectNoDot[t].width = roi.cols - rectNoDot[t].x;
+					rectDot[t].width = roi.cols - rectDot[t].x;
+				}
+
+				rectNoDot[t].width = 9;
+				rectDot[t].width = 9;
+
+				rectDot[t].y = 0;
+
+				rectDot[t].height = roiNewSize.height;
+
+				rectNoDot[t].y = 0;
+
+				rectNoDot[t].height = roiNewSize.height;
+			}
+
+
+
 			roiNew = Mat(roi, roiNewSize);
 
 
@@ -1481,8 +1578,8 @@ int DataIdentify::getWINPLAIdentify()
 #endif
 
 			bool dotFlag = false;
-			// 通过判断 宽度来判断数据 是否包含小数点
-			if (roiNew.cols >= 33)
+			// 通过判断 宽度来判断数据 是否包含小数点 3
+			if (roiNew.cols >= 32)
 			{
 				dotFlag = true;
 			}
@@ -1759,12 +1856,28 @@ int DataIdentify::getQINQPLIdentify()
 			{
 				if (dataOutput.mHorseInfo.isSCR[i] == true)
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					if (dataOutput.isQPL)
+					{
+						dataOutput.QPL[i][j] = -1;
+					}
+					else
+					{
+						dataOutput.QIN[i][j] = -1;
+
+					}
 					continue;
 				}
 				if (dataOutput.mHorseInfo.isSCR[j - 1] == true)
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					if (dataOutput.isQPL)
+					{
+						dataOutput.QPL[i][j] = -1;
+					}
+					else
+					{
+						dataOutput.QIN[i][j] = -1;
+
+					}
 					continue;
 				}
 			}
@@ -1774,13 +1887,29 @@ int DataIdentify::getQINQPLIdentify()
 
 				if (dataOutput.mHorseInfo.isSCR[j + 7] == true)
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					if (dataOutput.isQPL)
+					{
+						dataOutput.QPL[i][j] = -1;
+					}
+					else
+					{
+						dataOutput.QIN[i][j] = -1;
+
+					}
 					continue;
 				}
 
 				if (dataOutput.mHorseInfo.isSCR[i + 7] == true)
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					if (dataOutput.isQPL)
+					{
+						dataOutput.QPL[i][j] = -1;
+					}
+					else
+					{
+						dataOutput.QIN[i][j] = -1;
+
+					}
 					continue;
 				}
 
@@ -1792,10 +1921,7 @@ int DataIdentify::getQINQPLIdentify()
 			roiSize.height = qinQPLPosStruct.rect[i][j].height;
 			roiSize.width = qinQPLPosStruct.rect[i][j].width;
 
-
-
-
-
+			 
 
 			//	colorThreshold(roi, roiThreshold, 200);
 			Mat roiThreshold;
@@ -2150,8 +2276,17 @@ int DataIdentify::getQINQPLIdentify()
 					tempSum += result * factor[2][k];
 				}
 			}
-			dataOutput.QPL_QIN[i][j] = tempSum;
 
+			if (dataOutput.isQPL)
+			{
+				dataOutput.QPL[i][j] = tempSum;
+			}
+			else
+			{
+				dataOutput.QIN[i][j] = tempSum;
+
+			}
+		 
 			if (x != NULL)
 			{
 				delete[] x;
@@ -2259,6 +2394,9 @@ int DataIdentify::getCountDownIdentify()
 		hogMat.at<float>(0, m) = descriptorVector[m];
 
 	float result2 = raceTimeSvm.predict(hogMat);
+
+
+
 #ifdef WRITE_MINUTE_CLASSIFY_SAMPELS 
 	if (result1 >= 0 & result1 < 10)
 	{
@@ -2367,8 +2505,9 @@ int DataIdentify::calculateGraySumXForSetWINPLARect(Mat &mat, int *y, int &horse
 			j++;
 		}
 		//设置为 300 过滤掉 部分数字的底色
-		else if ((graySumX[i] < 300 && graySumX[i + 1] > 300
-			&& graySumX[i + 2] > 300))
+		//else if ((graySumX[i] < 300 && graySumX[i + 1] > 300
+		//&& graySumX[i + 2] > 300)) 有时候，会出现 退赛的马匹 高度为1 
+		else if (graySumX[i] < 300 && graySumX[i + 1] > 300 )
 		{
 			y[j] = i;
 #ifdef QDEBUG_OUTPUT
@@ -2991,6 +3130,8 @@ int  DataIdentify::trimRoiBlankPart(Mat &oriMat, Mat &newRoiMat, CvRect &roiNewS
 	{
 		return EXIT_THIS_OCR;
 	}
+	
+	/*
 	int x0, x1;
 
 
@@ -3018,6 +3159,137 @@ int  DataIdentify::trimRoiBlankPart(Mat &oriMat, Mat &newRoiMat, CvRect &roiNewS
 	roiNewSize.height = edge.rows;
 
 	newRoiMat = Mat(oriMat, roiNewSize);
+
+
+	if (roiNewSize.width < 15)
+	{
+		return EXIT_THIS_OCR;
+	}
+	else
+		return EXEC_SUCCESS;
+		*/
+
+	int *sumX = new int[oriMat.rows];
+	memset(sumX, 0, (oriMat.rows)*sizeof(int));
+
+	int y0 = 0;
+	int y1 = 0;
+
+	//计算 X方向投影 
+	for (int r = 0; r < oriMat.rows; r++)
+	{
+		for (int c = 0; c < oriMat.cols; c++)
+		{
+			sumX[r] += oriMat.at<uchar>(r, c);
+		}
+
+	}
+
+	for (int r = 0; r < oriMat.rows; r++)
+	{
+		if (sumX[r] > 20)
+		{
+			y0 = r;
+			break;
+
+		}
+	}
+
+	for (int r = oriMat.rows - 1; r >= 0; r--)
+	{
+		if (sumX[r] > 20)
+		{
+			y1 = r;
+			break;
+		}
+	}
+
+
+	int *sumY = new int[oriMat.cols];
+	memset(sumY, 0, (oriMat.cols)*sizeof(int));
+
+	int x0 = 0;
+	int x1 = 0;
+
+	//计算 X方向投影 
+	for (int c = 0; c < oriMat.cols; c++)
+	{
+		for (int r = 0; r < oriMat.rows; r++)
+		{
+			sumY[c] += oriMat.at<uchar>(r, c);
+		}
+
+	}
+
+
+	for (int c = 0; c < oriMat.cols; c++)
+	{
+		if (sumY[c] > 20)
+		{
+			if (c > 0)
+			{
+				x0 = c - 1;
+				break;
+			}
+			else
+			{
+				x0 = 0;
+				break;
+			}
+
+		}
+	}
+
+	for (int c = oriMat.cols - 1; c >= 0; c--)
+	{
+		if (sumY[c] > 20)
+		{
+			x1 = c + 1;
+			break;
+
+		}
+	}
+
+	if (x0 > 0)
+	{
+		roiNewSize.x = x0 ;
+		roiNewSize.width = x1 - x0  ;
+	}
+	else
+	{
+		roiNewSize.x = x0;
+		roiNewSize.width = x1 - x0 ;
+	}
+
+
+	if (y0 > 0)
+	{
+		roiNewSize.y = y0;
+		roiNewSize.height = y1 - y0 ;
+	}
+	else
+	{
+		roiNewSize.y = y0;
+		roiNewSize.height = y1 - y0 ;
+
+	}
+
+
+	newRoiMat = Mat(oriMat, roiNewSize);
+	// 计算Y方向投影
+
+
+	if (sumX != NULL)
+	{
+		delete[] sumX;
+		sumX = NULL;
+	}
+
+	if (sumY != NULL)
+	{
+		delete[] sumY;
+		sumY = NULL;
+	}
 
 
 	if (roiNewSize.width < 15)
@@ -3418,8 +3690,11 @@ int  DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int roiN
 			j++;
 		}
 		//设置为 300 过滤掉 部分数字的底色
-		else if ((graySumX[i] < THEREHOLD && graySumX[i + 1] > THEREHOLD
-			&& graySumX[i + 2] > THEREHOLD))
+		//else if ((graySumX[i] < THEREHOLD && graySumX[i + 1] > THEREHOLD
+		 //&& graySumX[i + 2] > THEREHOLD))
+		// 如果有马匹退赛，那么高度可能为1 
+		else if (graySumX[i] < THEREHOLD && graySumX[i + 1] > THEREHOLD
+			)
 		{
 			y[j] = i;
 #ifdef QDEBUG_OUTPUT

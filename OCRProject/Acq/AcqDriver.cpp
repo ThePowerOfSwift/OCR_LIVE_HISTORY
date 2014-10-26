@@ -23,7 +23,7 @@ AcqDriver::AcqDriver(QObject *parent)
 
 #ifdef OFFLINE_DEBUG
 		
-	count = 100  ;
+	count = 1000  ;
 #endif
 
 	//打开配置文件
@@ -50,8 +50,10 @@ void AcqDriver::createFalseData()
 	if (count < 41000 )
 		count += 1 ;
 	else
-		count = 0 ;
+	{
+		count = 41000 ;
 
+	}
 
 	fileName = QString(".bmp");
 
@@ -59,11 +61,12 @@ void AcqDriver::createFalseData()
 	fileName.prepend(QString::number(count, 10));
 	//fileName.prepend(QString::number(4));
 	
-	fileName = (QString("3615.bmp") );
+	//fileName = (QString("3615.bmp") );
 	//fileName.prepend(QString("G://BaiduYunDownload//liveImageData2//"));
 	
 	fileName.prepend(liveTestConfigStr);
-	//fileName = (QString("G://BaiduYunDownload//12.bmp"));	
+
+	fileName = (QString("G://BaiduYunDownload//5840.bmp"));	
 	
 	localImage.load(fileName);
  
@@ -85,7 +88,7 @@ void AcqDriver::createFalseData()
 	{
 		logDataStr =  QString( " AcqDriver::createFalseData() :pbData is NULL err!");
 		//Global::AppendLogString(logDataStr, true);
-		 count += 1 ;
+		 count += 10 ;
 		return ;
 
 	}

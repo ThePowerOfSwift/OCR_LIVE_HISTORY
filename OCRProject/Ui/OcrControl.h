@@ -17,12 +17,6 @@
 
 #include "../ui/MLineEdit.h"
 
-#define  VERSION_NUM "版本:1.0 2014/9/20  离线模式 yp " //
-
-
-//#define  VERSION_NUM "版本:1.0 2014/9/25  直播模式 yp " //
-
-//#define  VERSION_NUM "版本:1.0 2014/9/20  直播录制模式 yp " //
 #define  SHOW_ADBMP 1
 
 class OcrControl : public QWidget

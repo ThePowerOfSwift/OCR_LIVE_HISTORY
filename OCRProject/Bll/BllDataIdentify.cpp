@@ -275,44 +275,15 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 
 		}
 		dataNewCount++;
+
+		qDebug("DataNewCount = %d  raceTime = %d ",dataNewCount,outputStruct.raceTime );
 	}
 	else
 	{
 		//最大内容出现计数次数 
-		int maxContentCount;
-		int maxContent;
-		/*
-		
-		maxContentCount = myRaceNumberStruct[0].contentCount;
-		maxContent = myRaceNumberStruct[0].content;
-		//判决输出
-		for (int i = 0; i < 20; i++)
-		{
-
-			if (maxContentCount < myRaceNumberStruct[i].contentCount)
-			{
-				maxContentCount = myRaceNumberStruct[i].contentCount;
-				maxContent = myRaceNumberStruct[i].content;
-			}
-
-
-		}
+		int maxContentCount = 0 ;
+		int maxContent = 0 ;
 		 
-		//如果某个时候，场次号被检测出的次数超过一定限值，可以认为，这个时候这个值为正确的
-
-		if (maxContentCount > 8 & isRaceSessionDetected == false )
-		{
-			 
-			//获取第一次检测到了场次号。
-			firstRaceSessionDetected = maxContent;
-			//当前场次正确的倒计时没有被检测到。
-			isRightRaceTimeCountDownDetected = false;
-			isRaceSessionDetected = true;
-			raceSessionCount++;
-			Global::timerCount = 0;
-		}
-			
-		*/
 
 		//挑出来 应该输出的  倒计时时间 
 		maxContentCount = myRaceTimeStruct[0].contentCount;
@@ -329,51 +300,10 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 
 		}
 		dataNewCount = 0;
-  
-		/* 
-		if (isRightRaceTimeCountDownDetected == true)
-		{
-			//取个位数 倒计时
-			if (raceTimeCountDownNear9 == true)
-			{
-				if (Global::raceTime - maxContent <= 3 & Global::raceTime - maxContent % 10 >= 0)
-				{
-
-					//总时长
-					if (Global::totalSessionTime[Global::session] != Global::raceTime + Global::countRaceTime)
-					{
-						 
-						// 保存计时
-					 	//Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
-					}
-
-					Global::raceTime = maxContent % 10;
- 
-				}
-				
-
-			}
-			else
-			{
-				if (Global::raceTime - maxContent <= 3 & Global::raceTime - maxContent >= 0)
-				{
-					Global::raceTime = maxContent;
-					//总时长
-					if (Global::totalSessionTime[Global::session] != Global::raceTime + Global::countRaceTime)
-					{
-						 
-						// 保存计时
-						Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
-					}
-
-				}
-				 
-			}
-		}
-		*/
+		 
 		//
 		//第一次一定要检测到倒计时 发生了递减1 才能认为识别正确了倒计时
-		if (maxContentCount >= 6 &maxContent > 10 & isRightRaceTimeCountDownDetected == false)
+		if (maxContentCount >= 8 & maxContent > 10 & isRightRaceTimeCountDownDetected == false)
 		{
 			//第一次一定要检测到倒计时 发生了递减1 才能认为识别正确了倒计时
 			if (Global::raceTime - maxContent == 1)
@@ -429,13 +359,22 @@ LONG BllDataIdentify::winPlaDivTen(DataOutput &outputStruct)
 	for (int i = outputStruct.horseNum - 7; i < 7;i++)
 	{
 		for (int j = 0; j < i; j++)
-			outputStruct.QPL_QIN[i][j] = 0;
+		{
+			outputStruct.QPL[i][j] = 0;
+			outputStruct.QIN[i][j] = 0;
+
+
+		}
 
 	}
 	for (int i = 0; i < 7; i++)
 	{
-		for (int j = outputStruct.horseNum+1; j < 15; j++)
-			outputStruct.QPL_QIN[i][j] = 0;
+		for (int j = outputStruct.horseNum + 1; j < 15; j++)
+		{
+			outputStruct.QPL[i][j] = 0;
+			outputStruct.QIN[i][j] = 0;
+		}
+			 
 	}
 
 	//设置 退赛马匹
@@ -492,7 +431,11 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 	}
 	
 
-	bool dataOutOfRange = false ;
+	bool dataOutOfRangePLA = false ;
+	bool dataOutOfRangeWIN = false;
+	bool dataOutOfRangeQINQPL = false;
+ 
+
 	int  dataOutOfRangeCount = 0 ;
 	int  WINChangedNum = 0;
 	int  PLAChangedNum = 0;
@@ -504,9 +447,9 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 
 	//当QIN QPL发生切换时候 ，等待3个定时器周期，在发送新的数据，保持数据稳定。
 	//等待5幅图片的时间
-	//if ((outputStruct.horseNameChangedNum - Global::session != 1)
-	//	& (priDataOutput.isQPL != outputStruct.isQPL) )
-	if (priDataOutput.isQPL != outputStruct.isQPL & QINQPLTransformed == false)
+	
+	//如果刚开始的数据为零 那么，认为是刚开始
+	if (priDataOutput.isQPL != outputStruct.isQPL & QINQPLTransformed == false | (priDataOutput.WIN[0] - 0 ) < 0.2 ) 
 	{
 		//if (sessionChanged == false)
 		{
@@ -519,20 +462,30 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 
 	}
 
+
+	//WIN改变数目过多 等待3个周期在发送新数据，并且有2个以上数据 超出了改变那范围 ，此时场次号发生了改变
+	//如果场次号发生了变化，那么立刻发送
+
+	if (Global::isSessionChanged)
+	{
+		sessionChangedCountDown = 4;
+		sessionChanged = true;
+
+	}
+
 	if (sessionChangedCountDown == 0 )
 	{
 		for (int i = 0; i < outputStruct.horseNum; i++)
 		{
 			if (abs(outputStruct.WIN[i] - priDataOutput.WIN[i]) > 0.05)
 			{
-				//qDebug("WIN : i=%d , new is %f pri is %f ", i,  outputStruct.WIN[i], priDataOutput.WIN[i]);
-				//outputStruct.changeStatus = WIN_CHANGED;
+			 
 				WINChangedNum++;
 
 			}
-			if (abs((outputStruct.WIN[i] - priDataOutput.WIN[i])) / outputStruct.WIN[i] > 0.5)
+			if (abs((outputStruct.WIN[i] - priDataOutput.WIN[i])) / priDataOutput.WIN[i] > 0.6 )
 			{
-				dataOutOfRange = true;
+				dataOutOfRangeWIN = true;
 				dataOutOfRangeCount++;
 			}
 
@@ -551,9 +504,11 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 				//outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
 				PLAChangedNum++;
 			}
-			if (abs((outputStruct.PLA[i] - priDataOutput.PLA[i])) / outputStruct.PLA[i] > 0.5)
+			if (abs((outputStruct.PLA[i] - priDataOutput.PLA[i])) / priDataOutput.PLA[i] > 0.6
+				
+				)
 			{
-				dataOutOfRange = true;
+				dataOutOfRangePLA = true;
 				dataOutOfRangeCount++;
 			}
 
@@ -593,50 +548,75 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 						continue;
 					}
 				}
-
-				if (abs(outputStruct.QPL_QIN[i][j] - priDataOutput.QPL_QIN[i][j]) > 0.05)
+				if (outputStruct.isQPL)
 				{
-					//qDebug("QIN_QPL:i=%d ,j=%d new is %f pri is %f ", i, j, outputStruct.QPL_QIN[i][j], priDataOutput.QPL_QIN[i][j]);
-					//outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
-					QINQPLCHangedNum++;
-				}
-				if (priDataOutput.isQPL == outputStruct.isQPL)
-				{
-					if (outputStruct.QPL_QIN[i][j] == 0.0)
+					if (abs(outputStruct.QPL[i][j] - priDataOutput.QPL[i][j]) > 0.05)
 					{
-						continue; 
+						//qDebug("QIN_QPL:i=%d ,j=%d new is %f pri is %f ", i, j, outputStruct.QPL_QIN[i][j], priDataOutput.QPL_QIN[i][j]);
+						//outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
+						QINQPLCHangedNum++;
 					}
-					if (abs((outputStruct.QPL_QIN[i][j] - priDataOutput.QPL_QIN[i][j])) / outputStruct.QPL_QIN[i][j] > 0.5)
+					if (priDataOutput.isQPL == outputStruct.isQPL)
 					{
+						if (outputStruct.QPL[i][j] == 0.0)
+						{
+							continue;
+						}
+						if (abs((outputStruct.QPL[i][j] - priDataOutput.QPL[i][j])) / priDataOutput.QPL[i][j] > 0.6
 
-						dataOutOfRange = true;
+							)
+						{
+
+							dataOutOfRangeQINQPL = true;
 #ifdef QDEBUG_OUTPUT
-						qDebug("i=%d,j=%d,cur = %f , pri =%f", i, j, outputStruct.QPL_QIN[i][j], priDataOutput.QPL_QIN[i][j]);
+							qDebug("i=%d,j=%d,cur = %f , pri =%f", i, j, outputStruct.QPL[i][j], priDataOutput.QPL[i][j]);
 #endif
-						dataOutOfRangeCount++;
-					}
+							dataOutOfRangeCount++;
+						}
 
+					}
 				}
+				else  // QIN 
+				{
+					if (abs(outputStruct.QIN[i][j] - priDataOutput.QIN[i][j]) > 0.05)
+					{
+						//qDebug("QIN_QPL:i=%d ,j=%d new is %f pri is %f ", i, j, outputStruct.QPL_QIN[i][j], priDataOutput.QPL_QIN[i][j]);
+						//outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
+						QINQPLCHangedNum++;
+					}
+					if (priDataOutput.isQPL == outputStruct.isQPL)
+					{
+						if (outputStruct.QIN[i][j] == 0.0)
+						{
+							continue;
+						}
+						if (abs((outputStruct.QIN[i][j] - priDataOutput.QIN[i][j])) / priDataOutput.QIN[i][j] > 0.6
+
+							)
+						{
+
+							dataOutOfRangeQINQPL = true;
+#ifdef QDEBUG_OUTPUT
+							qDebug("i=%d,j=%d,cur = %f , pri =%f", i, j, outputStruct.QIN[i][j], priDataOutput.QIN[i][j]);
+#endif
+							dataOutOfRangeCount++;
+						}
+
+					}
+				}
+				
 
 			}
 		}
 	}
 	
-	//WIN改变数目过多 等待3个周期在发送新数据，并且有2个以上数据 超出了改变那范围 ，此时场次号发生了改变
-	//如果场次号发生了变化，那么立刻发送
-
-	if (Global::isSessionChanged)
-	{
-		sessionChangedCountDown = 4 ;
-		sessionChanged = true;
-
-	}
 	
 
 	//数据超出本应有的范围，那么就不会发送此时的数据， 此时应该避免掉 比赛刚开始，有数据的时候，此时应该发送数据。
 	//添加 Global::raceHasStarted 来控制 第一次，即 比赛未开始，那么可以发送的。
 	// 如果场次号发生了变化
-	if (dataOutOfRange == false | Global::raceHasStarted == 0 | QINQPLTransformed |
+	if (Global::raceHasStarted == 0 | QINQPLTransformed | dataOutOfRangeWIN == false |
+		dataOutOfRangePLA == false | dataOutOfRangeQINQPL == false |
 		Global::isSessionChanged )
 	{
 		Global::raceHasStarted = 1;
@@ -650,17 +630,17 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 		}
 		
 
-		if (WINChangedNum > 0)
+		if (WINChangedNum > 0 & dataOutOfRangeWIN == false )
 		{
 		//	if (sessionChangedCountDown == 0)
  				outputStruct.changeStatus = WIN_CHANGED;
 		}
-		if (PLAChangedNum > 0)
+		if (PLAChangedNum > 0 & dataOutOfRangePLA == false )
 		{
 		//	if (sessionChangedCountDown == 0)
 				outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
 		}
-		if (QINQPLCHangedNum > 0)
+		if (QINQPLCHangedNum > 0 & & dataOutOfRangeQINQPL == false)
 		{
 			if (QINQPLTransformedCountDown == 0)
 				outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
@@ -746,19 +726,34 @@ int BllDataIdentify::saveToLocalFile(char *data, QString path)
  
 #ifdef WRITE_IMAGES_BEFORE_DataIdentify
 		
-	
-
+	 
 		// 设置目录
 		QString runPath = QCoreApplication::applicationDirPath();
-
-		QDir::setCurrent(runPath);
+		QDir myDir ;
+		//QDir::setCurrent(runPath);
 		//退到上一层目录
-		QDir::setCurrent("../");
+		//QDir::setCurrent("../");
 
-		QDir::setCurrent("../");
+		//QDir::setCurrent("../");
 
 
-		QDir::setCurrent(".//OCRProject//liveImageData");
+		QDateTime liveDate = QDateTime::currentDateTime();//获取系统现在的时间
+		QString liveDateStr = liveDate.toString("yyyyMMdd"); //设置显示格式
+
+		QString newPath ;
+		newPath = runPath + QString("//") + liveDateStr;
+		
+		if (myDir.exists(newPath))
+		{
+			QDir::setCurrent(newPath);
+		}
+		else 
+		{
+			myDir.mkdir(newPath);
+			QDir::setCurrent(newPath);
+		}
+
+
 
 		if (!bmpCountIsSet)
 		{
@@ -1332,6 +1327,8 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 
 	if (rtValue == EXIT_THIS_OCR )
 	{
+		// 识别图片发生问题，当做广告图片处理
+		outputStruct.haveDataFlag = false;
 		emit readyRead(outputStruct, byteArray, imageWidth, imageHeight);
 		return EXIT_THIS_OCR ;
 	}
@@ -2117,12 +2114,31 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 				QDataInfo.YNO = j;//在Y轴上的第几号，跟它组合得出的数据 2-14
 				QDataInfo.AtTime = Global::countRaceTime;
 				if (j <= 7) // 正表
-				{					
-					QDataInfo.QinValue = dataOutput.QPL_QIN[j - 1][i];
+				{	
+					if (dataOutput.isQPL)
+					{
+						QDataInfo.QinValue = dataOutput.QPL[j - 1][i];
+
+					}
+					else
+					{
+						QDataInfo.QinValue = dataOutput.QIN[j - 1][i];
+
+					}
 				}
 				else //补充图表
 				{
-					QDataInfo.QinValue = dataOutput.QPL_QIN[i - 8][j - 8];
+					if (dataOutput.isQPL)
+					{
+						QDataInfo.QinValue = dataOutput.QPL[i - 8][j - 8];
+
+					}
+					else
+					{
+						QDataInfo.QinValue = dataOutput.QIN[i - 8][j - 8];
+
+					}
+					 
 				}
 
 				//写文件
@@ -2156,11 +2172,28 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 				QDataInfo.AtTime = Global::countRaceTime;
 				if (i <= 7) // 正表
 				{
-					QDataInfo.QinValue = dataOutput.QPL_QIN[i - 1][j];
+					if (dataOutput.isQPL)
+					{
+						QDataInfo.QinValue = dataOutput.QPL[i - 1][j];
+
+					}
+					else
+					{
+						QDataInfo.QinValue = dataOutput.QIN[i - 1][j];
+					}
 				}
 				else //补充图表
 				{
-					QDataInfo.QinValue = dataOutput.QPL_QIN[j - 8][i - 8];
+					if (dataOutput.isQPL)
+					{
+						QDataInfo.QinValue = dataOutput.QPL[j - 8][i - 8];
+
+					}
+					else
+					{
+						QDataInfo.QinValue = dataOutput.QIN[j - 8][i - 8];
+					}
+					 
 				}
 
 				//写文件

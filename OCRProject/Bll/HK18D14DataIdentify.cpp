@@ -46,15 +46,21 @@ HK18D14DataIdentify::HK18D14DataIdentify()
 	}
 	for (int i = 0; i < 7; i++)
 	{
-		for (int j = 0; j < 12; j++)
-			dataOutput.QPL_QIN[i][j] = 0;
-	}
+		for (int j = 0; j < 15; j++)
+		{
 
+			dataOutput.QPL[i][j] = 0;
+			dataOutput.QIN[i][j] = 0;
+
+		}
+	}
  
 	for (int i = 0; i < dataOutput.horseNum ; i++)
 	{
 		for (int j = 0; j < 3; j++)
 			winPlaPosStruct.rect[i][j] = cvRect(0, 0, 0, 0);
+		memset(dataOutput.mHorseInfo.horseName[i], 0, sizeof(wchar_t)* 4);
+		dataOutput.mHorseInfo.horseID[i] = 0;
 	}
 
  
@@ -269,15 +275,18 @@ void HK18D14DataIdentify::haveData()
 
 void HK18D14DataIdentify::originPosition()
 {
+	originX = 0;
+	originY = 0;
 	int regionWidth = ORIGINPOSITION_REGIONWIDTH, regionHeight = ORIGINPOSITION_REGIONHEIGHT;
  
 
+	Mat imageTemp;
+	image.copyTo(imageTemp);
 
-
-	Mat region(image, Rect(0, 0, regionWidth, regionHeight));
+	Mat region(imageTemp, Rect(0, 0, regionWidth, regionHeight));
 	Mat regionGray(regionHeight, regionWidth, CV_8UC1, Scalar::all(0));
 
-	cvtColor(image, regionGray, CV_BGR2GRAY);
+	cvtColor(imageTemp, regionGray, CV_BGR2GRAY);
 
  
 	for (int c = DELETE_PART.x; c < DELETE_PART.x + DELETE_PART.width; c++)
@@ -343,6 +352,9 @@ void HK18D14DataIdentify::originPosition()
 #ifdef QDEBUG_OUTPUT
 	qDebug("the originPosition Func : x =%d, y=%d",originX,originY);
 #endif // QDEBUG_OUTPUT
+ 
+
+	
 	if (colSum != NULL)
 	{
 		delete[] colSum;
@@ -354,6 +366,16 @@ void HK18D14DataIdentify::originPosition()
 		rowSum = NULL;
 	}
 
+	CvRect newRect;
+	newRect.x = originX;
+	newRect.y = originY;
+
+	newRect.width = imageTemp.cols - originX;
+	newRect.height = imageTemp.rows - originY;
+
+	Mat newMat;
+	newMat = Mat(imageTemp, newRect);
+	imwrite("originTrim.bmp", newMat);
  
 	return;
 }
@@ -369,9 +391,25 @@ int HK18D14DataIdentify::identify()
 {
 
 	haveData();
-	if (haveDataFlag == false || algorithmState == EXIT_THIS_OCR)						// the frame has not any data, return 1
+	if (haveDataFlag == false )						// the frame has not any data, return 1
+		return EXEC_SUCCESS ;
+	if (algorithmState == EXIT_THIS_OCR )
+	{
+		dataOutput.haveDataFlag = false;
+		haveDataFlag = false;
 		return EXIT_THIS_OCR;
+	}
+
 	originPosition();
+	if (algorithmState == EXIT_THIS_OCR)
+	{
+		dataOutput.haveDataFlag = false;
+		haveDataFlag = false;
+		//写入系统日志
+		Global::systemLog->append(QString(("DataIdentify  ")), QString("originPosition func EXIT this ocr"),
+			SystemLog::ERROR_TYPE);
+		return EXIT_THIS_OCR;
+	}
 	//设置马名位置
 
 	setHorseNameRectPos();
@@ -380,7 +418,7 @@ int HK18D14DataIdentify::identify()
 	{
 		//写入系统日志
 		Global::systemLog->append(QString(("HKD14DataIdentify  ")), QString("setHorseNameRectPos EXIT this ocr"),
-			SystemLog::INFO_TYPE);
+			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
 	}
 	// 设置 WIN PLA 位置
@@ -390,7 +428,7 @@ int HK18D14DataIdentify::identify()
 	{
 		//写入系统日志
 		Global::systemLog->append(QString(("HKD14DataIdentify  ")), QString("setWINPLARectPos EXIT this ocr"),
-			SystemLog::INFO_TYPE);
+			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
 	}
 	// 设置 QIN QPL  同时设置QIN QPL标记位置 
@@ -399,7 +437,7 @@ int HK18D14DataIdentify::identify()
 	{
 		//写入系统日志
 		Global::systemLog->append(QString(("HKD14DataIdentify  ")), QString("setQINQPLRectPos EXIT this ocr"),
-			SystemLog::INFO_TYPE);
+			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
 	}
 	//  设置场次号位置
@@ -409,7 +447,7 @@ int HK18D14DataIdentify::identify()
 	{
 		//写入系统日
 		Global::systemLog->append(QString(("HKD14DataIdentify  ")), QString("setSessionRectPos EXIT this ocr"),
-			SystemLog::INFO_TYPE);
+			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
 	}
 	//设置 倒计时位置 
@@ -418,7 +456,7 @@ int HK18D14DataIdentify::identify()
 	{
 		//写入系统日志
 		Global::systemLog->append(QString(("HKD14DataIdentify  ")), QString("setCountDownRectPos EXIT this ocr"),
-			SystemLog::INFO_TYPE);
+			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
 	}
 	//识别马名 
@@ -427,7 +465,7 @@ int HK18D14DataIdentify::identify()
 	{
 		//写入系统日志
 		Global::systemLog->append(QString(("HKD14DataIdentify  ")), QString("getHorseNameIdentify EXIT this ocr"),
-			SystemLog::INFO_TYPE);
+			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
 	}
 	// 识别 WIN PLA
@@ -1358,13 +1396,8 @@ int HK18D14DataIdentify::isHorseNameChanged()
 	if (Global::isSessioncalibrated)
 	{
 		dataOutput.horseNameChangedNum = Global::session;
-		Global::isSessionChanged = true;
-		//定时器清零 。新的场次号。 如果是历史视频通过 计算帧数来实现
-		Global::timerCount = 0;
-		Global::historyFrameCount = 0;
- 
-		//顺计时
-		Global::countRaceTime = 0;
+	
+	 
 
 	}
 	delete[] graySum;
@@ -1862,13 +1895,21 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 			{
 				if ( dataOutput.mHorseInfo.isSCR[i] == true )
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
-					continue; 
+					
+						dataOutput.QPL[i][j] = -1;
+				
+						dataOutput.QIN[i][j] = -1;
+
+						continue; 
 				}
 				if (dataOutput.mHorseInfo.isSCR[j-1] == true)
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
-					continue;
+					
+						dataOutput.QPL[i][j] = -1;
+					
+						dataOutput.QIN[i][j] = -1;
+
+						continue;
 				}
 			}
 			if (j < i )
@@ -1876,13 +1917,17 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 				
 				if (dataOutput.mHorseInfo.isSCR[j+7] == true)
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					dataOutput.QPL[i][j] = -1;
+
+					dataOutput.QIN[i][j] = -1;
 					continue;
 				}
 
 				if (dataOutput.mHorseInfo.isSCR[i + 7] == true)
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					dataOutput.QPL[i][j] = -1;
+
+					dataOutput.QIN[i][j] = -1;
 					continue;
 				}
 
@@ -2181,7 +2226,17 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 					tempSum += result * factor[2][k];
 				}
 			}
-			dataOutput.QPL_QIN[i][j] = tempSum;
+
+			if (dataOutput.isQPL)
+			{
+				dataOutput.QPL[i][j] = tempSum;
+			}
+			else
+			{
+				dataOutput.QIN[i][j] = tempSum;
+
+			}
+			
 
 			if (x != NULL)
 			{

@@ -33,6 +33,11 @@ TcpSocket::TcpSocket(int descriptor, QObject *parent)
 	//connect(this, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(getTcpSocketState(QAbstractSocket::SocketState), Qt::DirectConnection));
     
 	qRegisterMetaType<QAbstractSocket::SocketState>("QAbstractSocket::SocketState");
+
+	
+
+	 
+
 }
 TcpSocket::~TcpSocket()
 {

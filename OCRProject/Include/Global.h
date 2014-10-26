@@ -50,6 +50,8 @@
 #include "Bll/SystemLog/SystemLogThread.h"
 #include "Bll/SystemLog/SystemLog.h"
 
+
+
 #define  IMAGE_WIDTH 720 
 #define  IMAGE_HEIGHT 576 
 #define BMP_HEADER 0 
@@ -172,7 +174,7 @@ public:
 	//最长不超过14场的
 	static bool isThisSessionRaceIDRequested[14];
 	//保存请求到的场次号
-	static bool requestedRaceID[14];
+	static int requestedRaceID[14];
 	//保存每一场的所有时间
 
 	static int totalSessionTime[14] ;

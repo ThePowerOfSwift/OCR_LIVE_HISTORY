@@ -119,6 +119,13 @@ public slots:
 	*/
 
 	void sendBufferDataToServer();
+
+
+
+	/**
+	* @brief 为了保持连接，在空闲时候请求raceID
+	*/
+	void requestRaceIDForKeepAlive(int session);
 	
 signals:
 	void statuChanged(QString status);

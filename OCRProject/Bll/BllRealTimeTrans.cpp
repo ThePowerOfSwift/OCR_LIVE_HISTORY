@@ -259,6 +259,8 @@ void BllRealTimeTrans::handleRequestHorse(QByteArray result, int descriptor)
 
 	*/
 }
+
+
 /**
 * @brief 识别端根据RaceNO(场次号)请求RaceID指令
 */
@@ -311,6 +313,57 @@ void BllRealTimeTrans::requestRaceID( int session )
 
 	
 }
+
+
+
+/**
+* @brief 为了保持连接使用请求服务器raceID，保存不显示
+*/
+void BllRealTimeTrans::requestRaceIDForKeepAlive(int session)
+{
+#ifndef HISTORY_SUBMIT
+	if (Global::isHistoryVideo)
+	{
+		return;
+	}
+#endif
+	TagProtocolMsg msg;
+	msg.MsgID = 6;
+	msg.nDataSize = session;
+	strcpy(msg.Param, "");
+	strcpy(msg.Check, "RDBS");
+
+	QByteArray byteArray;
+	int m = sizeof(TagProtocolMsg);
+	byteArray.append((char*)&msg, sizeof(TagProtocolMsg));
+	//测试结构体
+	TagProtocolMsg msg1;
+	memcpy(&msg1, byteArray.data(), sizeof(TagProtocolMsg));
+
+	client_cmd_status = ClientCmdStatus::request_race_id_status;
+	mcsNetClient->sendData(byteArray, false);		//发送数据，且不需要关闭socket
+
+
+	bool success = mcsNetClient->waitForReadyRead(3000);//阻塞等待
+	if (success)
+	{
+		 
+		QByteArray result;
+		int descriptor;
+		mcsNetClient->readAllMessage(result, descriptor);//读取数据
+		 
+	}
+	else
+	{
+
+		emit statuChanged(QString("服务器 %1,识别端：为保持连接请求RaceID失败。").arg(serverNo));
+  
+	}
+
+
+
+}
+
 
 /**
 * @brief 识别端处理服务端-请求RaceID指令
@@ -398,6 +451,11 @@ void BllRealTimeTrans::submitRaceTime(qint32 raceTime)
 			+ QString(tr("服务端：回复，提交比赛时长"))
 			+ raceTimeStr, SystemLog::INFO_TYPE);
 
+		emit statuChanged(QString("识别端：提交比赛时长： %1 指令 。").arg(raceTimeStr) +
+			QString("倒计时：") + QString::number(Global::raceTime) + QString("顺计时：")
+			+ QString::number(Global::countRaceTime)) ;
+
+
 	}
 	else
 	{
@@ -468,7 +526,7 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 		qDebug("test re connect ");
 		serverNotConnected = true;		
 		connectCount++;
-		if (connectCount == 30 )
+		if (connectCount == 5 )
 		{
 			connectToHost(Global::serverIpAddr, Global::serverPort);
 			connectCount = 0 ;
@@ -645,7 +703,11 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 
 
 	}
-	
+	else  //数据为空了，那么这个时候，要与服务器保持连接 ，请求raceID，但不保存
+	{
+
+		requestRaceIDForKeepAlive(Global::session);
+	}
 	/*
 	if (usedSize > 2)
 	{
@@ -744,7 +806,7 @@ void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct, QString type)
 			{
 				//封装一个WIN
 				TagWPDataInfo WPData;
-				WPData.HorseID = i;
+				WPData.HorseID = ouputStruct.mHorseInfo.horseID[i] ;
 				WPData.HorseNO = i;
 
 				if (type == "WIN")
@@ -859,16 +921,16 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput &ouputStruct, QString type)
 					if (j <= 7) // 正表
 					{
 						if (type == "QIN")//数据值，由XNO与YNO组合得出 QPL+QIN[7][15]
-							QDataInfo.QinValue = ouputStruct.QPL_QIN[j - 1][i];
+							QDataInfo.QinValue = ouputStruct.QIN[j - 1][i];
 						else if (type == "QPL")
-							QDataInfo.QinValue = ouputStruct.QPL_QIN[j - 1][i];
+							QDataInfo.QinValue = ouputStruct.QPL[j - 1][i];
 					}
 					else //补充图表
 					{
 						if (type == "QIN")//数据值，由XNO与YNO组合得出 QPL+QIN[7][15]
-							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 8][j - 8];
+							QDataInfo.QinValue = ouputStruct.QIN[i - 8][j - 8];
 						else if (type == "QPL")
-							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 8][j - 8];
+							QDataInfo.QinValue = ouputStruct.QPL[i - 8][j - 8];
 					}
 
 
@@ -890,16 +952,16 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput &ouputStruct, QString type)
 					if (i <= 7) // 正表
 					{
 						if (type == "QIN")//数据值，由XNO与YNO组合得出 QPL+QIN[7][15]
-							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 1][j];
+							QDataInfo.QinValue = ouputStruct.QIN[i - 1][j];
 						else if (type == "QPL")
-							QDataInfo.QinValue = ouputStruct.QPL_QIN[i - 1][j];
+							QDataInfo.QinValue = ouputStruct.QPL[i - 1][j];
 					}
 					else //补充图表
 					{
 						if (type == "QIN")//数据值，由XNO与YNO组合得出 QPL+QIN[7][15]
-							QDataInfo.QinValue = ouputStruct.QPL_QIN[j - 8][i - 8];
+							QDataInfo.QinValue = ouputStruct.QIN[j - 8][i - 8];
 						else if (type == "QPL")
-							QDataInfo.QinValue = ouputStruct.QPL_QIN[j - 8][i - 8];
+							QDataInfo.QinValue = ouputStruct.QPL[j - 8][i - 8];
 					}
 
 

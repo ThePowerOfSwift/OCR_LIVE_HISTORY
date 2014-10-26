@@ -18,12 +18,18 @@ using namespace std;
 using namespace cv;
 
 //#define  WRITE_SESSION_CLASSIFY_SAMPELS 
-//#define  WRITE_MINUTE_CLASSIFY_SAMPELS
-//#define  QDEBUG_OUTPUT
+
 /*
-#define  WRITE_ROI_SMAPLES_TEMP
+#define  WRITE_MINUTE_CLASSIFY_SAMPELS
+
+
+#define		QDEBUG_OUTPUT
+
+#define		WRITE_ROI_SMAPLES_TEMP
 #define		WRITE_ROI_SMAPLES_CLASS_INFO1
 #define		WRITE_ROI_SMAPLES_CLASS_INFO2 
+
+
 */
 
 
@@ -163,7 +169,8 @@ private:
 //定义原点位置为 
 
 #define ORIGIN_X_BASE_LIVE 60
-#define ORIGIN_Y_BASE_LIVE 37 
+
+#define ORIGIN_Y_BASE_LIVE  37 
 //场次号位置
 #define SESSION_POS_RECT_LIVE cvRect(267+(originX-ORIGIN_X_BASE_LIVE),38+(originY-ORIGIN_Y_BASE_LIVE),285-267,60-38)
 //分钟位置
@@ -181,7 +188,7 @@ private:
 #define  QINQPL_LABEL_POS_RECT_LIVE cvRect(91+(originX-ORIGIN_X_BASE_LIVE),377+(originY-ORIGIN_Y_BASE_LIVE),50,20 )
 
 // QIN QPL 位置
-#define		WHOLE_QINQPL_POS_RECT_LIVE  cvRect(9+(originX-ORIGIN_X_BASE_LIVE), 378+(originY-ORIGIN_Y_BASE_LIVE), 697, 197)
+#define		WHOLE_QINQPL_POS_RECT_LIVE  cvRect(9+(originX-ORIGIN_X_BASE_LIVE), 378+(originY-ORIGIN_Y_BASE_LIVE), 697, 170)
 #define		QINQPL_POS_RECT_LIVE cvRect(69, 22, 563, 137)
 
 #define  RE_BASE_X 78+(originX-ORIGIN_X_BASE_LIVE)

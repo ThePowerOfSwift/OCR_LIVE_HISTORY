@@ -45,8 +45,13 @@ HK18DataIdentify::HK18DataIdentify()
 	}
 	for (int i = 0; i < 7; i++)
 	{
-		for (int j = 0; j < 12; j++)
-			dataOutput.QPL_QIN[i][j] = 0;
+		for (int j = 0; j < 15; j++)
+		{
+			dataOutput.QPL[i][j] = 0;
+			dataOutput.QPL[i][j] = 0;
+
+		}
+			
 	}
 
  
@@ -1818,12 +1823,16 @@ int HK18DataIdentify::getQINQPLIdentify()
 			{
 				if ( dataOutput.mHorseInfo.isSCR[i] == true )
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					dataOutput.QPL[i][j] = -1;
+					dataOutput.QIN[i][j] = -1;
+
 					continue; 
 				}
 				if (dataOutput.mHorseInfo.isSCR[j-1] == true)
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					dataOutput.QPL[i][j] = -1;
+					dataOutput.QIN[i][j] = -1;
+
 					continue;
 				}
 			}
@@ -1832,12 +1841,16 @@ int HK18DataIdentify::getQINQPLIdentify()
 				
 				if (dataOutput.mHorseInfo.isSCR[j+7] == true)
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					dataOutput.QPL[i][j] = -1;
+					dataOutput.QIN[i][j] = -1;
+
 					continue;
 				}
 				if (dataOutput.mHorseInfo.isSCR[i + 7] == true)
 				{
-					dataOutput.QPL_QIN[i][j] = -1;
+					dataOutput.QPL[i][j] = -1;
+					dataOutput.QIN[i][j] = -1;
+
 					continue;
 				}
 			}
@@ -2134,7 +2147,16 @@ int HK18DataIdentify::getQINQPLIdentify()
 					tempSum += result * factor[2][k];
 				}
 			}
-			dataOutput.QPL_QIN[i][j] = tempSum;
+			if (dataOutput.isQPL)
+			{
+				dataOutput.QPL[i][j] = tempSum;
+			}
+			else
+			{
+				dataOutput.QIN[i][j] = tempSum;
+
+			}
+			
 
 			if (x != NULL)
 			{

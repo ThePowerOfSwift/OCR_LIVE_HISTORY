@@ -3,13 +3,14 @@
 #include <QPixmap>
 #include <QTableWidget>
 #include <QFileDialog>
+
+
+
 OcrControl::OcrControl(QWidget *parent)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
-
 	 
-
 	//网络
 	bllRealTimeTrans = new BllRealTimeTrans();
 	threadRealTime = new ThreadRealTime();
@@ -200,7 +201,7 @@ OcrControl::OcrControl(QWidget *parent)
 	//从用户界面获取数据
 
 	Global::serverIpAddr = QString("58.67.161.109");
-	Global::serverPort = 9068;
+	Global::serverPort = 9069;
 
 	ui.svrIpAddrLineEdit->setText(Global::serverIpAddr);
 	ui.svrPortLineEdit->setText(QString::number(Global::serverPort));
@@ -208,7 +209,7 @@ OcrControl::OcrControl(QWidget *parent)
 
 
 	Global::serverIpAddr1 = QString("120.24.103.168");
-	Global::serverPort1 = 9068;
+	Global::serverPort1 = 9069;
 
 
 
@@ -653,7 +654,8 @@ void OcrControl::updateADData(DataOutput  output, QByteArray  array,int imageWid
 
 		
 	//	myImage.scaled(ui.imageLbl->width(), ui.imageLbl->height());
-		myImage = myImage.scaled(518, 432);
+
+		myImage = myImage.scaled(518 * 0.85, 432 * 0.85);
 		pixmap = pixmap.fromImage(myImage);
 		ui.imageLbl->setPixmap(pixmap);
 		delete[] buffer;
@@ -691,42 +693,50 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 			SystemLog::INFO_TYPE);
 
 		//如果QPL QIN发生切换那么，就不要在继续保持数值了
-		if (mDataOutput.isQPL == output.isQPL )
+		if (mDataOutput.isQPL == output.isQPL)
 		{
-			for (int i = 0; i < HORSENUMBER; i++)
+			if (Global::islockCali)
 			{
-				output.winCaliFlag[i] = mDataOutput.winCaliFlag[i];
-				output.plaCaliFlag[i] = mDataOutput.plaCaliFlag[i];
-
-				if (mDataOutput.winCaliFlag[i])
-				{ 
-					output.WIN[i] = mDataOutput.WIN[i];
-				}
-				if (mDataOutput.plaCaliFlag[i])
+				for (int i = 0; i < HORSENUMBER; i++)
 				{
-					output.PLA[i] = mDataOutput.PLA[i];
+
+					output.winCaliFlag[i] = mDataOutput.winCaliFlag[i];
+					output.plaCaliFlag[i] = mDataOutput.plaCaliFlag[i];
+
+					if (mDataOutput.winCaliFlag[i])
+					{
+						output.WIN[i] = mDataOutput.WIN[i];
+					}
+					if (mDataOutput.plaCaliFlag[i])
+					{
+						output.PLA[i] = mDataOutput.PLA[i];
+					}
 				}
+
+				for (int i = 0; i < qinList.size(); i++)
+				{
+
+					QList<MLineEdit*> list = qinList.at(i);
+					for (int j = 0; j < list.size(); j++)
+					{
+						output.qplQinCaliFlag[i][j] = mDataOutput.qplQinCaliFlag[i][j];
+
+						if (output.qplQinCaliFlag[i][j])
+						{
+							output.QPL[i][j] = mDataOutput.QPL[i][j];
+							output.QIN[i][j] = mDataOutput.QIN[i][j];
+
+						}
+
+					}
+				}
+
 
 			}
+
 		}
+
 	
-
-		for (int i = 0; i < qinList.size(); i++)
-		{
-
-			QList<MLineEdit*> list = qinList.at(i);
-			for (int j = 0; j < list.size(); j++)
-			{
-				output.qplQinCaliFlag[i][j] = mDataOutput.qplQinCaliFlag[i][j];
-
-				if (output.qplQinCaliFlag[i][j])
-				{
-					output.QPL_QIN[i][j] = mDataOutput.QPL_QIN[i][j];
-
-				}
-
-			}
-		}
 	}
 	
 
@@ -778,7 +788,7 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 		
 
 		//myImage.scaled(ui.imageLbl->width(), ui.imageLbl->height());
-		myImage = myImage.scaled(518, 432);
+		myImage = myImage.scaled(518*0.85, 432*0.85);
 
 		pixmap = pixmap.fromImage(myImage);
 		ui.imageLbl->setPixmap(pixmap);
@@ -978,8 +988,16 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 		for (int j = 0; j <  list.size(); j++)
 		{
 			MLineEdit * label = list.at(j);
-			label->setText(QString::number(output.QPL_QIN[i][j]));
+			if (output.isQPL)
+			{
+				label->setText(QString::number(output.QPL[i][j]));
 
+			}
+			else
+			{
+				label->setText(QString::number(output.QIN[i][j]));
+
+			}
 			
 
 			if (output.qplQinChangedFlag[i][j])
@@ -992,7 +1010,7 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 				label->setStyleSheet("MLineEdit{background: rgb(62,120,56);color: rgb(255,255,255)}");
 			}
 			//如果是0 ，那么 使用黑底白色
-			if (output.QPL_QIN[i][j] == 0)
+			if (output.QPL[i][j] == 0 | output.QIN[i][j] == 0 )
 			{
 				label->setStyleSheet("MLineEdit{background:rgb(42,81,37);color: rgb(255,255,255)}");
 			}
@@ -1418,24 +1436,54 @@ void OcrControl::on_inputUserDataBtn_clicked()
 			{
 				if (!mDataOutput.qplQinCaliFlag[i][j])
 				{
-					if (abs(mDataOutput.QPL_QIN[i][j] - qplQin.toFloat()) > 0.01)
+					if (mDataOutput.isQPL)
 					{
-						mDataOutput.QPL_QIN[i][j] = qplQin.toFloat();
+						if (abs(mDataOutput.QPL[i][j] - qplQin.toFloat()) > 0.01)
+						{
+							mDataOutput.QPL[i][j] = qplQin.toFloat();
 
+						}
 					}
+					else
+					{
+						if (abs(mDataOutput.QIN[i][j] - qplQin.toFloat()) > 0.01)
+						{
+							mDataOutput.QIN[i][j] = qplQin.toFloat();
+
+						}
+					}
+					
 				}
 			}
 			else
 			{
-				if (abs(mDataOutput.QPL_QIN[i][j] - qplQin.toFloat()) > 0.01)
+				if (mDataOutput.isQPL)
 				{
-					mDataOutput.QPL_QIN[i][j] = qplQin.toFloat();
-					mDataOutput.qplQinCaliFlag[i][j] = true;
+					if (abs(mDataOutput.QPL[i][j] - qplQin.toFloat()) > 0.01)
+					{
+						mDataOutput.QPL[i][j] = qplQin.toFloat();
+						mDataOutput.qplQinCaliFlag[i][j] = true;
+					}
+					else
+					{
+						mDataOutput.qplQinCaliFlag[i][j] = false;
+					}
 				}
 				else
 				{
-					mDataOutput.qplQinCaliFlag[i][j] = false;
+					if (abs(mDataOutput.QIN[i][j] - qplQin.toFloat()) > 0.01)
+					{
+						mDataOutput.QIN[i][j] = qplQin.toFloat();
+						mDataOutput.qplQinCaliFlag[i][j] = true;
+					}
+					else
+					{
+						mDataOutput.qplQinCaliFlag[i][j] = false;
+					}
+					 
 				}
+
+				 
 			}
 		
 			 
@@ -1749,11 +1797,29 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 				QDataInfo.AtTime = Global::countRaceTime;
 				if (j <= 7) // 正表
 				{
-					QDataInfo.QinValue = dataOutput.QPL_QIN[j - 1][i];
+					if (dataOutput.isQPL)
+					{
+						QDataInfo.QinValue = dataOutput.QPL[j - 1][i];
+					}
+					else
+					{
+						QDataInfo.QinValue = dataOutput.QIN[j - 1][i];
+
+					}
+					
 				}
 				else //补充图表
 				{
-					QDataInfo.QinValue = dataOutput.QPL_QIN[i - 8][j - 8];
+					if (dataOutput.isQPL)
+					{
+						QDataInfo.QinValue = dataOutput.QPL[i - 8][j - 8];
+					}
+					else
+					{
+						QDataInfo.QinValue = dataOutput.QIN[i - 8][j - 8];
+
+					}
+					
 				}
 
 				if (Global::isHistoryVideo)
@@ -1787,11 +1853,29 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 				QDataInfo.AtTime = Global::countRaceTime;
 				if (i <= 7) // 正表
 				{
-					QDataInfo.QinValue = dataOutput.QPL_QIN[i - 1][j];
+					if (dataOutput.isQPL)
+					{
+						QDataInfo.QinValue = dataOutput.QPL[i - 1][j];
+
+					}
+					else
+					{
+						QDataInfo.QinValue = dataOutput.QIN[i - 1][j];
+
+					}
 				}
 				else //补充图表
 				{
-					QDataInfo.QinValue = dataOutput.QPL_QIN[j - 8][i - 8];
+					if (dataOutput.isQPL)
+					{
+						QDataInfo.QinValue = dataOutput.QPL[j - 8][i - 8];
+
+					}
+					else
+					{
+						QDataInfo.QinValue = dataOutput.QIN[j - 8][i - 8];
+
+					}
 				}
 
 				if (Global::isHistoryVideo)
@@ -1913,7 +1997,9 @@ int OcrControl::isDataOutputNew(DataOutput &outputStruct, DataOutput &priOutputS
 				}
 			}
 
-			if (abs(outputStruct.QPL_QIN[i][j] - priOutputStruct.QPL_QIN[i][j]) > 0.05)
+			if (abs(outputStruct.QPL[i][j] - priOutputStruct.QPL[i][j]) > 0.05
+				| abs(outputStruct.QIN[i][j] - priOutputStruct.QIN[i][j]) > 0.05
+			)
 			{
 				//qDebug("QIN_QPL:i=%d ,j=%d new is %f pri is %f ", i, j, outputStruct.QPL_QIN[i][j], priDataOutput.QPL_QIN[i][j]);
 				//outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
@@ -2007,7 +2093,17 @@ void OcrControl::updateAfterUserInput(DataOutput  &output)
 		for (int j = 0; j < list.size(); j++)
 		{
 			MLineEdit * label = list.at(j);
-			label->setText(QString::number(output.QPL_QIN[i][j]));
+
+			if (output.isQPL)
+			{
+				label->setText(QString::number(output.QPL[i][j]));
+
+			}
+			else
+			{
+				label->setText(QString::number(output.QIN[i][j]));
+
+			}
 
 			if (output.isQplQinHasGroundColor[i][j] == true)
 			{
@@ -2170,7 +2266,7 @@ void OcrControl::initUi()
 	ui.verticalLayout_4->addItem(verticalSpacer);
 
 
-
+	labelHeight = 14 ;
 	for (int j = 0; j < 7; j++)
 	{
 		QList<MLineEdit*> list;
@@ -2189,8 +2285,8 @@ void OcrControl::initUi()
 
 		qinLbl_1->setSizePolicy(sizePolicy2);
 
-		qinLbl_1->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_1->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_1->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_1->setMaximumSize(QSize(labelWidth, labelHeight));
 		//	qinLbl_1->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 
 		list.append(qinLbl_1);
@@ -2200,8 +2296,8 @@ void OcrControl::initUi()
 		qinLbl_2->setObjectName(QStringLiteral("qinLbl_2"));
 		sizePolicy2.setHeightForWidth(qinLbl_2->sizePolicy().hasHeightForWidth());
 		qinLbl_2->setSizePolicy(sizePolicy2);
-		qinLbl_2->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_2->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_2->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_2->setMaximumSize(QSize(labelWidth, labelHeight));
 		//qinLbl_2->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_2);
 		horizontalLayout_3->addWidget(qinLbl_2);
@@ -2211,8 +2307,8 @@ void OcrControl::initUi()
 		sizePolicy2.setHeightForWidth(qinLbl_3->sizePolicy().hasHeightForWidth());
 		qinLbl_3->setSizePolicy(sizePolicy2);
 
-		qinLbl_3->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_3->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_3->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_3->setMaximumSize(QSize(labelWidth, labelHeight));
 		//	qinLbl_3->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_3);
 		horizontalLayout_3->addWidget(qinLbl_3);
@@ -2221,8 +2317,8 @@ void OcrControl::initUi()
 		qinLbl_4->setObjectName(QStringLiteral("qinLbl_4"));
 		sizePolicy2.setHeightForWidth(qinLbl_4->sizePolicy().hasHeightForWidth());
 		qinLbl_4->setSizePolicy(sizePolicy2);
-		qinLbl_4->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_4->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_4->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_4->setMaximumSize(QSize(labelWidth, labelHeight));
 		//qinLbl_4->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_4);
 		horizontalLayout_3->addWidget(qinLbl_4);
@@ -2231,8 +2327,8 @@ void OcrControl::initUi()
 		qinLbl_5->setObjectName(QStringLiteral("qinLbl_5"));
 		sizePolicy2.setHeightForWidth(qinLbl_5->sizePolicy().hasHeightForWidth());
 		qinLbl_5->setSizePolicy(sizePolicy2);
-		qinLbl_5->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_5->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_5->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_5->setMaximumSize(QSize(labelWidth, labelHeight));
 		//	qinLbl_5->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_5);
 		horizontalLayout_3->addWidget(qinLbl_5);
@@ -2241,8 +2337,8 @@ void OcrControl::initUi()
 		qinLbl_6->setObjectName(QStringLiteral("qinLbl_6"));
 		sizePolicy2.setHeightForWidth(qinLbl_6->sizePolicy().hasHeightForWidth());
 		qinLbl_6->setSizePolicy(sizePolicy2);
-		qinLbl_6->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_6->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_6->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_6->setMaximumSize(QSize(labelWidth, labelHeight));
 		//	qinLbl_6->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_6);
 		horizontalLayout_3->addWidget(qinLbl_6);
@@ -2251,8 +2347,8 @@ void OcrControl::initUi()
 		qinLbl_7->setObjectName(QStringLiteral("qinLbl_7"));
 		sizePolicy2.setHeightForWidth(qinLbl_7->sizePolicy().hasHeightForWidth());
 		qinLbl_7->setSizePolicy(sizePolicy2);
-		qinLbl_7->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_7->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_7->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_7->setMaximumSize(QSize(labelWidth, labelHeight));
 		//	qinLbl_7->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_7);
 		horizontalLayout_3->addWidget(qinLbl_7);
@@ -2261,8 +2357,8 @@ void OcrControl::initUi()
 		qinLbl_8->setObjectName(QStringLiteral("qinLbl_8"));
 		sizePolicy2.setHeightForWidth(qinLbl_8->sizePolicy().hasHeightForWidth());
 		qinLbl_8->setSizePolicy(sizePolicy2);
-		qinLbl_8->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_8->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_8->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_8->setMaximumSize(QSize(labelWidth, labelHeight));
 		//qinLbl_8->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_8);
 		horizontalLayout_3->addWidget(qinLbl_8);
@@ -2271,8 +2367,8 @@ void OcrControl::initUi()
 		qinLbl_9->setObjectName(QStringLiteral("qinLbl_9"));
 		sizePolicy2.setHeightForWidth(qinLbl_9->sizePolicy().hasHeightForWidth());
 		qinLbl_9->setSizePolicy(sizePolicy2);
-		qinLbl_9->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_9->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_9->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_9->setMaximumSize(QSize(labelWidth, labelHeight));
 		//qinLbl_9->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_9);
 		horizontalLayout_3->addWidget(qinLbl_9);
@@ -2281,8 +2377,8 @@ void OcrControl::initUi()
 		qinLbl_10->setObjectName(QStringLiteral("qinLbl_10"));
 		sizePolicy2.setHeightForWidth(qinLbl_10->sizePolicy().hasHeightForWidth());
 		qinLbl_10->setSizePolicy(sizePolicy2);
-		qinLbl_10->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_10->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_10->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_10->setMaximumSize(QSize(labelWidth, labelHeight));
 		//	qinLbl_10->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_10);
 		horizontalLayout_3->addWidget(qinLbl_10);
@@ -2291,8 +2387,8 @@ void OcrControl::initUi()
 		qinLbl_11->setObjectName(QStringLiteral("qinLbl_11"));
 		sizePolicy2.setHeightForWidth(qinLbl_11->sizePolicy().hasHeightForWidth());
 		qinLbl_11->setSizePolicy(sizePolicy2);
-		qinLbl_11->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_11->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_11->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_11->setMaximumSize(QSize(labelWidth, labelHeight));
 		//qinLbl_11->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_11);
 		horizontalLayout_3->addWidget(qinLbl_11);
@@ -2301,8 +2397,8 @@ void OcrControl::initUi()
 		qinLbl_12->setObjectName(QStringLiteral("qinLbl_12"));
 		sizePolicy2.setHeightForWidth(qinLbl_12->sizePolicy().hasHeightForWidth());
 		qinLbl_12->setSizePolicy(sizePolicy2);
-		qinLbl_12->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_12->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_12->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_12->setMaximumSize(QSize(labelWidth, labelHeight));
 		//qinLbl_12->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_12);
 		horizontalLayout_3->addWidget(qinLbl_12);
@@ -2311,8 +2407,8 @@ void OcrControl::initUi()
 		qinLbl_13->setObjectName(QStringLiteral("qinLbl_13"));
 		sizePolicy2.setHeightForWidth(qinLbl_13->sizePolicy().hasHeightForWidth());
 		qinLbl_13->setSizePolicy(sizePolicy2);
-		qinLbl_13->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_13->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_13->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_13->setMaximumSize(QSize(labelWidth, labelHeight));
 		//qinLbl_13->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_13);
 		horizontalLayout_3->addWidget(qinLbl_13);
@@ -2321,8 +2417,8 @@ void OcrControl::initUi()
 		qinLbl_14->setObjectName(QStringLiteral("qinLbl_14"));
 		sizePolicy2.setHeightForWidth(qinLbl_14->sizePolicy().hasHeightForWidth());
 		qinLbl_14->setSizePolicy(sizePolicy2);
-		qinLbl_14->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_14->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_14->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_14->setMaximumSize(QSize(labelWidth, labelHeight));
 		//qinLbl_14->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_14);
 		horizontalLayout_3->addWidget(qinLbl_14);
@@ -2331,8 +2427,8 @@ void OcrControl::initUi()
 		qinLbl_15->setObjectName(QStringLiteral("qinLbl_15"));
 		sizePolicy2.setHeightForWidth(qinLbl_15->sizePolicy().hasHeightForWidth());
 		qinLbl_15->setSizePolicy(sizePolicy2);
-		qinLbl_15->setMinimumSize(QSize(labelWidth, 14));
-		qinLbl_15->setMaximumSize(QSize(labelWidth, 14));
+		qinLbl_15->setMinimumSize(QSize(labelWidth, labelHeight));
+		qinLbl_15->setMaximumSize(QSize(labelWidth, labelHeight));
 		//qinLbl_15->setStyleSheet(QStringLiteral("background-color: rgb(145, 130, 255);"));
 		list.append(qinLbl_15);
 		horizontalLayout_3->addWidget(qinLbl_15);
