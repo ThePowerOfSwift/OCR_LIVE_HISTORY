@@ -38,8 +38,8 @@ HK18D14DataIdentify::HK18D14DataIdentify()
 	for (int i = 0; i < dataOutput.horseNum ; i++)
 	{
 		dataOutput.svmResult[i] = -1;
-		dataOutput.WIN[i] = 0.0;
-		dataOutput.PLA[i] = 0.0;
+		dataOutput.WIN[i].dataValue = 0.0;
+		dataOutput.PLA[i].dataValue = 0.0;
 
 		memset(dataOutput.mHorseInfo.horseName[i], 0, sizeof(wchar_t)* 4);
 		dataOutput.mHorseInfo.horseID[i] = 0;
@@ -49,8 +49,8 @@ HK18D14DataIdentify::HK18D14DataIdentify()
 		for (int j = 0; j < 15; j++)
 		{
 
-			dataOutput.QPL[i][j] = 0;
-			dataOutput.QIN[i][j] = 0;
+			dataOutput.QPL[i][j].dataValue = 0;
+			dataOutput.QIN[i][j].dataValue = 0;
 
 		}
 	}
@@ -1596,8 +1596,8 @@ int HK18D14DataIdentify::getWINPLAIdentify()
 			if (roiNew.cols < 20 )
 			{
 				dataOutput.mHorseInfo.isSCR[i] = true;
-				dataOutput.WIN[i] = -1;
-				dataOutput.PLA[i] = -1;
+				dataOutput.WIN[i].dataValue = -1;
+				dataOutput.PLA[i].dataValue = -1;
 				continue ; 
 
 			}
@@ -1707,9 +1707,9 @@ int HK18D14DataIdentify::getWINPLAIdentify()
 			}
 
 			if (j == 0)
-				dataOutput.WIN[i] = tempSum;
+				dataOutput.WIN[i].dataValue = tempSum;
 			if (j == 1)
-				dataOutput.PLA[i] = tempSum;
+				dataOutput.PLA[i].dataValue = tempSum;
 
 
 		}			// end j
@@ -1896,18 +1896,18 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 				if ( dataOutput.mHorseInfo.isSCR[i] == true )
 				{
 					
-						dataOutput.QPL[i][j] = -1;
+					dataOutput.QPL[i][j].dataValue = -1;
 				
-						dataOutput.QIN[i][j] = -1;
+					dataOutput.QIN[i][j].dataValue = -1;
 
 						continue; 
 				}
 				if (dataOutput.mHorseInfo.isSCR[j-1] == true)
 				{
 					
-						dataOutput.QPL[i][j] = -1;
+					dataOutput.QPL[i][j].dataValue = -1;
 					
-						dataOutput.QIN[i][j] = -1;
+					dataOutput.QIN[i][j].dataValue = -1;
 
 						continue;
 				}
@@ -1917,17 +1917,17 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 				
 				if (dataOutput.mHorseInfo.isSCR[j+7] == true)
 				{
-					dataOutput.QPL[i][j] = -1;
+					dataOutput.QPL[i][j].dataValue = -1;
 
-					dataOutput.QIN[i][j] = -1;
+					dataOutput.QIN[i][j].dataValue = -1;
 					continue;
 				}
 
 				if (dataOutput.mHorseInfo.isSCR[i + 7] == true)
 				{
-					dataOutput.QPL[i][j] = -1;
+					dataOutput.QPL[i][j].dataValue = -1;
 
-					dataOutput.QIN[i][j] = -1;
+					dataOutput.QIN[i][j].dataValue = -1;
 					continue;
 				}
 
@@ -2229,11 +2229,11 @@ int HK18D14DataIdentify::getQINQPLIdentify()
 
 			if (dataOutput.isQPL)
 			{
-				dataOutput.QPL[i][j] = tempSum;
+				dataOutput.QPL[i][j].dataValue = tempSum;
 			}
 			else
 			{
-				dataOutput.QIN[i][j] = tempSum;
+				dataOutput.QIN[i][j].dataValue = tempSum;
 
 			}
 			

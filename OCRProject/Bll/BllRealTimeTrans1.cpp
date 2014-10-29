@@ -1,8 +1,8 @@
-﻿#include "BllRealTimeTrans.h"
+﻿#include "BllRealTimeTrans1.h"
 #include "Include/HorseDataStruct.h"
 #include "qmath.h"
 #include "math.h"
-BllRealTimeTrans::BllRealTimeTrans(QObject *parent)
+BllRealTimeTrans1::BllRealTimeTrans1(QObject *parent)
 	: QObject(parent)
 {
 	
@@ -20,7 +20,7 @@ BllRealTimeTrans::BllRealTimeTrans(QObject *parent)
 	stopReadBuffData = false;
 
 	//服务器网络通讯接口
-	mcsNetClient = new Network("Server", Global::serverIpAddr, Global::serverPort);
+	mcsNetClient = new Network("Server", Global::serverIpAddr1, Global::serverPort1);
 
 	//正常接收到服务端回复
 	//connect(Global::mcsNetClient, SIGNAL(clientReceiveDataSignal(QByteArray, int)), this, SLOT(handleReceiveData(QByteArray, int)));
@@ -49,7 +49,7 @@ BllRealTimeTrans::BllRealTimeTrans(QObject *parent)
 	priServerState = false;
 }
 
-BllRealTimeTrans::~BllRealTimeTrans()
+BllRealTimeTrans1::~BllRealTimeTrans1()
 {
 	//delete[] data;
 	if (mcsNetClient != 0)
@@ -107,7 +107,7 @@ BllRealTimeTrans::~BllRealTimeTrans()
 /**
 * @brief 连接服务器
 */
-void BllRealTimeTrans::connectToHost(QString serverIp,qint32 serverPort)
+void BllRealTimeTrans1::connectToHost(QString serverIp,qint32 serverPort)
 {
 	client_cmd_status = ClientCmdStatus::connect_status;
 	mcsNetClient->connectToHost(serverIp, serverPort);
@@ -116,7 +116,7 @@ void BllRealTimeTrans::connectToHost(QString serverIp,qint32 serverPort)
 /**
 * @brief 断开服务器
 */
-void BllRealTimeTrans::disconnectToHost()
+void BllRealTimeTrans1::disconnectToHost()
 {
 	client_cmd_status = ClientCmdStatus::disconnect_status;
 	mcsNetClient->disConnectToHost();
@@ -124,7 +124,7 @@ void BllRealTimeTrans::disconnectToHost()
 /**
 * @brief 识别端登录请求指令
 */
-void BllRealTimeTrans::clientLogin()
+void BllRealTimeTrans1::clientLogin()
 {
 
 	TagProtocolMsg msg;
@@ -158,7 +158,7 @@ void BllRealTimeTrans::clientLogin()
 /**
 * @brief 识别端处理服务端返回的数据
 */
-void BllRealTimeTrans::handleLogin(QByteArray result, int descriptor)
+void BllRealTimeTrans1::handleLogin(QByteArray result, int descriptor)
 {
 	/**************/
 	/*1. 识别端登录请求指令
@@ -178,7 +178,7 @@ void BllRealTimeTrans::handleLogin(QByteArray result, int descriptor)
 /**
 * @brief 识别端请求马信息表指令
 */
-void BllRealTimeTrans::requestHorse()
+void BllRealTimeTrans1::requestHorse()
 {
 	
 	TagProtocolMsg msg;
@@ -213,7 +213,7 @@ void BllRealTimeTrans::requestHorse()
 /**
 * @brief 识别端处理服务端-请求马信息表指令
 */
-void BllRealTimeTrans::handleRequestHorse(QByteArray result, int descriptor)
+void BllRealTimeTrans1::handleRequestHorse(QByteArray result, int descriptor)
 {
 	/**************/
 	/*2. 识别端请求马信息表指令
@@ -259,12 +259,10 @@ void BllRealTimeTrans::handleRequestHorse(QByteArray result, int descriptor)
 
 	*/
 }
-
-
 /**
 * @brief 识别端根据RaceNO(场次号)请求RaceID指令
 */
-void BllRealTimeTrans::requestRaceID( int session )
+void BllRealTimeTrans1::requestRaceID( int session )
 {
 #ifndef HISTORY_SUBMIT
 	if (Global::isHistoryVideo)
@@ -292,7 +290,6 @@ void BllRealTimeTrans::requestRaceID( int session )
 	bool success = mcsNetClient->waitForReadyRead(3000);//阻塞等待
 	if (success)
 	{
-		serverSubmitFailed = false;
 		QByteArray result;
 		int descriptor;
 		mcsNetClient->readAllMessage(result, descriptor);//读取数据
@@ -319,7 +316,7 @@ void BllRealTimeTrans::requestRaceID( int session )
 /**
 * @brief 为了保持连接使用请求服务器raceID，保存不显示
 */
-void BllRealTimeTrans::requestRaceIDForKeepAlive(int session)
+void BllRealTimeTrans1::requestRaceIDForKeepAlive(int session)
 {
 #ifndef HISTORY_SUBMIT
 	if (Global::isHistoryVideo)
@@ -347,28 +344,27 @@ void BllRealTimeTrans::requestRaceIDForKeepAlive(int session)
 	bool success = mcsNetClient->waitForReadyRead(3000);//阻塞等待
 	if (success)
 	{
-		 
+
 		QByteArray result;
 		int descriptor;
 		mcsNetClient->readAllMessage(result, descriptor);//读取数据
-		 
+
 	}
 	else
 	{
 
 		emit statuChanged(QString("服务器 %1,识别端：为保持连接请求RaceID失败。").arg(serverNo));
-  
+
 	}
 
 
 
 }
 
-
 /**
 * @brief 识别端处理服务端-请求RaceID指令
 */
-void BllRealTimeTrans::handleRequestRaceID(QByteArray result, int descriptor)
+void BllRealTimeTrans1::handleRequestRaceID(QByteArray result, int descriptor)
 {
 	/**************/
 	/*3.识别端根据RaceNO(场次号)请求RaceID指令
@@ -395,7 +391,7 @@ void BllRealTimeTrans::handleRequestRaceID(QByteArray result, int descriptor)
 /**
 * @brief 识别端提交比赛时长指令
 */
-void BllRealTimeTrans::submitRaceTime(qint32 raceTime)
+void BllRealTimeTrans1::submitRaceTime(qint32 raceTime)
 {
 #ifndef HISTORY_SUBMIT
 	if (Global::isHistoryVideo)
@@ -453,7 +449,8 @@ void BllRealTimeTrans::submitRaceTime(qint32 raceTime)
 
 		emit statuChanged(QString("识别端：提交比赛时长： %1 指令 。").arg(raceTimeStr) +
 			QString("倒计时：") + QString::number(Global::raceTime) + QString("顺计时：")
-			+ QString::number(Global::countRaceTime)) ;
+			+ QString::number(Global::countRaceTime));
+
 
 
 	}
@@ -472,7 +469,7 @@ void BllRealTimeTrans::submitRaceTime(qint32 raceTime)
 /**
 * @brief 识别端处理服务端-提交比赛时长指令
 */
-void BllRealTimeTrans::handleSubmitRaceTime(QByteArray result, int descriptor)
+void BllRealTimeTrans1::handleSubmitRaceTime(QByteArray result, int descriptor)
 {
 	/**************/
 	/*4.识别端提交比赛时长指令
@@ -505,7 +502,7 @@ void BllRealTimeTrans::handleSubmitRaceTime(QByteArray result, int descriptor)
 /**
 * @brief 识别端发送提交实时数据指令
 */
-void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array, 
+void BllRealTimeTrans1::submitRealData(DataOutput outputStruct, QByteArray array, 
 										int imageWidth, int imageHeight)
 {
 #ifndef HISTORY_SUBMIT
@@ -528,7 +525,7 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 		connectCount++;
 		if (connectCount == 5 )
 		{
-			connectToHost(Global::serverIpAddr, Global::serverPort);
+			connectToHost(Global::serverIpAddr1, Global::serverPort1);
 			connectCount = 0 ;
 		}
 		
@@ -538,6 +535,7 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 		curServerState = true;
 		serverNotConnected = false ;
 		serverSubmitFailed = false;
+
 	}
 	/*
 	//之前没连接，现在连接上了
@@ -553,6 +551,8 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 		return;
 	}
 	*/
+
+	
 	//读取buffer
 	if (serverNo == 0 )
 	{
@@ -703,11 +703,12 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 
 
 	}
-	else  //数据为空了，那么这个时候，要与服务器保持连接 ，请求raceID，但不保存
+	else
 	{
 
 		requestRaceIDForKeepAlive(Global::session);
 	}
+	
 	/*
 	if (usedSize > 2)
 	{
@@ -737,7 +738,7 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 			}
 			else
 			{
-				qDebug("BllRealTimeTrans: wrong dataType ");
+				qDebug("BllRealTimeTrans1: wrong dataType ");
 			}
 		}
 		
@@ -758,7 +759,7 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 * @brief 提交实时数据-WIN或PLA
 * @param ouputStruct：算法传递来的数据，type:传送类型默认win
 */
-void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct, QString type)
+void BllRealTimeTrans1::submitWINOrPLA(DataOutput& ouputStruct, QString type)
 {
 	TagProtocolMsg msg;
 	msg.MsgID = 8;
@@ -800,13 +801,13 @@ void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct, QString type)
 		emit statuChanged(QString("服务器 %2 服务端：回复，提交实时数据指令，%1").arg(reply).arg(serverNo));
 		if (reply == "OK")//提交WIN
 		{
-			//*************还得发送数据：WIN(或PLA或QIN或QPL)*********//
+			//*************发送数据：WIN(或PLA或QIN或QPL)*********//
 
 			for (int i = 1; i <= ouputStruct.horseNum; /* HORSENUMBER_1; */i++)
 			{
 				//封装一个WIN
 				TagWPDataInfo WPData;
-				WPData.HorseID = ouputStruct.mHorseInfo.horseID[i] ;
+				WPData.HorseID = ouputStruct.mHorseInfo.horseID[i];;
 				WPData.HorseNO = i;
 
 				if (type == "WIN")
@@ -827,8 +828,8 @@ void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct, QString type)
 			//****************************************************//
 			mcsNetClient->sendData(sendBlock, false);//发送数据，且不需要关闭socket
 			emit statuChanged(QString("服务器 %2 服务端：回复，提交实时数据-%1").arg(type).arg(serverNo));
+			serverSubmitFailed = false;
 			
-			serverSubmitFailed = false ;
 
 			//**若对方有回复****//
 			//bool success = Global::mcsNetClient->waitForReadyRead(3000);//阻塞等待
@@ -870,7 +871,7 @@ void BllRealTimeTrans::submitWINOrPLA(DataOutput& ouputStruct, QString type)
 * @brief 提交实时数据-QIN或QPL
 * @param ouputStruct：算法传递来的数据，type:传送类型默认win
 */
-void BllRealTimeTrans::submitQINOrQPL(DataOutput &ouputStruct, QString type)
+void BllRealTimeTrans1::submitQINOrQPL(DataOutput &ouputStruct, QString type)
 {
 	TagProtocolMsg msg;
 	msg.MsgID = 8;
@@ -932,7 +933,6 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput &ouputStruct, QString type)
 						else if (type == "QPL")
 							QDataInfo.QinValue = ouputStruct.QPL[i - 8][j - 8].dataValue;
 					}
-
 
 					//发送
 					sendBlock.append((char*)&QDataInfo, sizeof(TagQDataInfo));
@@ -1019,7 +1019,7 @@ void BllRealTimeTrans::submitQINOrQPL(DataOutput &ouputStruct, QString type)
 /**
 * @brief 识别端处理服务端-提交实时数据指令
 */
-void BllRealTimeTrans::handleSubmitRealData(QByteArray result, int descriptor)
+void BllRealTimeTrans1::handleSubmitRealData(QByteArray result, int descriptor)
 {
 	/**************/
 	/*5. 识别端发送提交实时数据指令
@@ -1045,15 +1045,15 @@ void BllRealTimeTrans::handleSubmitRealData(QByteArray result, int descriptor)
 /*
 @brief 发送缓存区数据,缓存区数据为发送失败缓存的数据
 */
-void BllRealTimeTrans::sendBufferDataToServer()
+void BllRealTimeTrans1::sendBufferDataToServer()
 {
-	 
+	qDebug("test");
 }
 
 /**
 * @brief 识别端处理服务端返回的数据
 */
-void BllRealTimeTrans::handleReceiveData(QByteArray result, int descriptor)
+void BllRealTimeTrans1::handleReceiveData(QByteArray result, int descriptor)
 {
 	switch (client_cmd_status)
 	{
@@ -1083,7 +1083,7 @@ void BllRealTimeTrans::handleReceiveData(QByteArray result, int descriptor)
 /**
 * @brief 识别端处理服务端返回的数据
 */
-void BllRealTimeTrans::handleConnect()
+void BllRealTimeTrans1::handleConnect()
 {
 	emit statuChanged(QString("服务器 %1 识别端：正常，客户端连接上服务端，.").arg(serverNo) ) ;
 
@@ -1093,7 +1093,7 @@ void BllRealTimeTrans::handleConnect()
 /**
 * @brief 识别端处理服务端返回的数据
 */
-void BllRealTimeTrans::handleDisConnect()
+void BllRealTimeTrans1::handleDisConnect()
 {
 	emit statuChanged(QString("服务器 %1 识别端:正常，客户端已断开连接。").arg(serverNo) ) ;
 

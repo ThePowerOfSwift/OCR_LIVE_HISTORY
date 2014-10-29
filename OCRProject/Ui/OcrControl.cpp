@@ -705,11 +705,11 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 
 					if (mDataOutput.winCaliFlag[i])
 					{
-						output.WIN[i] = mDataOutput.WIN[i];
+						output.WIN[i].dataValue = mDataOutput.WIN[i].dataValue;
 					}
 					if (mDataOutput.plaCaliFlag[i])
 					{
-						output.PLA[i] = mDataOutput.PLA[i];
+						output.PLA[i].dataValue = mDataOutput.PLA[i].dataValue;
 					}
 				}
 
@@ -723,8 +723,8 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 
 						if (output.qplQinCaliFlag[i][j])
 						{
-							output.QPL[i][j] = mDataOutput.QPL[i][j];
-							output.QIN[i][j] = mDataOutput.QIN[i][j];
+							output.QPL[i][j].dataValue = mDataOutput.QPL[i][j].dataValue;
+							output.QIN[i][j].dataValue = mDataOutput.QIN[i][j].dataValue;
 
 						}
 
@@ -906,7 +906,7 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 	for (int i = 0; i < winLableList.size(); i++)
 	{
 
-		winLableList[i]->setText(QString::number(output.WIN[i]));
+		winLableList[i]->setText(QString::number(output.WIN[i].dataValue));
 
 		/*
 		//写入系统日志
@@ -933,7 +933,7 @@ void OcrControl::updateUiData(DataOutput output, QByteArray array)
 	for (int i = 0; i < plaLableList.size(); i++)
 	{
 
-		plaLableList[i]->setText(QString::number(output.PLA[i]));
+		plaLableList[i]->setText(QString::number(output.PLA[i].dataValue));
 	
 		if (output.plaChangedFlag[i] )
 		{
@@ -990,12 +990,12 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 			MLineEdit * label = list.at(j);
 			if (output.isQPL)
 			{
-				label->setText(QString::number(output.QPL[i][j]));
+				label->setText(QString::number(output.QPL[i][j].dataValue));
 
 			}
 			else
 			{
-				label->setText(QString::number(output.QIN[i][j]));
+				label->setText(QString::number(output.QIN[i][j].dataValue));
 
 			}
 			
@@ -1010,7 +1010,7 @@ void OcrControl::updateQINQPLData(DataOutput output, QByteArray array)
 				label->setStyleSheet("MLineEdit{background: rgb(62,120,56);color: rgb(255,255,255)}");
 			}
 			//如果是0 ，那么 使用黑底白色
-			if (output.QPL[i][j] == 0 | output.QIN[i][j] == 0 )
+			if (output.QPL[i][j].dataValue == 0 | output.QIN[i][j].dataValue == 0)
 			{
 				label->setStyleSheet("MLineEdit{background:rgb(42,81,37);color: rgb(255,255,255)}");
 			}
@@ -1345,9 +1345,9 @@ void OcrControl::on_inputUserDataBtn_clicked()
 			if (!mDataOutput.winCaliFlag[i])
 			{
 				//只有没被矫正过的才能赋值
-				if (abs(mDataOutput.WIN[i] - win.toFloat()) > 0.01)
+				if (abs(mDataOutput.WIN[i].dataValue - win.toFloat()) > 0.01)
 				{
-					mDataOutput.WIN[i] = win.toFloat();
+					mDataOutput.WIN[i].dataValue = win.toFloat();
 					mDataOutput.winCaliFlag[i] = true;
 				}
 				else
@@ -1359,9 +1359,9 @@ void OcrControl::on_inputUserDataBtn_clicked()
 		}
 		else
 		{
-			if (abs(mDataOutput.WIN[i] - win.toFloat()) > 0.01)
+			if (abs(mDataOutput.WIN[i].dataValue - win.toFloat()) > 0.01)
 			{
-				mDataOutput.WIN[i] = win.toFloat();
+				mDataOutput.WIN[i].dataValue = win.toFloat();
 			}
 			mDataOutput.winCaliFlag[i] = false;
 		}
@@ -1398,9 +1398,9 @@ void OcrControl::on_inputUserDataBtn_clicked()
 		{
 			if (!mDataOutput.plaCaliFlag[i])
 			{
-				if (abs(mDataOutput.PLA[i] - pla.toFloat()) > 0.01)
+				if (abs(mDataOutput.PLA[i].dataValue - pla.toFloat()) > 0.01)
 				{
-					mDataOutput.PLA[i] = pla.toFloat();
+					mDataOutput.PLA[i].dataValue = pla.toFloat();
 
 				}
 			}
@@ -1408,9 +1408,9 @@ void OcrControl::on_inputUserDataBtn_clicked()
 		else
 		{
 			//只有没被矫正过的才能赋值
-			if (abs(mDataOutput.PLA[i] - pla.toFloat()) > 0.01 )
+			if (abs(mDataOutput.PLA[i].dataValue - pla.toFloat()) > 0.01)
 			{
-				mDataOutput.PLA[i] = pla.toFloat();
+				mDataOutput.PLA[i].dataValue = pla.toFloat();
 				mDataOutput.plaCaliFlag[i] = true;
 			}
 			else
@@ -1438,17 +1438,17 @@ void OcrControl::on_inputUserDataBtn_clicked()
 				{
 					if (mDataOutput.isQPL)
 					{
-						if (abs(mDataOutput.QPL[i][j] - qplQin.toFloat()) > 0.01)
+						if (abs(mDataOutput.QPL[i][j].dataValue - qplQin.toFloat()) > 0.01)
 						{
-							mDataOutput.QPL[i][j] = qplQin.toFloat();
+							mDataOutput.QPL[i][j].dataValue = qplQin.toFloat();
 
 						}
 					}
 					else
 					{
-						if (abs(mDataOutput.QIN[i][j] - qplQin.toFloat()) > 0.01)
+						if (abs(mDataOutput.QIN[i][j].dataValue - qplQin.toFloat()) > 0.01)
 						{
-							mDataOutput.QIN[i][j] = qplQin.toFloat();
+							mDataOutput.QIN[i][j].dataValue = qplQin.toFloat();
 
 						}
 					}
@@ -1459,9 +1459,9 @@ void OcrControl::on_inputUserDataBtn_clicked()
 			{
 				if (mDataOutput.isQPL)
 				{
-					if (abs(mDataOutput.QPL[i][j] - qplQin.toFloat()) > 0.01)
+					if (abs(mDataOutput.QPL[i][j].dataValue - qplQin.toFloat()) > 0.01)
 					{
-						mDataOutput.QPL[i][j] = qplQin.toFloat();
+						mDataOutput.QPL[i][j].dataValue = qplQin.toFloat();
 						mDataOutput.qplQinCaliFlag[i][j] = true;
 					}
 					else
@@ -1471,9 +1471,9 @@ void OcrControl::on_inputUserDataBtn_clicked()
 				}
 				else
 				{
-					if (abs(mDataOutput.QIN[i][j] - qplQin.toFloat()) > 0.01)
+					if (abs(mDataOutput.QIN[i][j].dataValue - qplQin.toFloat()) > 0.01)
 					{
-						mDataOutput.QIN[i][j] = qplQin.toFloat();
+						mDataOutput.QIN[i][j].dataValue = qplQin.toFloat();
 						mDataOutput.qplQinCaliFlag[i][j] = true;
 					}
 					else
@@ -1677,7 +1677,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 			// from 1 to 14 .
 			WPData.HorseNO = i + 1;
 
-			WPData.WinValue = dataOutput.WIN[i];
+			WPData.WinValue = dataOutput.WIN[i].dataValue;
 
 			WPData.RaceID = dataOutput.session ;
 			//顺计时
@@ -1733,7 +1733,7 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 			//从1 到14 
 			WPData.HorseNO = i + 1;
 
-			WPData.WinValue = dataOutput.PLA[i];
+			WPData.WinValue = dataOutput.PLA[i].dataValue;
 
 			WPData.RaceID = dataOutput.session;
 			WPData.AtTime = Global::countRaceTime;
@@ -1799,11 +1799,11 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 				{
 					if (dataOutput.isQPL)
 					{
-						QDataInfo.QinValue = dataOutput.QPL[j - 1][i];
+						QDataInfo.QinValue = dataOutput.QPL[j - 1][i].dataValue;
 					}
 					else
 					{
-						QDataInfo.QinValue = dataOutput.QIN[j - 1][i];
+						QDataInfo.QinValue = dataOutput.QIN[j - 1][i].dataValue;
 
 					}
 					
@@ -1812,11 +1812,11 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 				{
 					if (dataOutput.isQPL)
 					{
-						QDataInfo.QinValue = dataOutput.QPL[i - 8][j - 8];
+						QDataInfo.QinValue = dataOutput.QPL[i - 8][j - 8].dataValue;
 					}
 					else
 					{
-						QDataInfo.QinValue = dataOutput.QIN[i - 8][j - 8];
+						QDataInfo.QinValue = dataOutput.QIN[i - 8][j - 8].dataValue;
 
 					}
 					
@@ -1855,12 +1855,12 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 				{
 					if (dataOutput.isQPL)
 					{
-						QDataInfo.QinValue = dataOutput.QPL[i - 1][j];
+						QDataInfo.QinValue = dataOutput.QPL[i - 1][j].dataValue;
 
 					}
 					else
 					{
-						QDataInfo.QinValue = dataOutput.QIN[i - 1][j];
+						QDataInfo.QinValue = dataOutput.QIN[i - 1][j].dataValue;
 
 					}
 				}
@@ -1868,12 +1868,12 @@ void OcrControl::writeHistoryData(DataOutput &dataOutput)
 				{
 					if (dataOutput.isQPL)
 					{
-						QDataInfo.QinValue = dataOutput.QPL[j - 8][i - 8];
+						QDataInfo.QinValue = dataOutput.QPL[j - 8][i - 8].dataValue;
 
 					}
 					else
 					{
-						QDataInfo.QinValue = dataOutput.QIN[j - 8][i - 8];
+						QDataInfo.QinValue = dataOutput.QIN[j - 8][i - 8].dataValue;
 
 					}
 				}
@@ -1931,7 +1931,7 @@ int OcrControl::isDataOutputNew(DataOutput &outputStruct, DataOutput &priOutputS
  
 	for (int i = 0; i < outputStruct.horseNum; i++)
 	{
-		if (abs(outputStruct.WIN[i] - priOutputStruct.WIN[i]) > 0.05)
+		if (abs(outputStruct.WIN[i].dataValue - priOutputStruct.WIN[i].dataValue) > 0.05)
 		{
 			//qDebug("WIN : i=%d , new is %f pri is %f ", i,  outputStruct.WIN[i], priDataOutput.WIN[i]);
 			//outputStruct.changeStatus = WIN_CHANGED;
@@ -1949,11 +1949,11 @@ int OcrControl::isDataOutputNew(DataOutput &outputStruct, DataOutput &priOutputS
 
 	for (int i = 0; i < outputStruct.horseNum; i++)
 	{
-		if (outputStruct.PLA[i] == 0.0)
+		if (outputStruct.PLA[i].dataValue == 0.0)
 		{
 			continue;
 		}
-		if (abs(outputStruct.PLA[i] - priOutputStruct.PLA[i]) >  0.05)
+		if (abs(outputStruct.PLA[i].dataValue - priOutputStruct.PLA[i].dataValue) >  0.05)
 		{
 			//qDebug("PLA:i=%d ,new is %f pri is %f ", i,  outputStruct.PLA[i], priDataOutput.PLA[i]);
 			//outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
@@ -1997,8 +1997,8 @@ int OcrControl::isDataOutputNew(DataOutput &outputStruct, DataOutput &priOutputS
 				}
 			}
 
-			if (abs(outputStruct.QPL[i][j] - priOutputStruct.QPL[i][j]) > 0.05
-				| abs(outputStruct.QIN[i][j] - priOutputStruct.QIN[i][j]) > 0.05
+			if (abs(outputStruct.QPL[i][j].dataValue - priOutputStruct.QPL[i][j].dataValue) > 0.05
+				| abs(outputStruct.QIN[i][j].dataValue - priOutputStruct.QIN[i][j].dataValue) > 0.05
 			)
 			{
 				//qDebug("QIN_QPL:i=%d ,j=%d new is %f pri is %f ", i, j, outputStruct.QPL_QIN[i][j], priDataOutput.QPL_QIN[i][j]);
@@ -2065,7 +2065,7 @@ void OcrControl::updateAfterUserInput(DataOutput  &output)
 	for (int i = 0; i < winLableList.size(); i++)
 	{
 
-		winLableList[i]->setText(QString::number(output.WIN[i]));
+		winLableList[i]->setText(QString::number(output.WIN[i].dataValue));
 
 
 		if (output.isWinPlaHasGroundColor[i][0] == true)
@@ -2077,7 +2077,7 @@ void OcrControl::updateAfterUserInput(DataOutput  &output)
 	for (int i = 0; i < plaLableList.size(); i++)
 	{
 
-		plaLableList[i]->setText(QString::number(output.PLA[i]));
+		plaLableList[i]->setText(QString::number(output.PLA[i].dataValue));
 		if (output.isWinPlaHasGroundColor[i][1] == true)
 		{
 			plaLableList[i]->setStyleSheet("MLineEdit{background: green;color: #FFFFFF}");
@@ -2096,12 +2096,12 @@ void OcrControl::updateAfterUserInput(DataOutput  &output)
 
 			if (output.isQPL)
 			{
-				label->setText(QString::number(output.QPL[i][j]));
+				label->setText(QString::number(output.QPL[i][j].dataValue));
 
 			}
 			else
 			{
-				label->setText(QString::number(output.QIN[i][j]));
+				label->setText(QString::number(output.QIN[i][j].dataValue));
 
 			}
 

@@ -36,8 +36,8 @@ DataIdentify::DataIdentify()
 	for (int i = 0; i < dataOutput.horseNum; i++)
 	{
 		dataOutput.svmResult[i] = -1;
-		dataOutput.WIN[i] = 0.0;
-		dataOutput.PLA[i] = 0.0;
+		dataOutput.WIN[i].dataValue = 0.0;
+		dataOutput.PLA[i].dataValue = 0.0;
 		memset(dataOutput.mHorseInfo.horseName[i], 0, sizeof(wchar_t)* 4);
 		dataOutput.mHorseInfo.horseID[i] = 0;
 	}
@@ -46,8 +46,8 @@ DataIdentify::DataIdentify()
 		for (int j = 0; j < 15; j++)
 		{
 		
-			dataOutput.QPL[i][j] = 0;
-			dataOutput.QIN[i][j] = 0;
+			dataOutput.QPL[i][j].dataValue = 0;
+			dataOutput.QIN[i][j].dataValue = 0;
 
 		}
 	}
@@ -1016,6 +1016,7 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 
 
 		}
+		/*
 		for (int i = 0; i < 6 - rectNum; i++)
 		{
 #ifdef QDEBUG_OUTPUT
@@ -1023,7 +1024,7 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 #endif
 		}
 
-
+		*/
 		for (int i = rectNum + 1; i < 7 - delataNum; i++)
 		{
 
@@ -1067,18 +1068,20 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			}
 			else
 				qinQPLPosStruct.rect[i][rectNum].y = qinQplSubRect[rectNum].y + y[i - rectNum - 1];
-
+			
+			//最后一个数字 设置高度为19 
 			if (i == 6 - delataNum)
 			{
 				qinQPLPosStruct.rect[i][rectNum].height = 19;
 			}
+			 // 
 			else
 			{
-				if (y[i - rectNum] - y[i - rectNum - 1] > 18)
+				if (y[i - rectNum] - y[i - rectNum - 1] > 24 )
 				{
 					y[i - rectNum] = y[i - rectNum - 1] + NUMBER_HEIGHT_LIVE + 2;
 				}
-				qinQPLPosStruct.rect[i][rectNum].height = y[i - rectNum] - y[i - rectNum - 1] + 1;
+				qinQPLPosStruct.rect[i][rectNum].height = y[i - rectNum] - y[i - rectNum - 1] -1 ;
 			}
 
 		}
@@ -1143,11 +1146,11 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			}
 			else
 			{
-				if (y[i + 1] - y[i] > 18)
+				if (y[i + 1] - y[i] > 24 )
 				{
 					y[i + 1] = y[i] + NUMBER_HEIGHT_LIVE + 2;
 				}
-				qinQPLPosStruct.rect[i][rectNum - 4].height = y[i + 1] - y[i];
+				qinQPLPosStruct.rect[i][rectNum - 4].height = y[i + 1] - y[i] - 1 ;
 			}
 
 
@@ -1225,11 +1228,11 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			}
 			else
 			{
-				if (y[i + 1] - y[i] > 18)
+				if (y[i + 1] - y[i] > 24 )
 				{
 					y[i + 1] = y[i] + NUMBER_HEIGHT_LIVE + 2;
 				}
-				qinQPLPosStruct.rect[i][rectNum - 4].height = y[i + 1] - y[i];
+				qinQPLPosStruct.rect[i][rectNum - 4].height = y[i + 1] - y[i] -1  ;
 			}
 
 
@@ -1326,11 +1329,12 @@ int DataIdentify::isHorseNameChanged()
 		if (abs(graySum[h] - dataOutput.mHorseInfo.graySum[h]) > graySumThreshold
 			& abs(length[h] - dataOutput.mHorseInfo.length[h]) > 4)
 		{
-			ChangedNum++;
+			
 #ifdef QDEBUG_OUTPUT
 			qDebug("  graySum[%d] = %d ,pri = %d \n", h,
 				graySum[h], dataOutput.mHorseInfo.graySum[h]);
 #endif
+			 
 			ChangedNum++;
 
 		}
@@ -1357,7 +1361,7 @@ int DataIdentify::isHorseNameChanged()
 			Global::isSessionChanged = true;
 		}
 		//必须 顺计时大于 15 分钟，才可以改变场次号
-		else if (Global::countRaceTime  > 15 )
+		else if (Global::countRaceTime  > 15 | Global::session == 1)
 		{
 			Global::session++;
 			//赋值场次号
@@ -1467,14 +1471,10 @@ int DataIdentify::getWINPLAIdentify()
 	{
 		for (int j = 0; j < 2; j++)
 		{
-			Mat roi(image, winPlaPosStruct.rect[i][j]);
-
-
+			Mat roi(image, winPlaPosStruct.rect[i][j]) ;
 			Mat roiThreshold;
-
-
-
 			Mat roiThresholdEdge;
+
 			cvtColor(roi, roi, CV_RGB2GRAY);
 
 			roi.copyTo(roiThreshold);
@@ -1592,8 +1592,8 @@ int DataIdentify::getWINPLAIdentify()
 			if (roiNew.cols < 20)
 			{
 				dataOutput.mHorseInfo.isSCR[i] = true;
-				dataOutput.WIN[i] = -1;
-				dataOutput.PLA[i] = -1;
+				dataOutput.WIN[i].dataValue = -1;
+				dataOutput.PLA[i].dataValue = -1;
 				continue;
 
 			}
@@ -1615,8 +1615,23 @@ int DataIdentify::getWINPLAIdentify()
 					if (roiNew.cols < rectDot[k].x + rectDot[k].width |
 						roiNew.rows < rectDot[k].y + rectDot[k].height)
 					{
-						algorithmState = EXIT_THIS_OCR;
-						return EXIT_THIS_OCR;
+
+						if (j ==0 )
+						{
+							dataOutput.WIN[i].byPass = true;
+						}
+						if (j == 1 )
+						{
+							dataOutput.PLA[i].byPass = true;
+						}
+						continue ; 
+					//	algorithmState = EXIT_THIS_OCR;
+						//return EXIT_THIS_OCR;
+					}
+					else
+					{
+						dataOutput.WIN[i].byPass = false ;
+						dataOutput.PLA[i].byPass = false ;
 					}
 					Mat singleNum(roiNew, rectDot[k]);									// the single number image
 
@@ -1650,8 +1665,7 @@ int DataIdentify::getWINPLAIdentify()
 					createClassifySamples(result, singleNum);
 
 #endif
-
-
+ 
 					tempSum += result * factor[0][k];
 				}
 			}
@@ -1667,9 +1681,27 @@ int DataIdentify::getWINPLAIdentify()
 					if (roiNew.cols < rectNoDot[k].x + rectNoDot[k].width |
 						roiNew.rows < rectNoDot[k].y + rectNoDot[k].height)
 					{
+						//忽略当前这个WIN PLA数据，继续下一个识别
+						if (j == 0)
+						{
+							dataOutput.WIN[i].byPass = true;
+						}
+						if (j == 1)
+						{
+							dataOutput.PLA[i].byPass = true;
+						}
+						continue;
+
 						algorithmState = EXIT_THIS_OCR;
 						return EXIT_THIS_OCR;
+					} 
+					else
+					{ 
+						dataOutput.WIN[i].byPass = false ;
+						dataOutput.PLA[i].byPass = false ;
+
 					}
+
 					Mat singleNum(roiNew, rectNoDot[k]);
 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO1
@@ -1707,9 +1739,9 @@ int DataIdentify::getWINPLAIdentify()
 			}
 
 			if (j == 0)
-				dataOutput.WIN[i] = tempSum;
+				dataOutput.WIN[i].dataValue = tempSum;
 			if (j == 1)
-				dataOutput.PLA[i] = tempSum;
+				dataOutput.PLA[i].dataValue = tempSum;
 
 
 		}			// end j
@@ -1858,11 +1890,11 @@ int DataIdentify::getQINQPLIdentify()
 				{
 					if (dataOutput.isQPL)
 					{
-						dataOutput.QPL[i][j] = -1;
+						dataOutput.QPL[i][j].dataValue = -1;
 					}
 					else
 					{
-						dataOutput.QIN[i][j] = -1;
+						dataOutput.QIN[i][j].dataValue = -1;
 
 					}
 					continue;
@@ -1871,11 +1903,11 @@ int DataIdentify::getQINQPLIdentify()
 				{
 					if (dataOutput.isQPL)
 					{
-						dataOutput.QPL[i][j] = -1;
+						dataOutput.QPL[i][j].dataValue = -1;
 					}
 					else
 					{
-						dataOutput.QIN[i][j] = -1;
+						dataOutput.QIN[i][j].dataValue = -1;
 
 					}
 					continue;
@@ -1889,11 +1921,11 @@ int DataIdentify::getQINQPLIdentify()
 				{
 					if (dataOutput.isQPL)
 					{
-						dataOutput.QPL[i][j] = -1;
+						dataOutput.QPL[i][j].dataValue = -1;
 					}
 					else
 					{
-						dataOutput.QIN[i][j] = -1;
+						dataOutput.QIN[i][j].dataValue = -1;
 
 					}
 					continue;
@@ -1903,11 +1935,11 @@ int DataIdentify::getQINQPLIdentify()
 				{
 					if (dataOutput.isQPL)
 					{
-						dataOutput.QPL[i][j] = -1;
+						dataOutput.QPL[i][j].dataValue = -1;
 					}
 					else
 					{
-						dataOutput.QIN[i][j] = -1;
+						dataOutput.QIN[i][j].dataValue = -1;
 
 					}
 					continue;
@@ -1928,26 +1960,65 @@ int DataIdentify::getQINQPLIdentify()
 			Mat roiThresholdEdge;
 			cvtColor(roi, roi, CV_RGB2GRAY);
 
-			roi.copyTo(roiThreshold);
+			roiThreshold = roi.clone();
 
-			//使用灰度阈值
+			//使用灰度阈值 roiThreshold用来去除 上下左右空白
 			int *graySum = new int [roiThreshold.cols + 1];
 			memset(graySum, 0, (roiThreshold.cols + 1)*sizeof(int));
 
+			int sum = 0 ;
 			for (int c = 0; c < roiThreshold.cols; c++)
 			{
 				for (int r = 0; r < roiThreshold.rows; r++)
 				{
-					if (roiThreshold.at<uchar>(r, c) < 190)
+					 
+					if (roiThreshold.at<uchar>(r, c) > 190)
 					{
 						roiThreshold.at<uchar>(r, c) = 0;
 						
 					}
-					graySum[c] += roiThreshold.at<uchar>(r, c);
+					 
+					sum += roiThreshold.at<uchar>(r, c);
 
 				}
 			}
+			bool hasGroudColor;
+			if (sum > 30000)
+			{
+				hasGroudColor = true;
+			}
+			else
+				hasGroudColor = false;
 
+			qDebug(" sum ALL = %d i = %d j = %d ",sum ,i ,j );
+			//根据是否有底色，使用不同阈值
+			roiThreshold = roi.clone();
+			for (int c = 0; c < roiThreshold.cols; c++)
+			{
+				for (int r = 0; r < roiThreshold.rows; r++)
+				{
+					if (hasGroudColor )
+					{
+						if (roiThreshold.at<uchar>(r, c) < 190)
+						{
+							roiThreshold.at<uchar>(r, c) = 0;
+
+						}
+					}
+					else
+					{
+						if (roiThreshold.at<uchar>(r, c) < 140)
+						{
+							roiThreshold.at<uchar>(r, c) = 0;
+
+						}
+					}
+					
+					graySum[c] += roiThreshold.at<uchar>(r, c);
+					 
+
+				}
+			}
 
 			CvRect roiNewSize;
 			//	dotFlag = identifyImageInfor2_Dot_live(&edge);
@@ -1961,7 +2032,7 @@ int DataIdentify::getQINQPLIdentify()
 				return EXIT_THIS_OCR;
 			}
 			*/
-
+			//裁剪 roiThreshold
 			int x0 = 0;
 			int x1 = 0 ;
  
@@ -1994,33 +2065,63 @@ int DataIdentify::getQINQPLIdentify()
 				algorithmState = EXIT_THIS_OCR;
 				return EXIT_THIS_OCR;
 			}
-			roiNewSize.width = x1 - x0 + 1;
 
-			roiNewSize.y = 0;
-			roiNewSize.height = roiThreshold.rows;
 
-		 
-			/*
-			if (roiNewSize.width < 10 )
+			// 
+			int y1 = 0;
+			int y0 = 0;
+
+			int *graySumX = new int[roiThreshold.rows + 1];
+			memset(graySumX, 0, (roiThreshold.rows + 1)*sizeof(int));
+
+			for (int r = 0; r < roiThreshold.rows; r++)
 			{
-				algorithmState == EXIT_THIS_OCR;
-				return EXIT_THIS_OCR;
+				for (int c = 0; c < roiThreshold.cols; c++)
+				{
+					 
+					graySumX[r] += roiThreshold.at<uchar>(r, c);
+
+				}
 			}
-			else
-				return EXEC_SUCCESS;
-			*/
+			 
+
+			for (int r = 0; r < roiThreshold.rows;r++)
+			{
+				if (graySumX[r] >= 180)
+				{
+					y0 = r ;
+					break ;
+				}
+			}
+			for (int r = roiThreshold.rows - 1; r >= 0; r--)
+			{
+				if (graySumX[r] >= 180)
+				{
+					y1 = r ;
+					break ;
+				}
+			}
+
+
+			roiNewSize.width = x1 - x0 + 1;
+			 
+			roiNewSize.y = y0 ;
+			roiNewSize.height = y1-y0 + 1 ;
+
+			if (graySumX != NULL)
+			{
+				delete[] graySumX;
+				graySumX = NULL;
+			}
  
- 
-			//由于trimRoiBlankPart里面并没有完全裁剪干净空余地方
-		//	roiNewSize.x = roiNewSize.x + 1;
-		//	roiNewSize.width = roiNewSize.width - 3;
+			Mat roiClone;
+			roiClone = roi.clone();
 
 			roiNew = Mat(roi, roiNewSize);
 
-			roiForDotJudge =Mat(roiThreshold,roiNewSize);
+			roiForDotJudge = Mat(roiClone, roiNewSize);
 
-
-			
+			/*
 			//将图像 增强 然后进行小数点判断
 			for (int c = 0; c < roiForDotJudge.cols; c++)
 			{
@@ -2032,8 +2133,18 @@ int DataIdentify::getQINQPLIdentify()
 					}
 				}
 			}
-			
+			*/
 			 
+			for (int c = 0; c < roiForDotJudge.cols; c++)
+			{
+				for (int r = 0; r < roiForDotJudge.rows; r++)
+				{
+					if (roiForDotJudge.at<uchar>(r, c) < 140)
+					{
+						roiForDotJudge.at<uchar>(r, c) = 0;
+					}
+				}
+			}
 
 			int *x = new int[3 + 1];
 			memset(x, 0, 4);
@@ -2047,7 +2158,7 @@ int DataIdentify::getQINQPLIdentify()
 			// 1 两位数
 			// 2 三位数
 			Mat edge;
-			dotFlag = judgeQINQPLDot(roiForDotJudge, edge, x);
+			dotFlag = judgeQINQPLDot(roiThreshold, edge, x);
 
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
 
@@ -2061,7 +2172,7 @@ int DataIdentify::getQINQPLIdentify()
 
 			//	QString path = QString(".//temp//");
 
-			writeSamples(fileNameTemp, edge, path);
+			writeSamples(fileNameTemp, roiThreshold, path);
 
 
 #endif
@@ -2279,11 +2390,11 @@ int DataIdentify::getQINQPLIdentify()
 
 			if (dataOutput.isQPL)
 			{
-				dataOutput.QPL[i][j] = tempSum;
+				dataOutput.QPL[i][j].dataValue = tempSum;
 			}
 			else
 			{
-				dataOutput.QIN[i][j] = tempSum;
+				dataOutput.QIN[i][j].dataValue = tempSum;
 
 			}
 		 
@@ -2859,7 +2970,7 @@ int  DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 		}
 		return EXIT_THIS_OCR;
 	}
-	else if (delta >= 24) // three number . 20
+	else if (delta >= 25) // three number . 20
 	{
 		//获取3个数字的 坐标值 x
 		if (calculateGraySumYForQINDotJudge(edge, x, 3) != EXEC_SUCCESS)
@@ -2877,7 +2988,7 @@ int  DataIdentify::judgeQINQPLDot(Mat &roi, Mat &edge, int *x)
 		}
 		return 2;
 	}
-	else if (delta <= 23 & delta > 19) // tow number with dot .
+	else if (delta <= 24 & delta > 19) // tow number with dot .
 	{
 		Mat halfEdge = Mat(edge, cvRect(0, 0, edge.cols, edge.rows / 2));
 		memset(graySum, 0, edge.cols*sizeof(int));
@@ -3577,12 +3688,13 @@ int  DataIdentify::calculateGraySumYForTrim(Mat &mat, int &x0, int &x1, int roiN
 		{
 			graySumY[pixelX] += mat.at<uchar>(pixelY, pixelX);
 		}
-		graySumY[pixelX] /= roiNum;
+		//graySumY[pixelX] /= roiNum;
+
 #ifdef QDEBUG_OUTPUT
 		qDebug("calculateGraySumYForTrim %d = %d \n", pixelX, graySumY[pixelX]);
 #endif
 	}
-	int thereshold = 100;
+	int thereshold = 200;
 	//提取 两边y坐标
 	for (int x = 0; x <= mat.cols; x++)
 	{

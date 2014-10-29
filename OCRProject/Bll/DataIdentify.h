@@ -221,7 +221,7 @@ private:
 
 
 
-#define  NUMBER_HEIGHT_LIVE 18 
+#define  NUMBER_HEIGHT_LIVE 15 
 #define  NUMBER_WIDTH_LIVE 36
 
 

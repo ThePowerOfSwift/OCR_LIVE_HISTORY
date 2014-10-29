@@ -276,7 +276,7 @@ LONG BllDataIdentify::chooseRightRaceTimeRaceSession(DataOutput &outputStruct)
 		}
 		dataNewCount++;
 
-		qDebug("DataNewCount = %d  raceTime = %d ",dataNewCount,outputStruct.raceTime );
+		//qDebug("DataNewCount = %d  raceTime = %d ",dataNewCount,outputStruct.raceTime );
 	}
 	else
 	{
@@ -353,15 +353,15 @@ LONG BllDataIdentify::winPlaDivTen(DataOutput &outputStruct)
 	//无数据区域设置为0 
 	for (int i = outputStruct.horseNum; i < 14;i ++ )
 	{
-		outputStruct.WIN[i] = 0;
-		outputStruct.PLA[i] = 0;
+		outputStruct.WIN[i].dataValue = 0;
+		outputStruct.PLA[i].dataValue = 0;
 	}
 	for (int i = outputStruct.horseNum - 7; i < 7;i++)
 	{
 		for (int j = 0; j < i; j++)
 		{
-			outputStruct.QPL[i][j] = 0;
-			outputStruct.QIN[i][j] = 0;
+			outputStruct.QPL[i][j].dataValue = 0;
+			outputStruct.QIN[i][j].dataValue = 0;
 
 
 		}
@@ -371,8 +371,8 @@ LONG BllDataIdentify::winPlaDivTen(DataOutput &outputStruct)
 	{
 		for (int j = outputStruct.horseNum + 1; j < 15; j++)
 		{
-			outputStruct.QPL[i][j] = 0;
-			outputStruct.QIN[i][j] = 0;
+			outputStruct.QPL[i][j].dataValue = 0;
+			outputStruct.QIN[i][j].dataValue = 0;
 		}
 			 
 	}
@@ -387,28 +387,28 @@ LONG BllDataIdentify::winPlaDivTen(DataOutput &outputStruct)
 	float dataTemp = 0;
 	for (int i = 0; i < 14; i++)
 	{
-		dataTemp = outputStruct.WIN[i] / 10 ;
+		dataTemp = outputStruct.WIN[i].dataValue / 10;
 
 		if (dataTemp >= 10)
 		{
-			outputStruct.WIN[i] = (int)dataTemp;
+			outputStruct.WIN[i].dataValue = (int)dataTemp;
 		}
 		else
 		{
-			dataBigger10 = (int)outputStruct.WIN[i];
-			outputStruct.WIN[i] = (float)(dataBigger10 /10.0 );
+			dataBigger10 = (int)outputStruct.WIN[i].dataValue;
+			outputStruct.WIN[i].dataValue = (float)(dataBigger10 /10.0 );
 		}
 
-		dataTemp = outputStruct.PLA[i] / 10;
+		dataTemp = outputStruct.PLA[i].dataValue / 10;
 
 		if (dataTemp >= 10)
 		{
-			outputStruct.PLA[i] = (int)dataTemp;
+			outputStruct.PLA[i].dataValue = (int)dataTemp;
 		}
 		else
 		{
-			dataBigger10 = (int)outputStruct.PLA[i];
-			outputStruct.PLA[i] = (float)(dataBigger10 / 10.0);
+			dataBigger10 = (int)outputStruct.PLA[i].dataValue;
+			outputStruct.PLA[i].dataValue = (float)(dataBigger10 / 10.0);
 		}
 		 
 	}
@@ -446,29 +446,23 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 	
 
 	//当QIN QPL发生切换时候 ，等待3个定时器周期，在发送新的数据，保持数据稳定。
-	//等待5幅图片的时间
-	
+	//等待5幅图片的时间	
 	//如果刚开始的数据为零 那么，认为是刚开始
-	if (priDataOutput.isQPL != outputStruct.isQPL & QINQPLTransformed == false | (priDataOutput.WIN[0] - 0 ) < 0.2 ) 
+	if (priDataOutput.isQPL != outputStruct.isQPL & QINQPLTransformed == false 
+		| (priDataOutput.WIN[0].dataValue - 0) < 0.2)
 	{
 		//if (sessionChanged == false)
 		{
-			QINQPLTransformedCountDown = 5 ;
+			QINQPLTransformedCountDown = 3 ;
 			QINQPLTransformed = true ;
 		}
-
-		//标记QIN QPL 发生了转变
-		 
-
+	 
 	}
-
-
-	//WIN改变数目过多 等待3个周期在发送新数据，并且有2个以上数据 超出了改变那范围 ，此时场次号发生了改变
-	//如果场次号发生了变化，那么立刻发送
-
+	 
+	//如果场次号发生了变化，那么等待3张图片，数据稳定开始发送
 	if (Global::isSessionChanged)
 	{
-		sessionChangedCountDown = 4;
+		sessionChangedCountDown = 3 ;
 		sessionChanged = true;
 
 	}
@@ -477,13 +471,18 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 	{
 		for (int i = 0; i < outputStruct.horseNum; i++)
 		{
-			if (abs(outputStruct.WIN[i] - priDataOutput.WIN[i]) > 0.05)
+			if (outputStruct.mHorseInfo.isSCR[i] != priDataOutput.mHorseInfo.isSCR[i])
+			{
+				WINChangedNum++ ;
+			}
+			if (abs(outputStruct.WIN[i].dataValue - priDataOutput.WIN[i].dataValue) > 0.05)
 			{
 			 
 				WINChangedNum++;
 
 			}
-			if (abs((outputStruct.WIN[i] - priDataOutput.WIN[i])) / priDataOutput.WIN[i] > 0.6 )
+			if (abs((outputStruct.WIN[i].dataValue - priDataOutput.WIN[i].dataValue)) 
+				/ priDataOutput.WIN[i].dataValue > 0.6 )
 			{
 				dataOutOfRangeWIN = true;
 				dataOutOfRangeCount++;
@@ -494,17 +493,18 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 
 		for (int i = 0; i < outputStruct.horseNum; i++)
 		{
-			if (outputStruct.PLA[i] == 0.0)
+			if (outputStruct.mHorseInfo.isSCR[i] != priDataOutput.mHorseInfo.isSCR[i])
 			{
-				continue;
+				PLAChangedNum++;
 			}
-			if (abs(outputStruct.PLA[i] - priDataOutput.PLA[i]) >  0.05)
+			if (abs(outputStruct.PLA[i].dataValue - priDataOutput.PLA[i].dataValue) >  0.05)
 			{
 				//qDebug("PLA:i=%d ,new is %f pri is %f ", i,  outputStruct.PLA[i], priDataOutput.PLA[i]);
 				//outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
 				PLAChangedNum++;
 			}
-			if (abs((outputStruct.PLA[i] - priDataOutput.PLA[i])) / priDataOutput.PLA[i] > 0.6
+			if (abs((outputStruct.PLA[i].dataValue - priDataOutput.PLA[i].dataValue)) 
+				/ priDataOutput.PLA[i].dataValue > 0.6
 				
 				)
 			{
@@ -526,6 +526,12 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 			{
 				if (i == j || j == (i + 1))
 					continue;
+
+
+				if (outputStruct.mHorseInfo.isSCR[i] != priDataOutput.mHorseInfo.isSCR[i])
+				{
+					QINQPLCHangedNum ++;
+				}
 				//排除掉 退赛的马匹
 				if (j> i + 1)
 				{
@@ -550,7 +556,7 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 				}
 				if (outputStruct.isQPL)
 				{
-					if (abs(outputStruct.QPL[i][j] - priDataOutput.QPL[i][j]) > 0.05)
+					if (abs(outputStruct.QPL[i][j].dataValue - priDataOutput.QPL[i][j].dataValue) > 0.05)
 					{
 						//qDebug("QIN_QPL:i=%d ,j=%d new is %f pri is %f ", i, j, outputStruct.QPL_QIN[i][j], priDataOutput.QPL_QIN[i][j]);
 						//outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
@@ -558,18 +564,20 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 					}
 					if (priDataOutput.isQPL == outputStruct.isQPL)
 					{
-						if (outputStruct.QPL[i][j] == 0.0)
+						if (outputStruct.QPL[i][j].dataValue == 0.0)
 						{
 							continue;
 						}
-						if (abs((outputStruct.QPL[i][j] - priDataOutput.QPL[i][j])) / priDataOutput.QPL[i][j] > 0.6
+						if (abs((outputStruct.QPL[i][j].dataValue - priDataOutput.QPL[i][j].dataValue)) 
+							/ priDataOutput.QPL[i][j].dataValue > 0.6
 
 							)
 						{
 
 							dataOutOfRangeQINQPL = true;
 #ifdef QDEBUG_OUTPUT
-							qDebug("i=%d,j=%d,cur = %f , pri =%f", i, j, outputStruct.QPL[i][j], priDataOutput.QPL[i][j]);
+							qDebug("i=%d,j=%d,cur = %f , pri =%f", i, j, outputStruct.QPL[i][j].dataValue, 
+								priDataOutput.QPL[i][j].dataValue);
 #endif
 							dataOutOfRangeCount++;
 						}
@@ -578,7 +586,8 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 				}
 				else  // QIN 
 				{
-					if (abs(outputStruct.QIN[i][j] - priDataOutput.QIN[i][j]) > 0.05)
+					if (abs(outputStruct.QIN[i][j].dataValue 
+						- priDataOutput.QIN[i][j].dataValue) > 0.05)
 					{
 						//qDebug("QIN_QPL:i=%d ,j=%d new is %f pri is %f ", i, j, outputStruct.QPL_QIN[i][j], priDataOutput.QPL_QIN[i][j]);
 						//outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
@@ -586,18 +595,20 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 					}
 					if (priDataOutput.isQPL == outputStruct.isQPL)
 					{
-						if (outputStruct.QIN[i][j] == 0.0)
+						if (outputStruct.QIN[i][j].dataValue == 0.0)
 						{
 							continue;
 						}
-						if (abs((outputStruct.QIN[i][j] - priDataOutput.QIN[i][j])) / priDataOutput.QIN[i][j] > 0.6
+						if (abs((outputStruct.QIN[i][j].dataValue - priDataOutput.QIN[i][j].dataValue)) 
+							/ priDataOutput.QIN[i][j].dataValue > 0.6
 
 							)
 						{
 
 							dataOutOfRangeQINQPL = true;
 #ifdef QDEBUG_OUTPUT
-							qDebug("i=%d,j=%d,cur = %f , pri =%f", i, j, outputStruct.QIN[i][j], priDataOutput.QIN[i][j]);
+							qDebug("i=%d,j=%d,cur = %f , pri =%f", i, j,
+								outputStruct.QIN[i][j].dataValue, priDataOutput.QIN[i][j].dataValue);
 #endif
 							dataOutOfRangeCount++;
 						}
@@ -640,7 +651,7 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 		//	if (sessionChangedCountDown == 0)
 				outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
 		}
-		if (QINQPLCHangedNum > 0 & & dataOutOfRangeQINQPL == false)
+		if (QINQPLCHangedNum > 0 & dataOutOfRangeQINQPL == false)
 		{
 			if (QINQPLTransformedCountDown == 0)
 				outputStruct.changeStatus = outputStruct.changeStatus | QIN_QPL_CHANGED;
@@ -2008,7 +2019,7 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 			// from 1 to 14 .
 			WPData.HorseNO = i +1 ;
  
-		 	WPData.WinValue = dataOutput.WIN[i];
+			WPData.WinValue = dataOutput.WIN[i].dataValue;
 				 
 			WPData.RaceID = Global::raceId;
 			//顺计时
@@ -2056,7 +2067,7 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 			//从1 到14 
 			WPData.HorseNO = i+ 1; 
 
-			WPData.WinValue = dataOutput.PLA[i];
+			WPData.WinValue = dataOutput.PLA[i].dataValue;
 
 			WPData.RaceID = Global::raceId ;
 			WPData.AtTime = Global::countRaceTime;
@@ -2117,12 +2128,12 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 				{	
 					if (dataOutput.isQPL)
 					{
-						QDataInfo.QinValue = dataOutput.QPL[j - 1][i];
+						QDataInfo.QinValue = dataOutput.QPL[j - 1][i].dataValue;
 
 					}
 					else
 					{
-						QDataInfo.QinValue = dataOutput.QIN[j - 1][i];
+						QDataInfo.QinValue = dataOutput.QIN[j - 1][i].dataValue;
 
 					}
 				}
@@ -2130,12 +2141,12 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 				{
 					if (dataOutput.isQPL)
 					{
-						QDataInfo.QinValue = dataOutput.QPL[i - 8][j - 8];
+						QDataInfo.QinValue = dataOutput.QPL[i - 8][j - 8].dataValue;
 
 					}
 					else
 					{
-						QDataInfo.QinValue = dataOutput.QIN[i - 8][j - 8];
+						QDataInfo.QinValue = dataOutput.QIN[i - 8][j - 8].dataValue;
 
 					}
 					 
@@ -2174,24 +2185,24 @@ void BllDataIdentify::writeHistoryData(DataOutput &dataOutput)
 				{
 					if (dataOutput.isQPL)
 					{
-						QDataInfo.QinValue = dataOutput.QPL[i - 1][j];
+						QDataInfo.QinValue = dataOutput.QPL[i - 1][j].dataValue;
 
 					}
 					else
 					{
-						QDataInfo.QinValue = dataOutput.QIN[i - 1][j];
+						QDataInfo.QinValue = dataOutput.QIN[i - 1][j].dataValue;
 					}
 				}
 				else //补充图表
 				{
 					if (dataOutput.isQPL)
 					{
-						QDataInfo.QinValue = dataOutput.QPL[j - 8][i - 8];
+						QDataInfo.QinValue = dataOutput.QPL[j - 8][i - 8].dataValue;
 
 					}
 					else
 					{
-						QDataInfo.QinValue = dataOutput.QIN[j - 8][i - 8];
+						QDataInfo.QinValue = dataOutput.QIN[j - 8][i - 8].dataValue;
 					}
 					 
 				}

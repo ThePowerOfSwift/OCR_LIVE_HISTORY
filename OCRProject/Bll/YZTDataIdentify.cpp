@@ -138,15 +138,15 @@ YZTDataIdentify::YZTDataIdentify()
 	for (int i = 0; i < dataOutput.horseNum; i++)
 	{
 		dataOutput.svmResult[i] = -1;
-		dataOutput.WIN[i] = 0.0;
-		dataOutput.PLA[i] = 0.0;
+		dataOutput.WIN[i].dataValue = 0.0;
+		dataOutput.PLA[i].dataValue = 0.0;
 	}
 	for (int i = 0; i < 7; i++)
 	{
 		for (int j = 0; j < 15; j++)
 		{
-			dataOutput.QPL[i][j] = 0;
-			dataOutput.QIN[i][j] = 0;
+			dataOutput.QPL[i][j].dataValue = 0;
+			dataOutput.QIN[i][j].dataValue = 0;
 
 		}
 	}
@@ -1173,9 +1173,9 @@ int YZTDataIdentify::getWINPLAIdentify()
 			}
 
 			if (j == 0)
-				dataOutput.WIN[i] = tempSum;
+				dataOutput.WIN[i].dataValue = tempSum;
 			if (j == 1)
-				dataOutput.PLA[i] = tempSum;
+				dataOutput.PLA[i].dataValue = tempSum;
 
 
 		}			// end j
@@ -1479,12 +1479,12 @@ int YZTDataIdentify::getQINQPLIdentify()
 			if (dataOutput.isQPL)
 
 			{
-				dataOutput.QPL[i][j] = tempSum;
+				dataOutput.QPL[i][j].dataValue = tempSum;
 
 			}
 			else
 			{
-				dataOutput.QIN[i][j] = tempSum;
+				dataOutput.QIN[i][j].dataValue = tempSum;
 
 			}
 

@@ -179,7 +179,13 @@ enum ALGO_STATE {
 	EXEC_WARNING = -2 
 };
 
+struct HorseDataStruct
+{
+	float dataValue; // 识别数据
+	bool  byPass; //是否不识别,用于rect 设置有问题，所以忽略
 
+	CvRect mRect;
+};
 
 struct DataOutput
 {
@@ -193,8 +199,10 @@ struct DataOutput
 	//通过检测马名字灰度值变化来决定是否发生了场次变化
 	int horseNameChangedNum;
 
-	float WIN[HORSENUMBER];
-	float PLA[HORSENUMBER];
+	//float WIN[HORSENUMBER];
+	//float PLA[HORSENUMBER];
+	HorseDataStruct WIN[HORSENUMBER];
+	HorseDataStruct PLA[HORSENUMBER];
 
 	//标记改变
 	bool winChangedFlag[HORSENUMBER];
@@ -210,8 +218,12 @@ struct DataOutput
 	// image region 2
 	bool isQPL;		 	// true: QPL, false: QIN
 
-	float QPL[QIN_QPL_ROW][QIN_QPL_COL];
-	float QIN[QIN_QPL_ROW][QIN_QPL_COL];
+	//float QPL[QIN_QPL_ROW][QIN_QPL_COL];
+	//float QIN[QIN_QPL_ROW][QIN_QPL_COL];
+
+	HorseDataStruct QPL[QIN_QPL_ROW][QIN_QPL_COL];
+	HorseDataStruct QIN[QIN_QPL_ROW][QIN_QPL_COL];
+
 	//标记改变
 	bool qplQinChangedFlag[QIN_QPL_ROW][QIN_QPL_COL];
 
