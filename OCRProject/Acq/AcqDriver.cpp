@@ -23,7 +23,7 @@ AcqDriver::AcqDriver(QObject *parent)
 
 #ifdef OFFLINE_DEBUG
 		
-	count = 1 ;
+	count = 13448 ;
 #endif
 
 	//打开配置文件
@@ -70,7 +70,7 @@ void AcqDriver::createFalseData()
 	
 	fileName.prepend(liveTestConfigStr);
 
-	//fileName = (QString("G://BaiduYunDownload//107.bmp"));	
+	fileName = (QString("G://BaiduYunDownload//15065.bmp"));	
 	
 	localImage.load(fileName);
  

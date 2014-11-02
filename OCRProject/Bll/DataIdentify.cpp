@@ -670,8 +670,8 @@ int DataIdentify::setWINPLARectPos()
 
 	// get the relative position of the three vertex in the first row, relative to the origin 
 	//
-	//	imwrite("WIN_Region.bmp", edgeWin);
-	//	imwrite("PLA_Region.bmp", edgePla);
+		imwrite("WIN_Region.bmp", edgeWin);
+		imwrite("PLA_Region.bmp", edgePla);
 
 
 	//计算 识别区域的两侧X值
@@ -728,12 +728,18 @@ int DataIdentify::setWINPLARectPos()
 			//如果高度过高，那么说明出现了 退赛的马匹，那么强制设置高度为固定值。
 			if (yWin[i + 1] - yWin[i] > 23)
 			{
-				yWin[i + 1] = yWin[i] + NUMBER_HEIGHT_LIVE + 2;
+			//	yWin[i + 1] = yWin[i] + NUMBER_HEIGHT_LIVE + 2;
+				winPlaPosStruct.rect[i][0].height = NUMBER_HEIGHT_LIVE + 2;
+
+			}
+			else
+			{
+				winPlaPosStruct.rect[i][0].height = yWin[i + 1] - yWin[i];
+
 			}
 
-			winPlaPosStruct.rect[i][0].height = yWin[i + 1] - yWin[i];
 		}
-
+		//检查 是否有超标的
 		if (winPlaPosStruct.rect[i][0].width <= 20)
 		{
 			winPlaPosStruct.rect[i][0].width = NUMBER_WIDTH_LIVE;
@@ -802,7 +808,18 @@ int DataIdentify::setWINPLARectPos()
 		else
 		{
 
-			winPlaPosStruct.rect[i][1].height = yWin[i + 1] - yWin[i];
+			//如果高度过高，那么说明出现了 退赛的马匹，那么强制设置高度为固定值。
+			if (yWin[i + 1] - yWin[i] > 23)
+			{
+				//	yWin[i + 1] = yWin[i] + NUMBER_HEIGHT_LIVE + 2;
+				winPlaPosStruct.rect[i][1].height = NUMBER_HEIGHT_LIVE + 2;
+
+			}
+			else
+			{
+				winPlaPosStruct.rect[i][1].height = yWin[i + 1] - yWin[i];
+
+			}
 		}
 
 		if (winPlaPosStruct.rect[i][1].width <= 20)
@@ -1077,13 +1094,17 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			 // 
 			else
 			{
-				if (y[i - rectNum] - y[i - rectNum - 1] > 24 )
+				if (y[i - rectNum] - y[i - rectNum - 1] > 24)
 				{
-					y[i - rectNum] = y[i - rectNum - 1] + NUMBER_HEIGHT_LIVE + 2;
+					//y[i - rectNum] = y[i - rectNum - 1] + NUMBER_HEIGHT_LIVE + 2;
+					qinQPLPosStruct.rect[i][rectNum].height = NUMBER_HEIGHT_LIVE + 2;
 				}
-				qinQPLPosStruct.rect[i][rectNum].height = y[i - rectNum] - y[i - rectNum - 1] -1 ;
-			}
+				else
+				{
+					qinQPLPosStruct.rect[i][rectNum].height = y[i - rectNum] - y[i - rectNum - 1] - 1;
 
+				}
+			}
 		}
 
 
@@ -1148,9 +1169,15 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			{
 				if (y[i + 1] - y[i] > 24 )
 				{
-					y[i + 1] = y[i] + NUMBER_HEIGHT_LIVE + 2;
+					//y[i + 1] = y[i] + NUMBER_HEIGHT_LIVE + 2;
+
+					qinQPLPosStruct.rect[i][rectNum - 4].height = NUMBER_HEIGHT_LIVE + 2;
 				}
-				qinQPLPosStruct.rect[i][rectNum - 4].height = y[i + 1] - y[i] - 1 ;
+				else
+				{
+					qinQPLPosStruct.rect[i][rectNum - 4].height = y[i + 1] - y[i] - 1;
+
+				}
 			}
 
 
@@ -1230,9 +1257,15 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			{
 				if (y[i + 1] - y[i] > 24 )
 				{
-					y[i + 1] = y[i] + NUMBER_HEIGHT_LIVE + 2;
+					//y[i + 1] = y[i] + NUMBER_HEIGHT_LIVE + 2;
+
+					qinQPLPosStruct.rect[i][rectNum - 4].height = NUMBER_HEIGHT_LIVE + 2;
 				}
-				qinQPLPosStruct.rect[i][rectNum - 4].height = y[i + 1] - y[i] -1  ;
+				else
+				{
+					qinQPLPosStruct.rect[i][rectNum - 4].height = y[i + 1] - y[i] - 1;
+
+				}
 			}
 
 

@@ -19,7 +19,7 @@
 
 
 
-//#define	OFFLINE_DEBUG 
+#define	OFFLINE_DEBUG 
 
 //#define  ONLY_SAVE_IMAGES
 
