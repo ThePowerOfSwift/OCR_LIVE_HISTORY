@@ -312,7 +312,7 @@ void HK18D14DataIdentify::originPosition()
 
 		rowSum[i] = rowSum[i] / regionWidth;
 
-		qDebug("rowSum[%d] = %d ", i, rowSum[i]);
+		 
  
 	}
 

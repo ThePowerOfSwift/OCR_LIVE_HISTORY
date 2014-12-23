@@ -6,6 +6,7 @@
 
 #include <QFile>
 #include <QTimerEvent>
+#include <QTextStream>
 #include "readHistoryVideo.h"
 
 #include "DataIdentify.h"
@@ -26,6 +27,15 @@
 然后识别完广告，再反回来。
 yp 20140701
 */ 
+
+
+typedef struct HorseIDStruct
+{
+	int	horseID;	 //马的唯一编号
+	QString horseName; 	//马名
+}HorseIDStructInfo, *PHorseIDStructInfo;
+
+
 class BllDataIdentify : public QObject
 {
 	Q_OBJECT
@@ -33,9 +43,10 @@ class BllDataIdentify : public QObject
 public:
 	BllDataIdentify(QObject *parent = 0 );
 	~BllDataIdentify();
-	
-	// 
-	QFile logFile;
+	 
+
+	QFile   notFindHorseIDFile;
+	QTextStream notFindHorseIdTextStream;
 
 
 	void writeDataFile(DataOutput &dataOutput);
@@ -194,6 +205,7 @@ private:
 	//文件 
 	 
 	QFile horseNameHistoryDataFile;
+
 	QFile horseNameIdDataFile;
 
 	QTextStream horseNameHistoryData;
@@ -228,6 +240,16 @@ private:
 
 	bool bmpCountIsSet;
 	
+	//读取 二进制数据进入 QList
+
+	QFile horseIDDataFile;
+	QDataStream horseIDDataDsIn;
+
+	QDataStream horseIDDataDsOut;
+
+	QList <HorseIDStruct> mHorseIDData;
+
+	QList <QString> mHorseIDNameData ;
 
 };
 

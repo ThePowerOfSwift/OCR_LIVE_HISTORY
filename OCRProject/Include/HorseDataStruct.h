@@ -175,7 +175,7 @@ struct HorseNamePosStruct
 enum ALGO_STATE {
 	EXIT_THIS_OCR = -1, // 退出此次识别 
 	EXEC_SUCCESS = 1  ,	//执行成功，运行正常
-
+	EXEC_FAILED = -1 ,
 	EXEC_WARNING = -2 
 };
 
@@ -186,6 +186,14 @@ struct HorseDataStruct
 
 	CvRect mRect;
 };
+
+struct dataSendStruct {
+
+	bool winDataSendSuccess;
+	bool plaDataSendSuccess;
+	bool qinQPLDataSendSucess;
+};
+
 
 struct DataOutput
 {
@@ -242,7 +250,8 @@ struct DataOutput
 	bool haveDataFlag;
 	//检测结果改变情况
 	int changeStatus;
-
+	// 发送状态
+	int sendStatus;
 	//比赛时长  一个场次的
 	int countRaceTime;
 	// onceRaceTIme+倒计时 
@@ -257,6 +266,14 @@ struct DataOutput
 
 	bool sessionChangedFlag;
 
+
+	dataSendStruct mDataSendFlag ;
+};
+
+
+struct LoginStruct {
+	QString serverAddr;
+	int ipPort ;
 };
 
 #endif // HORSEDATASTRUCT_H

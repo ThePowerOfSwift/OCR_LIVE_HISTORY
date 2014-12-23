@@ -6,6 +6,8 @@
 //#define  CALLBACK_MODE
 
 
+//#define WRITE_ERROR 
+
 DataIdentify::DataIdentify()
 {
 	dataLength = 0;
@@ -177,8 +179,7 @@ void DataIdentify::haveData()
 	Mat image_temp = image;
 	//imshow("a", image_temp);
 	//waitKey();
-
-
+	 
 
 	cvtColor(image, image_temp, CV_RGB2BGR);
 
@@ -363,10 +364,11 @@ int DataIdentify::originPosition()
 	if (abs(originX - ORIGIN_X_BASE_LIVE) > 10 | abs((originY-ORIGIN_X_BASE_LIVE) > 10 ) )
 	{
 
+
 		//写入系统日志
 		Global::systemLog->append(QString(("Error :DataIdentify  ")), QString("Get OriginX Y Wrong！"),
 			SystemLog::ERROR_TYPE);
-
+	 
 		algorithmState = EXIT_THIS_OCR;
 		return EXIT_THIS_OCR;
 	}
@@ -414,6 +416,7 @@ int DataIdentify::identify()
 		dataOutput.haveDataFlag = false;
 		haveDataFlag = false;
 		//写入系统日志
+ 	//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("originPosition func EXIT this ocr"),
 			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
@@ -425,7 +428,8 @@ int DataIdentify::identify()
 
 	if (algorithmState == EXIT_THIS_OCR)
 	{
-		//写入系统日志
+ 
+	//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("setHorseNameRectPos EXIT this ocr"),
 			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
@@ -435,7 +439,8 @@ int DataIdentify::identify()
 	setWINPLARectPos();
 	if (algorithmState == EXIT_THIS_OCR)
 	{
-		//写入系统日志
+ 
+	//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("setWINPLARectPos EXIT this ocr"),
 			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
@@ -444,9 +449,11 @@ int DataIdentify::identify()
 	setQINQPLRectPos();
 	if (algorithmState == EXIT_THIS_OCR)
 	{
+
 		//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("setQINQPLRectPos EXIT this ocr"),
-			SystemLog::ERROR_TYPE);
+		SystemLog::ERROR_TYPE);
+
 		return EXIT_THIS_OCR;
 	}
 	//  设置场次号位置
@@ -454,27 +461,33 @@ int DataIdentify::identify()
 	setSessionRectPos();
 	if (algorithmState == EXIT_THIS_OCR)
 	{
+
 		//写入系统日
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("setSessionRectPos EXIT this ocr"),
 			SystemLog::ERROR_TYPE);
+
 		return EXIT_THIS_OCR;
 	}
 	//设置 倒计时位置 
 	setCountDownRectPos();
 	if (algorithmState == EXIT_THIS_OCR)
 	{
+
 		//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("setCountDownRectPos EXIT this ocr"),
 			SystemLog::ERROR_TYPE);
+
 		return EXIT_THIS_OCR;
 	}
 	//识别马名 
 	getHorseNameIdentify();
 	if (algorithmState == EXIT_THIS_OCR)
 	{
+
 		//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("getHorseNameIdentify EXIT this ocr"),
 			SystemLog::ERROR_TYPE);
+
 		return EXIT_THIS_OCR;
 	}
 	// 识别 WIN PLA
@@ -482,18 +495,22 @@ int DataIdentify::identify()
 	getWINPLAIdentify();
 	if (algorithmState == EXIT_THIS_OCR)
 	{
+
 		//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("getWINPLAIdentify EXIT this ocr"),
 			SystemLog::INFO_TYPE);
+
 		return EXIT_THIS_OCR;
 	}
 	//识别 QIN QPL   同时识别ＱＩＮ　ＱＰＬ
 	getQINQPLIdentify();
 	if (algorithmState == EXIT_THIS_OCR)
 	{
+
 		//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("getQINQPLIdentify EXIT this ocr"),
 			SystemLog::INFO_TYPE);
+
 		return EXIT_THIS_OCR;
 	}
 	//识别场次号
@@ -501,9 +518,11 @@ int DataIdentify::identify()
 	getSessionIdentify();
 	if (algorithmState == EXIT_THIS_OCR)
 	{
+
 		//写入系统日志
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("getSessionIdentify EXIT this ocr"),
-			SystemLog::INFO_TYPE);
+		SystemLog::INFO_TYPE);
+
 		return EXIT_THIS_OCR;
 	}
 	//识别倒计时 
@@ -512,8 +531,10 @@ int DataIdentify::identify()
 
 	if (algorithmState == EXIT_THIS_OCR)
 	{
+
 		Global::systemLog->append(QString(("DataIdentify")), QString("getCountDownIdentify EXIT this ocr"),
 			SystemLog::INFO_TYPE);
+
 		return EXIT_THIS_OCR;
 	}
 	return EXEC_SUCCESS;
@@ -670,8 +691,8 @@ int DataIdentify::setWINPLARectPos()
 
 	// get the relative position of the three vertex in the first row, relative to the origin 
 	//
-		imwrite("WIN_Region.bmp", edgeWin);
-		imwrite("PLA_Region.bmp", edgePla);
+//		imwrite("WIN_Region.bmp", edgeWin);
+//		imwrite("PLA_Region.bmp", edgePla);
 
 
 	//计算 识别区域的两侧X值
@@ -758,9 +779,11 @@ int DataIdentify::setWINPLARectPos()
 	//计算 识别区域的两侧X值
 	if (calculateGraySumYForTrim(edgePla, x0, x1, dataOutput.horseNum) == EXIT_THIS_OCR)
 	{
+
 		Global::systemLog->append(QString(("HK18D14DataIdentify  ")),
 			QString("calculateGraySumYForTrim2 EXIT THIS OCR2 "),
 			SystemLog::INFO_TYPE);
+
 		if (yPla != NULL)
 		{
 			delete[] yPla;
@@ -961,6 +984,7 @@ int DataIdentify::setQINQPLRectPos()
 			//写入系统日志
 			Global::systemLog->append(QString(("DataIdentify  ")), QString("setEveryQINQPLPos EXIT this ocr"),
 				SystemLog::INFO_TYPE);
+
 			return EXIT_THIS_OCR;
 
 		}
@@ -1002,6 +1026,7 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 		Global::systemLog->append(QString(("DataIdentify  ")), QString("horseNum > 14 EXIT this ocr"),
 			SystemLog::INFO_TYPE);
 
+
 		return EXIT_THIS_OCR;
 
 
@@ -1019,8 +1044,6 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			Global::systemLog->append(QString(("DataIdentify")),
 				QString("calculateGraySumXForSetQINQPLRect EXIT this ocr"),
 				SystemLog::INFO_TYPE);
-
-
 			if (y != NULL)
 			{
 				delete[] y;
@@ -1028,8 +1051,6 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			}
 
 			return EXIT_THIS_OCR;
-
-
 
 
 		}
@@ -1054,14 +1075,15 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 					delete[] y;
 					y = NULL;
 				}
-
+ 
 				//写入系统日志
 				Global::systemLog->append(QString(("DataIdentify  ")), QString("setEveryQINQPLPos EXIT this ocr"),
 					SystemLog::INFO_TYPE);
+ 
 
 				return EXIT_THIS_OCR;
 			}
-			if (x1 <= x0)
+			if (x1 <= x0 | (x1 - x0) < 12)
 			{
 #ifdef QDEBUG_OUTPUT
 				qDebug("ERROR:getImageInfo2Rect function : x1 < x0 ERROR");
@@ -1077,6 +1099,8 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 			// 3个像素 空白
 			qinQPLPosStruct.rect[i][rectNum].x = qinQplSubRect[rectNum].x + x0 - 2;
 			qinQPLPosStruct.rect[i][rectNum].width = x1 - x0 + 4;
+
+			 
 			//向上增加一个像素
 			if (y[i - rectNum - 1] - 1 >= 0)
 			{
@@ -1148,7 +1172,7 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 				algorithmState = EXIT_THIS_OCR;
 				return EXIT_THIS_OCR;
 			}
-			if (x1 <= x0)
+			if (x1 <= x0 | (x1-x0) < 12 ) 
 			{
 #ifdef QDEBUG_OUTPUT
 				qDebug("ERROR:getImageInfo2Rect function : x1 < x0 ERROR");
@@ -1235,7 +1259,7 @@ int  DataIdentify::setEveryQINQPLPos(Mat &mat, int rectNum)
 				return EXIT_THIS_OCR;
 			}
 
-			if (x1 <= x0)
+			if (x1 <= x0 | (x1 - x0) < 12)
 			{
 #ifdef QDEBUG_OUTPUT
 				qDebug("ERROR:getImageInfo2Rect function : x1 < x0 ERROR");
@@ -1392,6 +1416,9 @@ int DataIdentify::isHorseNameChanged()
 			Global::countRaceTime = 0;
 
 			Global::isSessionChanged = true;
+
+			Global::isCountTimeCalied = false;
+
 		}
 		//必须 顺计时大于 15 分钟，才可以改变场次号
 		else if (Global::countRaceTime  > 15 | Global::session == 1)
@@ -1404,6 +1431,7 @@ int DataIdentify::isHorseNameChanged()
 			Global::countRaceTime = 0;
 
 			Global::isSessionChanged = true;
+			Global::isCountTimeCalied = false;
 
 		}
 	
@@ -2023,7 +2051,7 @@ int DataIdentify::getQINQPLIdentify()
 			else
 				hasGroudColor = false;
 
-			qDebug(" sum ALL = %d i = %d j = %d ",sum ,i ,j );
+			//qDebug(" sum ALL = %d i = %d j = %d ",sum ,i ,j );
 			//根据是否有底色，使用不同阈值
 			roiThreshold = roi.clone();
 			for (int c = 0; c < roiThreshold.cols; c++)
@@ -3190,7 +3218,7 @@ int DataIdentify::judgeQINQPL()
 	{
 		for (int r = 0; r < qinQPL.rows; r++)
 		{
-			if (qinQPL.at<uchar>(r,c) < 200 )
+			if (qinQPL.at<uchar>(r,c) < 150 )
 			{
 				qinQPL.at<uchar>(r, c) = 0;
 			}
@@ -3242,8 +3270,8 @@ int DataIdentify::judgeQINQPL()
 	Mat roiWhole(qinQPLOri, newSize);
  
 	CvRect newSize1;
-	newSize1.x = roiWhole.cols - 12;
-	newSize1.width = 12;
+	newSize1.x = roiWhole.cols - 10;
+	newSize1.width = 10;
 	newSize1.y = 0;
 	newSize1.height = roiWhole.rows;
 
@@ -3742,7 +3770,7 @@ int  DataIdentify::calculateGraySumYForTrim(Mat &mat, int &x0, int &x1, int roiN
 	}
 	for (int x = mat.cols - 1; x >= 0; x--)
 	{//排除掉 单条条纹 连续3个像素 》 600 为了 去除 底色线条导致的小点 被误识别 300为了对1进行识别。
-		if (graySumY[x] > thereshold & graySumY[x - 2] > thereshold)
+		if (graySumY[x] > thereshold /* & graySumY[x - 2] > thereshold */)
 		{
 			x1 = x;
 			break;
@@ -3790,11 +3818,7 @@ int  DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int roiN
 #ifdef  QDEBUG_OUTPUT
 		qDebug("ERROR : calculateGraySumXForSetRect2 :mat is empty \n");
 #endif //  QDEBUG_OUTPUT
-
-		//写入系统日志
-		Global::systemLog->append(QString(("calculateGraySumXForSetQINQPLRect")), QString("Mat is empty EXIT this ocr"),
-			SystemLog::INFO_TYPE);
-
+ 
 		return EXIT_THIS_OCR;
 
 	}
@@ -3818,12 +3842,7 @@ int  DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int roiN
 #ifdef QDEBUG_OUTPUT
 		qDebug("calculateGraySumXForSetRect2 %d = %d \n", pixelY, graySumX[pixelY]);
 #endif
-		/*
-		//写入系统日志
-		Global::systemLog->append(QString(("pixelY")),
-		QString::number(pixelY) + QString("graySum") + QString::number(graySumX[pixelY]),
-		SystemLog::INFO_TYPE);
-		*/
+		 
 	}
 	int j = 0;
 	int THEREHOLD = 200;
@@ -3847,12 +3866,9 @@ int  DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int roiN
 
 
 #endif
-			//写入系统日志
-		//	Global::systemLog->append(QString(("calculateGraySumXForSetQINQPLRect")),
-			//	QString::number(j) + QString("j =") + QString::number(i),
-		//		SystemLog::INFO_TYPE);
+		 
 
-			j++;
+			j++ ;
 
 			i += 2;
 
@@ -3867,13 +3883,7 @@ int  DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int roiN
 					delete[] graySumX;
 					graySumX = NULL;
 				}
-
-
-				//写入系统日志
-				Global::systemLog->append(QString(("calculateGraySumXForSetQINQPLRect")),
-					QString::number(j) + QString("j > roiNum") + QString::number(roiNum),
-					SystemLog::INFO_TYPE);
-
+ 
 				algorithmState = EXIT_THIS_OCR;
 				//delete[] graySumX;
 				//graySumX = NULL;
@@ -3895,11 +3905,7 @@ int  DataIdentify::calculateGraySumXForSetQINQPLRect(Mat &mat, int  *y, int roiN
 #ifdef QDEBUG_OUTPUT
 		qDebug("calculateGraySumXForSetRect2 :Func error  j %d != roiNum %d \n ",j,roiNum);
 #endif
-
-		//写入系统日志
-		Global::systemLog->append(QString(("calculateGraySumXForSetQINQPLRect")),
-			QString("j != joiNum"),
-			SystemLog::INFO_TYPE);
+ 
 		algorithmState = EXIT_THIS_OCR;
 		return EXIT_THIS_OCR;
 	}

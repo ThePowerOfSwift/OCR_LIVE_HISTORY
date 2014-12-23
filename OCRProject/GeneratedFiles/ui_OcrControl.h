@@ -53,6 +53,8 @@ public:
     QLabel *label_20;
     QLineEdit *CountRaceTimeLineEdit;
     QPushButton *caliCountDownBtn;
+    QPushButton *submitTotalRaceTimeBtn;
+    QPushButton *submitRaceEndBtn;
     QGroupBox *groupBox_3;
     QVBoxLayout *verticalLayout_12;
     QHBoxLayout *horizontalLayout_yp;
@@ -248,6 +250,16 @@ public:
         caliCountDownBtn->setObjectName(QStringLiteral("caliCountDownBtn"));
 
         horizontalLayout_2->addWidget(caliCountDownBtn);
+
+        submitTotalRaceTimeBtn = new QPushButton(groupBox_2);
+        submitTotalRaceTimeBtn->setObjectName(QStringLiteral("submitTotalRaceTimeBtn"));
+
+        horizontalLayout_2->addWidget(submitTotalRaceTimeBtn);
+
+        submitRaceEndBtn = new QPushButton(groupBox_2);
+        submitRaceEndBtn->setObjectName(QStringLiteral("submitRaceEndBtn"));
+
+        horizontalLayout_2->addWidget(submitRaceEndBtn);
 
 
         verticalLayout_18->addLayout(horizontalLayout_2);
@@ -1007,6 +1019,8 @@ public:
         label_2->setText(QApplication::translate("OcrControl", "\345\200\222\350\256\241\346\227\266", 0));
         label_20->setText(QApplication::translate("OcrControl", "\351\241\272\350\256\241\346\227\266", 0));
         caliCountDownBtn->setText(QApplication::translate("OcrControl", "\346\240\241\346\255\243\346\227\266\351\227\264", 0));
+        submitTotalRaceTimeBtn->setText(QApplication::translate("OcrControl", "\346\217\220\344\272\244\346\257\224\350\265\233\346\227\266\351\225\277", 0));
+        submitRaceEndBtn->setText(QApplication::translate("OcrControl", "\346\217\220\344\272\244\346\257\224\350\265\233\347\273\223\346\235\237\346\214\207\344\273\244", 0));
         groupBox_3->setTitle(QString());
         label_4->setText(QApplication::translate("OcrControl", "\345\272\217\345\217\267", 0));
         label_5->setText(QApplication::translate("OcrControl", "\351\251\254\345\220\215", 0));

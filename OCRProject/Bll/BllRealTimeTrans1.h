@@ -89,12 +89,12 @@ public slots:
 	/**
 	* @brief 提交win实时数据
 	*/
-	void submitWINOrPLA(DataOutput &outputStruct, QString type);
+	int submitWINOrPLA(DataOutput &outputStruct, QString type);
 	/**
 	* @brief 提交实时数据-QIN或QPL
 	* @param ouputStruct：算法传递来的数据，type:传送类型默认QIN
 	*/
-	void submitQINOrQPL(DataOutput &outputStruct, QString type);
+	int submitQINOrQPL(DataOutput &outputStruct, QString type);
 	/**
 	* @brief 识别端处理服务端-提交实时数据指令
 	*/
@@ -127,7 +127,12 @@ public slots:
 	*/
 	void requestRaceIDForKeepAlive( int session );
 
-	
+	/*
+	*  最后一场结束了，发送比赛结束指令
+	*/
+
+	void submitRaceEnd();
+
 signals:
 	void statuChanged(QString status);
 private:

@@ -100,6 +100,20 @@
                        </property>
                       </widget>
                      </item>
+                     <item>
+                      <widget class="QPushButton" name="submitTotalRaceTimeBtn">
+                       <property name="text">
+                        <string>提交比赛时长</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="submitRaceEndBtn">
+                       <property name="text">
+                        <string>提交比赛结束指令</string>
+                       </property>
+                      </widget>
+                     </item>
                     </layout>
                    </item>
                   </layout>

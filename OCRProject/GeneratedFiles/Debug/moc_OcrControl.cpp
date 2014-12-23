@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_OcrControl_t {
-    QByteArrayData data[69];
-    char stringdata[1158];
+    QByteArrayData data[73];
+    char stringdata[1255];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -48,56 +48,60 @@ QT_MOC_LITERAL(15, 166, 8),
 QT_MOC_LITERAL(16, 175, 9),
 QT_MOC_LITERAL(17, 185, 12),
 QT_MOC_LITERAL(18, 198, 27),
-QT_MOC_LITERAL(19, 226, 21),
-QT_MOC_LITERAL(20, 248, 24),
-QT_MOC_LITERAL(21, 273, 19),
-QT_MOC_LITERAL(22, 293, 12),
-QT_MOC_LITERAL(23, 306, 6),
-QT_MOC_LITERAL(24, 313, 22),
-QT_MOC_LITERAL(25, 336, 21),
-QT_MOC_LITERAL(26, 358, 10),
-QT_MOC_LITERAL(27, 369, 10),
-QT_MOC_LITERAL(28, 380, 6),
-QT_MOC_LITERAL(29, 387, 5),
-QT_MOC_LITERAL(30, 393, 10),
-QT_MOC_LITERAL(31, 404, 11),
-QT_MOC_LITERAL(32, 416, 12),
-QT_MOC_LITERAL(33, 429, 12),
-QT_MOC_LITERAL(34, 442, 16),
-QT_MOC_LITERAL(35, 459, 9),
-QT_MOC_LITERAL(36, 469, 22),
-QT_MOC_LITERAL(37, 492, 24),
-QT_MOC_LITERAL(38, 517, 21),
-QT_MOC_LITERAL(39, 539, 10),
-QT_MOC_LITERAL(40, 550, 11),
-QT_MOC_LITERAL(41, 562, 3),
-QT_MOC_LITERAL(42, 566, 25),
-QT_MOC_LITERAL(43, 592, 27),
-QT_MOC_LITERAL(44, 620, 24),
-QT_MOC_LITERAL(45, 645, 25),
-QT_MOC_LITERAL(46, 671, 25),
-QT_MOC_LITERAL(47, 697, 26),
-QT_MOC_LITERAL(48, 724, 26),
-QT_MOC_LITERAL(49, 751, 25),
-QT_MOC_LITERAL(50, 777, 22),
-QT_MOC_LITERAL(51, 800, 23),
-QT_MOC_LITERAL(52, 824, 27),
-QT_MOC_LITERAL(53, 852, 27),
-QT_MOC_LITERAL(54, 880, 17),
-QT_MOC_LITERAL(55, 898, 20),
-QT_MOC_LITERAL(56, 919, 11),
-QT_MOC_LITERAL(57, 931, 24),
-QT_MOC_LITERAL(58, 956, 27),
-QT_MOC_LITERAL(59, 984, 31),
-QT_MOC_LITERAL(60, 1016, 16),
-QT_MOC_LITERAL(61, 1033, 10),
-QT_MOC_LITERAL(62, 1044, 15),
-QT_MOC_LITERAL(63, 1060, 12),
-QT_MOC_LITERAL(64, 1073, 15),
-QT_MOC_LITERAL(65, 1089, 20),
-QT_MOC_LITERAL(66, 1110, 28),
-QT_MOC_LITERAL(67, 1139, 11),
-QT_MOC_LITERAL(68, 1151, 6)
+QT_MOC_LITERAL(19, 226, 17),
+QT_MOC_LITERAL(20, 244, 16),
+QT_MOC_LITERAL(21, 261, 21),
+QT_MOC_LITERAL(22, 283, 24),
+QT_MOC_LITERAL(23, 308, 19),
+QT_MOC_LITERAL(24, 328, 12),
+QT_MOC_LITERAL(25, 341, 6),
+QT_MOC_LITERAL(26, 348, 22),
+QT_MOC_LITERAL(27, 371, 21),
+QT_MOC_LITERAL(28, 393, 10),
+QT_MOC_LITERAL(29, 404, 10),
+QT_MOC_LITERAL(30, 415, 6),
+QT_MOC_LITERAL(31, 422, 5),
+QT_MOC_LITERAL(32, 428, 10),
+QT_MOC_LITERAL(33, 439, 11),
+QT_MOC_LITERAL(34, 451, 12),
+QT_MOC_LITERAL(35, 464, 12),
+QT_MOC_LITERAL(36, 477, 16),
+QT_MOC_LITERAL(37, 494, 9),
+QT_MOC_LITERAL(38, 504, 22),
+QT_MOC_LITERAL(39, 527, 24),
+QT_MOC_LITERAL(40, 552, 21),
+QT_MOC_LITERAL(41, 574, 10),
+QT_MOC_LITERAL(42, 585, 11),
+QT_MOC_LITERAL(43, 597, 3),
+QT_MOC_LITERAL(44, 601, 25),
+QT_MOC_LITERAL(45, 627, 33),
+QT_MOC_LITERAL(46, 661, 27),
+QT_MOC_LITERAL(47, 689, 24),
+QT_MOC_LITERAL(48, 714, 25),
+QT_MOC_LITERAL(49, 740, 25),
+QT_MOC_LITERAL(50, 766, 26),
+QT_MOC_LITERAL(51, 793, 26),
+QT_MOC_LITERAL(52, 820, 25),
+QT_MOC_LITERAL(53, 846, 22),
+QT_MOC_LITERAL(54, 869, 23),
+QT_MOC_LITERAL(55, 893, 27),
+QT_MOC_LITERAL(56, 921, 27),
+QT_MOC_LITERAL(57, 949, 27),
+QT_MOC_LITERAL(58, 977, 17),
+QT_MOC_LITERAL(59, 995, 20),
+QT_MOC_LITERAL(60, 1016, 11),
+QT_MOC_LITERAL(61, 1028, 24),
+QT_MOC_LITERAL(62, 1053, 27),
+QT_MOC_LITERAL(63, 1081, 31),
+QT_MOC_LITERAL(64, 1113, 16),
+QT_MOC_LITERAL(65, 1130, 10),
+QT_MOC_LITERAL(66, 1141, 15),
+QT_MOC_LITERAL(67, 1157, 12),
+QT_MOC_LITERAL(68, 1170, 15),
+QT_MOC_LITERAL(69, 1186, 20),
+QT_MOC_LITERAL(70, 1207, 28),
+QT_MOC_LITERAL(71, 1236, 11),
+QT_MOC_LITERAL(72, 1248, 6)
     },
     "OcrControl\0connectToServer\0\0"
     "connectToServer1\0disconnect\0login\0"
@@ -106,6 +110,7 @@ QT_MOC_LITERAL(68, 1151, 6)
     "startAcq\0stopAcq\0startIdentify\0fileName\0"
     "videoType\0stopIdentify\0"
     "getHorseNameFromDataFileSig\0"
+    "submitRaceTimeSig\0submitRaceEndSig\0"
     "on_connectBtn_clicked\0on_disconnectBtn_clicked\0"
     "on_loginBtn_clicked\0appendStatus\0"
     "status\0on_startAcqBtn_clicked\0"
@@ -116,6 +121,7 @@ QT_MOC_LITERAL(68, 1151, 6)
     "on_loadFileBtn_clicked\0on_appendFileBtn_clicked\0"
     "on_delFileBtn_clicked\0appendFile\0"
     "takeTopFile\0row\0on_caliSessionBtn_clicked\0"
+    "on_submitTotalRaceTimeBtn_clicked\0"
     "on_caliCountDownBtn_clicked\0"
     "startProcessHistoryVideo\0"
     "on_advance3MinBtn_clicked\0"
@@ -126,6 +132,7 @@ QT_MOC_LITERAL(68, 1151, 6)
     "on_pullBackBtn_clicked\0on_pauseCaliBtn_clicked\0"
     "on_inputUserDataBtn_clicked\0"
     "on_svrConfigSaveBtn_clicked\0"
+    "on_submitRaceEndBtn_clicked\0"
     "upDateSvrLineEdit\0updateAfterUserInput\0"
     "DataOutput&\0getHorseNameFromDataFile\0"
     "is63TAICheckBoxStateChanged\0"
@@ -143,67 +150,71 @@ static const uint qt_meta_data_OcrControl[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      51,   14, // methods
+      55,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-      13,       // signalCount
+      15,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    2,  269,    2, 0x06 /* Public */,
-       3,    2,  274,    2, 0x06 /* Public */,
-       4,    0,  279,    2, 0x06 /* Public */,
-       5,    0,  280,    2, 0x06 /* Public */,
-       6,    0,  281,    2, 0x06 /* Public */,
-       7,    1,  282,    2, 0x06 /* Public */,
-       9,    1,  285,    2, 0x06 /* Public */,
-      11,    0,  288,    2, 0x06 /* Public */,
-      12,    0,  289,    2, 0x06 /* Public */,
-      13,    0,  290,    2, 0x06 /* Public */,
-      14,    2,  291,    2, 0x06 /* Public */,
-      17,    0,  296,    2, 0x06 /* Public */,
-      18,    0,  297,    2, 0x06 /* Public */,
+       1,    2,  289,    2, 0x06 /* Public */,
+       3,    2,  294,    2, 0x06 /* Public */,
+       4,    0,  299,    2, 0x06 /* Public */,
+       5,    0,  300,    2, 0x06 /* Public */,
+       6,    0,  301,    2, 0x06 /* Public */,
+       7,    1,  302,    2, 0x06 /* Public */,
+       9,    1,  305,    2, 0x06 /* Public */,
+      11,    0,  308,    2, 0x06 /* Public */,
+      12,    0,  309,    2, 0x06 /* Public */,
+      13,    0,  310,    2, 0x06 /* Public */,
+      14,    2,  311,    2, 0x06 /* Public */,
+      17,    0,  316,    2, 0x06 /* Public */,
+      18,    0,  317,    2, 0x06 /* Public */,
+      19,    1,  318,    2, 0x06 /* Public */,
+      20,    0,  321,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      19,    0,  298,    2, 0x0a /* Public */,
-      20,    0,  299,    2, 0x0a /* Public */,
-      21,    0,  300,    2, 0x0a /* Public */,
-      22,    1,  301,    2, 0x0a /* Public */,
-      24,    0,  304,    2, 0x0a /* Public */,
-      25,    0,  305,    2, 0x0a /* Public */,
-      26,    4,  306,    2, 0x0a /* Public */,
-      32,    4,  315,    2, 0x0a /* Public */,
-      33,    2,  324,    2, 0x0a /* Public */,
-      34,    2,  329,    2, 0x0a /* Public */,
-      35,    0,  334,    2, 0x0a /* Public */,
-      36,    0,  335,    2, 0x0a /* Public */,
-      37,    0,  336,    2, 0x0a /* Public */,
-      38,    0,  337,    2, 0x0a /* Public */,
-      39,    1,  338,    2, 0x0a /* Public */,
-      40,    1,  341,    2, 0x0a /* Public */,
-      40,    0,  344,    2, 0x2a /* Public | MethodCloned */,
-      42,    0,  345,    2, 0x0a /* Public */,
-      43,    0,  346,    2, 0x0a /* Public */,
-      44,    0,  347,    2, 0x0a /* Public */,
-      45,    0,  348,    2, 0x0a /* Public */,
-      46,    0,  349,    2, 0x0a /* Public */,
-      47,    0,  350,    2, 0x0a /* Public */,
-      48,    0,  351,    2, 0x0a /* Public */,
-      49,    0,  352,    2, 0x0a /* Public */,
-      50,    0,  353,    2, 0x0a /* Public */,
-      51,    0,  354,    2, 0x0a /* Public */,
-      52,    0,  355,    2, 0x0a /* Public */,
-      53,    0,  356,    2, 0x0a /* Public */,
-      54,    1,  357,    2, 0x0a /* Public */,
-      55,    1,  360,    2, 0x0a /* Public */,
-      57,    0,  363,    2, 0x0a /* Public */,
-      58,    1,  364,    2, 0x0a /* Public */,
-      59,    1,  367,    2, 0x0a /* Public */,
-      60,    1,  370,    2, 0x0a /* Public */,
-      62,    2,  373,    2, 0x0a /* Public */,
-      65,    1,  378,    2, 0x0a /* Public */,
-      68,    0,  381,    2, 0x0a /* Public */,
+      21,    0,  322,    2, 0x0a /* Public */,
+      22,    0,  323,    2, 0x0a /* Public */,
+      23,    0,  324,    2, 0x0a /* Public */,
+      24,    1,  325,    2, 0x0a /* Public */,
+      26,    0,  328,    2, 0x0a /* Public */,
+      27,    0,  329,    2, 0x0a /* Public */,
+      28,    4,  330,    2, 0x0a /* Public */,
+      34,    4,  339,    2, 0x0a /* Public */,
+      35,    2,  348,    2, 0x0a /* Public */,
+      36,    2,  353,    2, 0x0a /* Public */,
+      37,    0,  358,    2, 0x0a /* Public */,
+      38,    0,  359,    2, 0x0a /* Public */,
+      39,    0,  360,    2, 0x0a /* Public */,
+      40,    0,  361,    2, 0x0a /* Public */,
+      41,    1,  362,    2, 0x0a /* Public */,
+      42,    1,  365,    2, 0x0a /* Public */,
+      42,    0,  368,    2, 0x2a /* Public | MethodCloned */,
+      44,    0,  369,    2, 0x0a /* Public */,
+      45,    0,  370,    2, 0x0a /* Public */,
+      46,    0,  371,    2, 0x0a /* Public */,
+      47,    0,  372,    2, 0x0a /* Public */,
+      48,    0,  373,    2, 0x0a /* Public */,
+      49,    0,  374,    2, 0x0a /* Public */,
+      50,    0,  375,    2, 0x0a /* Public */,
+      51,    0,  376,    2, 0x0a /* Public */,
+      52,    0,  377,    2, 0x0a /* Public */,
+      53,    0,  378,    2, 0x0a /* Public */,
+      54,    0,  379,    2, 0x0a /* Public */,
+      55,    0,  380,    2, 0x0a /* Public */,
+      56,    0,  381,    2, 0x0a /* Public */,
+      57,    0,  382,    2, 0x0a /* Public */,
+      58,    1,  383,    2, 0x0a /* Public */,
+      59,    1,  386,    2, 0x0a /* Public */,
+      61,    0,  389,    2, 0x0a /* Public */,
+      62,    1,  390,    2, 0x0a /* Public */,
+      63,    1,  393,    2, 0x0a /* Public */,
+      64,    1,  396,    2, 0x0a /* Public */,
+      66,    2,  399,    2, 0x0a /* Public */,
+      69,    1,  404,    2, 0x0a /* Public */,
+      72,    0,  407,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString, QMetaType::Int,    2,    2,
@@ -219,24 +230,26 @@ static const uint qt_meta_data_OcrControl[] = {
     QMetaType::Void, QMetaType::QString, QMetaType::Int,   15,   16,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,    2,
+    QMetaType::Void,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,   23,
+    QMetaType::Void, QMetaType::QString,   25,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 27, QMetaType::QByteArray, QMetaType::Int, QMetaType::Int,   28,   29,   30,   31,
-    QMetaType::Void, 0x80000000 | 27, QMetaType::QByteArray, QMetaType::Int, QMetaType::Int,   28,   29,   30,   31,
-    QMetaType::Void, 0x80000000 | 27, QMetaType::QByteArray,   28,   29,
-    QMetaType::Void, 0x80000000 | 27, QMetaType::QByteArray,   28,   29,
+    QMetaType::Void, 0x80000000 | 29, QMetaType::QByteArray, QMetaType::Int, QMetaType::Int,   30,   31,   32,   33,
+    QMetaType::Void, 0x80000000 | 29, QMetaType::QByteArray, QMetaType::Int, QMetaType::Int,   30,   31,   32,   33,
+    QMetaType::Void, 0x80000000 | 29, QMetaType::QByteArray,   30,   31,
+    QMetaType::Void, 0x80000000 | 29, QMetaType::QByteArray,   30,   31,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void, QMetaType::QString,   15,
-    QMetaType::QString, QMetaType::Int,   41,
+    QMetaType::QString, QMetaType::Int,   43,
     QMetaType::QString,
     QMetaType::Void,
     QMetaType::Void,
@@ -250,14 +263,16 @@ static const uint qt_meta_data_OcrControl[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void, QMetaType::QString,    2,
-    QMetaType::Void, 0x80000000 | 56,   28,
+    QMetaType::Void, 0x80000000 | 60,   30,
     QMetaType::Void,
     QMetaType::Void, QMetaType::Bool,    2,
     QMetaType::Void, QMetaType::Bool,    2,
-    QMetaType::Void, 0x80000000 | 56,   61,
-    QMetaType::Int, 0x80000000 | 56, 0x80000000 | 56,   63,   64,
-    QMetaType::Void, 0x80000000 | 66,   67,
+    QMetaType::Void, 0x80000000 | 60,   65,
+    QMetaType::Int, 0x80000000 | 60, 0x80000000 | 60,   67,   68,
+    QMetaType::Void, 0x80000000 | 70,   71,
     QMetaType::Void,
 
        0        // eod
@@ -281,53 +296,57 @@ void OcrControl::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 10: _t->startIdentify((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 11: _t->stopIdentify(); break;
         case 12: _t->getHorseNameFromDataFileSig(); break;
-        case 13: _t->on_connectBtn_clicked(); break;
-        case 14: _t->on_disconnectBtn_clicked(); break;
-        case 15: _t->on_loginBtn_clicked(); break;
-        case 16: _t->appendStatus((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 17: _t->on_startAcqBtn_clicked(); break;
-        case 18: _t->on_stopAcqBtn_clicked(); break;
-        case 19: _t->updateData((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< int(*)>(_a[4]))); break;
-        case 20: _t->updateADData((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< int(*)>(_a[4]))); break;
-        case 21: _t->updateUiData((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2]))); break;
-        case 22: _t->updateQINQPLData((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2]))); break;
-        case 23: _t->reConnect(); break;
-        case 24: _t->on_loadFileBtn_clicked(); break;
-        case 25: _t->on_appendFileBtn_clicked(); break;
-        case 26: _t->on_delFileBtn_clicked(); break;
-        case 27: _t->appendFile((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 28: { QString _r = _t->takeTopFile((*reinterpret_cast< int(*)>(_a[1])));
+        case 13: _t->submitRaceTimeSig((*reinterpret_cast< qint32(*)>(_a[1]))); break;
+        case 14: _t->submitRaceEndSig(); break;
+        case 15: _t->on_connectBtn_clicked(); break;
+        case 16: _t->on_disconnectBtn_clicked(); break;
+        case 17: _t->on_loginBtn_clicked(); break;
+        case 18: _t->appendStatus((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 19: _t->on_startAcqBtn_clicked(); break;
+        case 20: _t->on_stopAcqBtn_clicked(); break;
+        case 21: _t->updateData((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< int(*)>(_a[4]))); break;
+        case 22: _t->updateADData((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< int(*)>(_a[4]))); break;
+        case 23: _t->updateUiData((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2]))); break;
+        case 24: _t->updateQINQPLData((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2]))); break;
+        case 25: _t->reConnect(); break;
+        case 26: _t->on_loadFileBtn_clicked(); break;
+        case 27: _t->on_appendFileBtn_clicked(); break;
+        case 28: _t->on_delFileBtn_clicked(); break;
+        case 29: _t->appendFile((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 30: { QString _r = _t->takeTopFile((*reinterpret_cast< int(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = _r; }  break;
-        case 29: { QString _r = _t->takeTopFile();
+        case 31: { QString _r = _t->takeTopFile();
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = _r; }  break;
-        case 30: _t->on_caliSessionBtn_clicked(); break;
-        case 31: _t->on_caliCountDownBtn_clicked(); break;
-        case 32: _t->startProcessHistoryVideo(); break;
-        case 33: _t->on_advance3MinBtn_clicked(); break;
-        case 34: _t->on_advance1MinBtn_clicked(); break;
-        case 35: _t->on_advance30SecBtn_clicked(); break;
-        case 36: _t->on_advance10SecBtn_clicked(); break;
-        case 37: _t->on_advance1SecBtn_clicked(); break;
-        case 38: _t->on_pullBackBtn_clicked(); break;
-        case 39: _t->on_pauseCaliBtn_clicked(); break;
-        case 40: _t->on_inputUserDataBtn_clicked(); break;
-        case 41: _t->on_svrConfigSaveBtn_clicked(); break;
-        case 42: _t->upDateSvrLineEdit((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 43: _t->updateAfterUserInput((*reinterpret_cast< DataOutput(*)>(_a[1]))); break;
-        case 44: _t->getHorseNameFromDataFile(); break;
-        case 45: _t->is63TAICheckBoxStateChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 46: _t->islockCaliCheckBoxStatusChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 47: _t->writeHistoryData((*reinterpret_cast< DataOutput(*)>(_a[1]))); break;
-        case 48: { int _r = _t->isDataOutputNew((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< DataOutput(*)>(_a[2])));
+        case 32: _t->on_caliSessionBtn_clicked(); break;
+        case 33: _t->on_submitTotalRaceTimeBtn_clicked(); break;
+        case 34: _t->on_caliCountDownBtn_clicked(); break;
+        case 35: _t->startProcessHistoryVideo(); break;
+        case 36: _t->on_advance3MinBtn_clicked(); break;
+        case 37: _t->on_advance1MinBtn_clicked(); break;
+        case 38: _t->on_advance30SecBtn_clicked(); break;
+        case 39: _t->on_advance10SecBtn_clicked(); break;
+        case 40: _t->on_advance1SecBtn_clicked(); break;
+        case 41: _t->on_pullBackBtn_clicked(); break;
+        case 42: _t->on_pauseCaliBtn_clicked(); break;
+        case 43: _t->on_inputUserDataBtn_clicked(); break;
+        case 44: _t->on_svrConfigSaveBtn_clicked(); break;
+        case 45: _t->on_submitRaceEndBtn_clicked(); break;
+        case 46: _t->upDateSvrLineEdit((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 47: _t->updateAfterUserInput((*reinterpret_cast< DataOutput(*)>(_a[1]))); break;
+        case 48: _t->getHorseNameFromDataFile(); break;
+        case 49: _t->is63TAICheckBoxStateChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 50: _t->islockCaliCheckBoxStatusChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 51: _t->writeHistoryData((*reinterpret_cast< DataOutput(*)>(_a[1]))); break;
+        case 52: { int _r = _t->isDataOutputNew((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< DataOutput(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 49: _t->getClientSocketState((*reinterpret_cast< QAbstractSocket::SocketState(*)>(_a[1]))); break;
-        case 50: _t->initUi(); break;
+        case 53: _t->getClientSocketState((*reinterpret_cast< QAbstractSocket::SocketState(*)>(_a[1]))); break;
+        case 54: _t->initUi(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 49:
+        case 53:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
@@ -416,6 +435,18 @@ void OcrControl::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
                 *result = 12;
             }
         }
+        {
+            typedef void (OcrControl::*_t)(qint32 );
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&OcrControl::submitRaceTimeSig)) {
+                *result = 13;
+            }
+        }
+        {
+            typedef void (OcrControl::*_t)();
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&OcrControl::submitRaceEndSig)) {
+                *result = 14;
+            }
+        }
     }
 }
 
@@ -444,13 +475,13 @@ int OcrControl::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 51)
+        if (_id < 55)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 51;
+        _id -= 55;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 51)
+        if (_id < 55)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 51;
+        _id -= 55;
     }
     return _id;
 }
@@ -536,5 +567,18 @@ void OcrControl::stopIdentify()
 void OcrControl::getHorseNameFromDataFileSig()
 {
     QMetaObject::activate(this, &staticMetaObject, 12, 0);
+}
+
+// SIGNAL 13
+void OcrControl::submitRaceTimeSig(qint32 _t1)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 13, _a);
+}
+
+// SIGNAL 14
+void OcrControl::submitRaceEndSig()
+{
+    QMetaObject::activate(this, &staticMetaObject, 14, 0);
 }
 QT_END_MOC_NAMESPACE

@@ -385,7 +385,6 @@
     <Library Include="Lib\JPPlayApi.lib" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="pp.jpg" />
     <Image Include="acqImages\1.bmp" />
     <Image Include="acqImages\2.bmp" />
     <Image Include="acqImages\3.bmp" />
@@ -402,6 +401,8 @@
     <Image Include="2.bmp" />
     <Image Include="1.bmp" />
     <Image Include="3.bmp" />
+    <Image Include="icon1.ico" />
+    <Image Include="..\Win32\Release\OCR.ico" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OCRProject.rc" />

@@ -15,6 +15,14 @@ int main(int argc, char *argv[])
 	Global global;
 	global.init();
 
+	QFile file("out.txt");
+	if (!file.open(QIODevice::Append | QIODevice::Text))
+		return 1;
+
+	QTextStream out(&file);
+	out << "The magic number is: " << 49 << "\n";
+
+
 	OcrControl w;
 	w.show();
 	return a.exec();

@@ -23,7 +23,7 @@ AcqDriver::AcqDriver(QObject *parent)
 
 #ifdef OFFLINE_DEBUG
 		
-	count = 13448 ;
+	count = 1 ;
 #endif
 
 	//打开配置文件
@@ -70,7 +70,7 @@ void AcqDriver::createFalseData()
 	
 	fileName.prepend(liveTestConfigStr);
 
-	fileName = (QString("G://BaiduYunDownload//15065.bmp"));	
+	//fileName = (QString("G://BaiduYunDownload//13702.bmp"));	
 	
 	localImage.load(fileName);
  
@@ -406,11 +406,11 @@ LONG AcqDriver::ccbRead(char * buffer, int size)
 //定时器周期响应函数
 void AcqDriver::timerEvent(QTimerEvent *event)
 {
-	if (Global::isCountTimeCalied )
+	//if (Global::isCountTimeCalied )
 	{
-		Global::timerCount = Global::countRaceTime * 60;
+//		Global::timerCount = Global::countRaceTime * 60;
 
-		Global::isCountTimeCalied = false;
+	//	Global::isCountTimeCalied = false;
 	}
 	
 	//计时分钟数 

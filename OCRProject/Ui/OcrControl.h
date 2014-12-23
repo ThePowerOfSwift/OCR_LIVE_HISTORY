@@ -86,6 +86,10 @@ public slots:
 	*/
 	void on_caliSessionBtn_clicked();
 
+	/*
+	
+	*/
+	void on_submitTotalRaceTimeBtn_clicked();
 
 	/*
 	
@@ -143,6 +147,12 @@ public slots:
 	void on_svrConfigSaveBtn_clicked();
 
 
+
+	/*
+		提交比赛结束指令
+	*/
+	
+	void on_submitRaceEndBtn_clicked();
 	/*
 	 依据不同的 combox选择项，即不同的服务器，显示不同的地址配置
 	*/
@@ -211,7 +221,10 @@ signals:
 
 	void getHorseNameFromDataFileSig();
  
+	void submitRaceTimeSig(qint32);
 
+
+	void submitRaceEndSig();
 private:
 	Ui::OcrControl ui;
 	BllRealTimeTrans* bllRealTimeTrans;//实时传输
@@ -284,6 +297,13 @@ private:
 	int priSession;
 
 	int priCountRaceTime;
+
+
+	//用于存放文件
+
+	QString serverConfigFileName ;
+	QSettings *settings ;
+
 //	QTextStream logContentOut ;
 };
 

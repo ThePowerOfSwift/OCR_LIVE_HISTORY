@@ -67,12 +67,29 @@ OcrControl::OcrControl(QWidget *parent)
 	//发送比赛时长 当前比赛时间+倒计时 atTime + raceTime  atTime 为CountRaceTime
 	QObject::connect(bllDataIdentify, SIGNAL(submitRaceTimeSig(qint32)), bllRealTimeTrans, SLOT(submitRaceTime(qint32)));
 
+	//如果按下submitTotalRaceTimeBtn 提交比赛时长
+
+	QObject::connect(this, SIGNAL(submitRaceTimeSig(qint32)), bllRealTimeTrans, SLOT(submitRaceTime(qint32)));
+
+	//提交比赛结束指令 	
+
+	QObject::connect(this, SIGNAL(submitRaceEndSig()), bllRealTimeTrans, SLOT(submitRaceEnd()));
 
 
 	QObject::connect(bllDataIdentify, SIGNAL(readyRead(DataOutput, QByteArray, int, int)), bllRealTimeTrans, SLOT(submitRealData(DataOutput, QByteArray,int, int)));//开始发送
 	
 	//发送比赛时长 当前比赛时间+倒计时 atTime + raceTime  atTime 为CountRaceTime
 	QObject::connect(bllDataIdentify, SIGNAL(submitRaceTimeSig(qint32)), bllRealTimeTrans1, SLOT(submitRaceTime(qint32)));
+
+	//如果按下submitTotalRaceTimeBtn 提交比赛时长
+
+	QObject::connect(this, SIGNAL(submitRaceTimeSig(qint32)), bllRealTimeTrans1, SLOT(submitRaceTime(qint32)));
+
+
+	//提交比赛结束指令 	
+
+	QObject::connect(this, SIGNAL(submitRaceEndSig()), bllRealTimeTrans1, SLOT(submitRaceEnd()));
+
 
 
 
@@ -200,16 +217,51 @@ OcrControl::OcrControl(QWidget *parent)
 
 	//从用户界面获取数据
 
-	Global::serverIpAddr = QString("58.67.161.109");
-	Global::serverPort = 9069;
+	serverConfigFileName = QString("serverConfig.ini");
+	settings = new QSettings(serverConfigFileName, QSettings::IniFormat);
+
+	QList<LoginStruct> logins;
+	
+	/*
+	LoginStruct mLoginStruct;
+
+	mLoginStruct.ipPort = 9069;
+	mLoginStruct.serverAddr = QString("58.67.161.109");
+	logins.append(mLoginStruct);
+
+	mLoginStruct.ipPort = 9069;
+	mLoginStruct.serverAddr = QString("120.24.103.168");
+	logins.append(mLoginStruct);
+
+	settings->beginWriteArray("logins");
+	for (int i = 0; i < logins.size(); ++i) {
+		settings->setArrayIndex(i);
+		settings->setValue("serverAddr", logins.at(i).serverAddr);
+		settings->setValue("ipPort", logins.at(i).ipPort);
+	}
+	settings->endArray();
+	*/
+	 
+	int size = settings->beginReadArray("logins");
+	for (int i = 0; i < size; ++i) {
+		settings->setArrayIndex(i);
+		LoginStruct login;
+		login.serverAddr = settings->value("serverAddr").toString();
+		login.ipPort = settings->value("ipPort").toInt();
+		logins.append(login);
+ 	}
+	settings->endArray();
+
+	Global::serverIpAddr = logins.at(0).serverAddr;
+	Global::serverPort = logins.at(0).ipPort;
 
 	ui.svrIpAddrLineEdit->setText(Global::serverIpAddr);
 	ui.svrPortLineEdit->setText(QString::number(Global::serverPort));
 	
 
 
-	Global::serverIpAddr1 = QString("120.24.103.168");
-	Global::serverPort1 = 9069;
+	Global::serverIpAddr1 = logins.at(1).serverAddr;
+	Global::serverPort1 = logins.at(1).ipPort;
 
 
 
@@ -583,6 +635,8 @@ void OcrControl::on_svrConfigSaveBtn_clicked()
 	
 
 
+	 
+	settings->beginWriteArray("logins");
 
 	QString serverName; 
 	serverName = ui.serverNameComboBox->currentText();
@@ -595,6 +649,7 @@ void OcrControl::on_svrConfigSaveBtn_clicked()
 		Global::serverIpAddr = ui.svrIpAddrLineEdit->text();
 		Global::serverPort = svrPortStr.toInt();
 
+		
 
 	}
 	else if (serverName == "服务器1")
@@ -605,8 +660,24 @@ void OcrControl::on_svrConfigSaveBtn_clicked()
 		Global::serverIpAddr1 = ui.svrIpAddrLineEdit->text();
 		Global::serverPort1 = svrPortStr.toInt();
 
-
+		
+		
 	}
+ 
+	LoginStruct login;
+	login.ipPort = Global::serverPort;
+	login.serverAddr = Global::serverIpAddr;
+	settings->setArrayIndex(0);
+	settings->setValue("serverAddr", login.serverAddr);
+	settings->setValue("ipPort", login.ipPort);
+
+	login.ipPort = Global::serverPort1;
+	login.serverAddr = Global::serverIpAddr1;
+	settings->setArrayIndex(1);
+	settings->setValue("serverAddr", login.serverAddr);
+	settings->setValue("ipPort", login.ipPort);
+
+	settings->endArray();
 
 }
 
@@ -1197,12 +1268,25 @@ void OcrControl::on_caliSessionBtn_clicked()
 		Global::isSessionChanged	= true ;
 	}
 
-
-
-
-
+	 
+}
+/*
+ 提交比赛结束指令
+*/
+void OcrControl::on_submitRaceEndBtn_clicked()
+{
+	emit submitRaceEndSig();
 }
 
+/*
+	按下按键，提交比赛时长
+*/
+void OcrControl::on_submitTotalRaceTimeBtn_clicked()
+{
+
+	emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+
+}
 
 /**
 * @brief 校正场次号 倒计时
@@ -1224,6 +1308,9 @@ void OcrControl::on_caliCountDownBtn_clicked()
 	countRaceTime = ui.CountRaceTimeLineEdit->text();
 
 	Global::countRaceTime = countRaceTime.toInt();
+
+	//更新计数器
+	Global::timerCount = Global::countRaceTime * 60;
 
 	Global::isCountTimeCalied = true;
 	/*
