@@ -23,7 +23,7 @@ AcqDriver::AcqDriver(QObject *parent)
 
 #ifdef OFFLINE_DEBUG
 		
-	count = 1 ;
+	count = 13545 ;
 #endif
 
 	//打开配置文件

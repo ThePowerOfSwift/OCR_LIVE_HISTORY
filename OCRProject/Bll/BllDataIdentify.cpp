@@ -510,7 +510,7 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 	//等待5幅图片的时间	
 	//如果刚开始的数据为零 那么，认为是刚开始
 	if (priDataOutput.isQPL != outputStruct.isQPL & QINQPLTransformed == false 
-		| (priDataOutput.WIN[0].dataValue - 0) < 0.2)
+		| abs(priDataOutput.WIN[0].dataValue - 0)*10 < 0.2)
 	{
 		//if (sessionChanged == false)
 		{
