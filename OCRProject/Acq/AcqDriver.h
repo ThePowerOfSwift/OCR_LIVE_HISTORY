@@ -19,7 +19,7 @@
 
 
 
-#define	OFFLINE_DEBUG 
+//#define	OFFLINE_DEBUG 
 
 //#define  ONLY_SAVE_IMAGES
 
@@ -30,7 +30,7 @@
 
 
 #else
-#define  VERSION_NUM "版本:1.0 2014/9/25  直播模式 yp " //
+#define  VERSION_NUM "版本:1.0 2015/02/09   直播模式 yp " //
 #define WRITE_IMAGES_BEFORE_DataIdentify
 #endif
 

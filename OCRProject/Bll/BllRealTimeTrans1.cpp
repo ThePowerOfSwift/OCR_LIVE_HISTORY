@@ -893,8 +893,8 @@ int BllRealTimeTrans1::submitWINOrPLA(DataOutput& ouputStruct, QString type)
 			serverSubmitFailed = false;
 			
 
-		
-			//**若对方有回复****//
+			/*
+			// 若对方有回复 
 			bool success = mcsNetClient->waitForReadyRead(3000);//阻塞等待
 			if (success)
 			{
@@ -920,6 +920,7 @@ int BllRealTimeTrans1::submitWINOrPLA(DataOutput& ouputStruct, QString type)
 				emit statuChanged(QString("服务器 %1：未回复 .").arg(serverNo));
 				return EXEC_FAILED;
 			}
+			*/
 			//**若对方有回复****//
 		}
 
@@ -1055,8 +1056,8 @@ int BllRealTimeTrans1::submitQINOrQPL(DataOutput &ouputStruct, QString type)
 
 			serverSubmitFailed = false ;
 
-			
-			//**若对方有回复****//
+			/*
+			//若对方有回复 
 			bool success = mcsNetClient->waitForReadyRead(3000);//阻塞等待
 			if (success)
 			{
@@ -1082,7 +1083,7 @@ int BllRealTimeTrans1::submitQINOrQPL(DataOutput &ouputStruct, QString type)
 				emit statuChanged(QString("服务器 %1：未回复 .").arg(serverNo));
 				return EXEC_FAILED;
 			}
-
+			*/
 			
 			//**若对方有回复****//
 		}
