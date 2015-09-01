@@ -179,10 +179,10 @@ OcrControl::OcrControl(QWidget *parent)
 
 
 
-	// 写数据文件
+	// 写数据文件 使用追加的模式
 
-	logFile.setFileName("RDBSDataAfterChange.txt");
-	if (!logFile.open(QIODevice::WriteOnly | QIODevice::Text))
+	logFile.setFileName("SendDataLog.txt");
+	if (!logFile.open(QIODevice::Append | QIODevice::Text))
 		qDebug("logFile open Failed \n");
 
  
@@ -426,6 +426,12 @@ void OcrControl::on_loginBtn_clicked()
 void OcrControl::appendStatus(QString status)
 {
 	ui.textBrowser->append(status);
+
+	//将日志写入 文件
+	QTextStream logContentOut(&logFile);
+
+	logContentOut << status <<endl ;
+
 }
 /**
 * @brief 开始采集
@@ -1149,6 +1155,7 @@ void OcrControl::reConnect()
 */
 void OcrControl::on_loadFileBtn_clicked()
 {
+	
 	QFileDialog *fd = new QFileDialog(this, tr("选择历史视频文件"), "F:/movie", "");
 	fd->setFileMode(QFileDialog::ExistingFiles);
 	fd->setViewMode(QFileDialog::Detail);
@@ -1276,6 +1283,16 @@ void OcrControl::on_caliSessionBtn_clicked()
 void OcrControl::on_submitRaceEndBtn_clicked()
 {
 	emit submitRaceEndSig();
+	
+}
+
+
+void OcrControl::on_tenSecondNotifyBtn_clicked()
+{
+	
+
+	Global::tenSecondNotifyNeeded = true ;
+	 
 }
 
 /*

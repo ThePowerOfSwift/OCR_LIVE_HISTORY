@@ -132,6 +132,11 @@ private:
 
 
 	DataOutput priDataOutput;
+	// 10s 倒计时
+	DataOutput lastQINQPLDATA;
+
+	bool  tenSencond3DataSend;
+	bool  tenSencondLastQINorQPLDataSend;
 
 	//live  香港18台 直播 720*576
 	DataIdentify  myDataIdentify;

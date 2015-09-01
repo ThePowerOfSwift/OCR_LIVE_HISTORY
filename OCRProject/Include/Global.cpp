@@ -141,6 +141,12 @@ bool Global::is63TAIVideoData = false ;
 /***********比赛数据***********/
 
 
+bool Global::tenSecondNotifyNeeded = false;
+
+bool Global::tenSecondNotifyDataWriteen1 = false ;
+
+bool Global::tenSecondNotifyDataWriteen2 = false ;
+
 
 //系统日志线程
 SystemLogThread * Global::systemLogThread = new SystemLogThread();

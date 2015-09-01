@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_OcrControl_t {
-    QByteArrayData data[73];
-    char stringdata[1255];
+    QByteArrayData data[74];
+    char stringdata[1285];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -101,7 +101,8 @@ QT_MOC_LITERAL(68, 1170, 15),
 QT_MOC_LITERAL(69, 1186, 20),
 QT_MOC_LITERAL(70, 1207, 28),
 QT_MOC_LITERAL(71, 1236, 11),
-QT_MOC_LITERAL(72, 1248, 6)
+QT_MOC_LITERAL(72, 1248, 29),
+QT_MOC_LITERAL(73, 1278, 6)
     },
     "OcrControl\0connectToServer\0\0"
     "connectToServer1\0disconnect\0login\0"
@@ -140,7 +141,8 @@ QT_MOC_LITERAL(72, 1248, 6)
     "writeHistoryData\0dataOutput\0isDataOutputNew\0"
     "outputStruct\0priOutputStruct\0"
     "getClientSocketState\0QAbstractSocket::SocketState\0"
-    "socketState\0initUi"
+    "socketState\0on_tenSecondNotifyBtn_clicked\0"
+    "initUi"
 };
 #undef QT_MOC_LITERAL
 
@@ -150,7 +152,7 @@ static const uint qt_meta_data_OcrControl[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      55,   14, // methods
+      56,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -158,63 +160,64 @@ static const uint qt_meta_data_OcrControl[] = {
       15,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    2,  289,    2, 0x06 /* Public */,
-       3,    2,  294,    2, 0x06 /* Public */,
-       4,    0,  299,    2, 0x06 /* Public */,
-       5,    0,  300,    2, 0x06 /* Public */,
-       6,    0,  301,    2, 0x06 /* Public */,
-       7,    1,  302,    2, 0x06 /* Public */,
-       9,    1,  305,    2, 0x06 /* Public */,
-      11,    0,  308,    2, 0x06 /* Public */,
-      12,    0,  309,    2, 0x06 /* Public */,
-      13,    0,  310,    2, 0x06 /* Public */,
-      14,    2,  311,    2, 0x06 /* Public */,
-      17,    0,  316,    2, 0x06 /* Public */,
-      18,    0,  317,    2, 0x06 /* Public */,
-      19,    1,  318,    2, 0x06 /* Public */,
-      20,    0,  321,    2, 0x06 /* Public */,
+       1,    2,  294,    2, 0x06 /* Public */,
+       3,    2,  299,    2, 0x06 /* Public */,
+       4,    0,  304,    2, 0x06 /* Public */,
+       5,    0,  305,    2, 0x06 /* Public */,
+       6,    0,  306,    2, 0x06 /* Public */,
+       7,    1,  307,    2, 0x06 /* Public */,
+       9,    1,  310,    2, 0x06 /* Public */,
+      11,    0,  313,    2, 0x06 /* Public */,
+      12,    0,  314,    2, 0x06 /* Public */,
+      13,    0,  315,    2, 0x06 /* Public */,
+      14,    2,  316,    2, 0x06 /* Public */,
+      17,    0,  321,    2, 0x06 /* Public */,
+      18,    0,  322,    2, 0x06 /* Public */,
+      19,    1,  323,    2, 0x06 /* Public */,
+      20,    0,  326,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      21,    0,  322,    2, 0x0a /* Public */,
-      22,    0,  323,    2, 0x0a /* Public */,
-      23,    0,  324,    2, 0x0a /* Public */,
-      24,    1,  325,    2, 0x0a /* Public */,
-      26,    0,  328,    2, 0x0a /* Public */,
-      27,    0,  329,    2, 0x0a /* Public */,
-      28,    4,  330,    2, 0x0a /* Public */,
-      34,    4,  339,    2, 0x0a /* Public */,
-      35,    2,  348,    2, 0x0a /* Public */,
-      36,    2,  353,    2, 0x0a /* Public */,
-      37,    0,  358,    2, 0x0a /* Public */,
-      38,    0,  359,    2, 0x0a /* Public */,
-      39,    0,  360,    2, 0x0a /* Public */,
-      40,    0,  361,    2, 0x0a /* Public */,
-      41,    1,  362,    2, 0x0a /* Public */,
-      42,    1,  365,    2, 0x0a /* Public */,
-      42,    0,  368,    2, 0x2a /* Public | MethodCloned */,
-      44,    0,  369,    2, 0x0a /* Public */,
-      45,    0,  370,    2, 0x0a /* Public */,
-      46,    0,  371,    2, 0x0a /* Public */,
-      47,    0,  372,    2, 0x0a /* Public */,
-      48,    0,  373,    2, 0x0a /* Public */,
-      49,    0,  374,    2, 0x0a /* Public */,
-      50,    0,  375,    2, 0x0a /* Public */,
-      51,    0,  376,    2, 0x0a /* Public */,
-      52,    0,  377,    2, 0x0a /* Public */,
-      53,    0,  378,    2, 0x0a /* Public */,
-      54,    0,  379,    2, 0x0a /* Public */,
-      55,    0,  380,    2, 0x0a /* Public */,
-      56,    0,  381,    2, 0x0a /* Public */,
-      57,    0,  382,    2, 0x0a /* Public */,
-      58,    1,  383,    2, 0x0a /* Public */,
-      59,    1,  386,    2, 0x0a /* Public */,
-      61,    0,  389,    2, 0x0a /* Public */,
-      62,    1,  390,    2, 0x0a /* Public */,
-      63,    1,  393,    2, 0x0a /* Public */,
-      64,    1,  396,    2, 0x0a /* Public */,
-      66,    2,  399,    2, 0x0a /* Public */,
-      69,    1,  404,    2, 0x0a /* Public */,
-      72,    0,  407,    2, 0x0a /* Public */,
+      21,    0,  327,    2, 0x0a /* Public */,
+      22,    0,  328,    2, 0x0a /* Public */,
+      23,    0,  329,    2, 0x0a /* Public */,
+      24,    1,  330,    2, 0x0a /* Public */,
+      26,    0,  333,    2, 0x0a /* Public */,
+      27,    0,  334,    2, 0x0a /* Public */,
+      28,    4,  335,    2, 0x0a /* Public */,
+      34,    4,  344,    2, 0x0a /* Public */,
+      35,    2,  353,    2, 0x0a /* Public */,
+      36,    2,  358,    2, 0x0a /* Public */,
+      37,    0,  363,    2, 0x0a /* Public */,
+      38,    0,  364,    2, 0x0a /* Public */,
+      39,    0,  365,    2, 0x0a /* Public */,
+      40,    0,  366,    2, 0x0a /* Public */,
+      41,    1,  367,    2, 0x0a /* Public */,
+      42,    1,  370,    2, 0x0a /* Public */,
+      42,    0,  373,    2, 0x2a /* Public | MethodCloned */,
+      44,    0,  374,    2, 0x0a /* Public */,
+      45,    0,  375,    2, 0x0a /* Public */,
+      46,    0,  376,    2, 0x0a /* Public */,
+      47,    0,  377,    2, 0x0a /* Public */,
+      48,    0,  378,    2, 0x0a /* Public */,
+      49,    0,  379,    2, 0x0a /* Public */,
+      50,    0,  380,    2, 0x0a /* Public */,
+      51,    0,  381,    2, 0x0a /* Public */,
+      52,    0,  382,    2, 0x0a /* Public */,
+      53,    0,  383,    2, 0x0a /* Public */,
+      54,    0,  384,    2, 0x0a /* Public */,
+      55,    0,  385,    2, 0x0a /* Public */,
+      56,    0,  386,    2, 0x0a /* Public */,
+      57,    0,  387,    2, 0x0a /* Public */,
+      58,    1,  388,    2, 0x0a /* Public */,
+      59,    1,  391,    2, 0x0a /* Public */,
+      61,    0,  394,    2, 0x0a /* Public */,
+      62,    1,  395,    2, 0x0a /* Public */,
+      63,    1,  398,    2, 0x0a /* Public */,
+      64,    1,  401,    2, 0x0a /* Public */,
+      66,    2,  404,    2, 0x0a /* Public */,
+      69,    1,  409,    2, 0x0a /* Public */,
+      72,    0,  412,    2, 0x0a /* Public */,
+      73,    0,  413,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString, QMetaType::Int,    2,    2,
@@ -273,6 +276,7 @@ static const uint qt_meta_data_OcrControl[] = {
     QMetaType::Void, 0x80000000 | 60,   65,
     QMetaType::Int, 0x80000000 | 60, 0x80000000 | 60,   67,   68,
     QMetaType::Void, 0x80000000 | 70,   71,
+    QMetaType::Void,
     QMetaType::Void,
 
        0        // eod
@@ -340,7 +344,8 @@ void OcrControl::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 52: { int _r = _t->isDataOutputNew((*reinterpret_cast< DataOutput(*)>(_a[1])),(*reinterpret_cast< DataOutput(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
         case 53: _t->getClientSocketState((*reinterpret_cast< QAbstractSocket::SocketState(*)>(_a[1]))); break;
-        case 54: _t->initUi(); break;
+        case 54: _t->on_tenSecondNotifyBtn_clicked(); break;
+        case 55: _t->initUi(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -475,13 +480,13 @@ int OcrControl::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 55)
+        if (_id < 56)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 55;
+        _id -= 56;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 55)
+        if (_id < 56)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 55;
+        _id -= 56;
     }
     return _id;
 }

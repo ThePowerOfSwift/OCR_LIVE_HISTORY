@@ -198,6 +198,11 @@ public slots:
 	void getClientSocketState(QAbstractSocket::SocketState socketState);
 
 
+	/// 10s 倒计时提醒
+
+
+	void on_tenSecondNotifyBtn_clicked();
+
 	// 初始化用户界面
 
 	void initUi();
@@ -287,11 +292,14 @@ private:
 	QFile liveBackupFile;
 	QDataStream liveBackupDataStream;
 
+
+
 	// 调试用文件
 
 	QFile logFile;
 
 	QFile raceFile;
+
 	QDataStream raceDataStream;
 
 	int priSession;

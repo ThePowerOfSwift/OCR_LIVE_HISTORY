@@ -152,6 +152,9 @@ public:
 	static qint32 countRaceTime; //从当前场开始的时候计时 
 
 
+
+
+
 	//标记 是否正在进行 历史视频 识别
 
 	static bool isHistoryVideoIdentifyRuning;
@@ -170,7 +173,15 @@ public:
 	// //比赛已经开始了 标志位
 	static qint32 raceHasStarted; 
 	
+
+	//标记是否需要提交10s倒计时 
+
+	static bool tenSecondNotifyNeeded ;
+
+	static bool tenSecondNotifyDataWriteen1 ;
 	
+	static bool tenSecondNotifyDataWriteen2 ;
+
 	//最长不超过14场的
 	static bool isThisSessionRaceIDRequested[14];
 	//保存请求到的场次号

@@ -68,6 +68,7 @@ public:
     QLabel *imageLbl;
     QVBoxLayout *verticalLayout_19;
     QLabel *versionNumLabel;
+    QPushButton *tenSecondNotifyBtn;
     QSpacerItem *horizontalSpacer_2;
     QGroupBox *groupBox;
     QHBoxLayout *horizontalLayout_13;
@@ -171,7 +172,7 @@ public:
     {
         if (OcrControl->objectName().isEmpty())
             OcrControl->setObjectName(QStringLiteral("OcrControl"));
-        OcrControl->resize(1051, 891);
+        OcrControl->resize(1051, 1026);
         horizontalLayout_15 = new QHBoxLayout(OcrControl);
         horizontalLayout_15->setSpacing(6);
         horizontalLayout_15->setContentsMargins(11, 11, 11, 11);
@@ -364,6 +365,11 @@ public:
 
         verticalLayout_19->addWidget(versionNumLabel);
 
+        tenSecondNotifyBtn = new QPushButton(frame);
+        tenSecondNotifyBtn->setObjectName(QStringLiteral("tenSecondNotifyBtn"));
+
+        verticalLayout_19->addWidget(tenSecondNotifyBtn);
+
         horizontalSpacer_2 = new QSpacerItem(318, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         verticalLayout_19->addItem(horizontalSpacer_2);
@@ -502,7 +508,7 @@ public:
 
         verticalLayout_19->addWidget(groupBox);
 
-        verticalLayout_19->setStretch(2, 10);
+        verticalLayout_19->setStretch(3, 10);
 
         horizontalLayout_8->addLayout(verticalLayout_19);
 
@@ -1028,6 +1034,7 @@ public:
         label_6->setText(QApplication::translate("OcrControl", "PLA", 0));
         imageLbl->setText(QString());
         versionNumLabel->setText(QString());
+        tenSecondNotifyBtn->setText(QApplication::translate("OcrControl", "\345\200\222\350\256\241\346\227\26610s\346\217\220\351\206\222", 0));
         groupBox->setTitle(QString());
         QTableWidgetItem *___qtablewidgetitem = fileTableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("OcrControl", "\346\226\207\344\273\266\345\220\215", 0));

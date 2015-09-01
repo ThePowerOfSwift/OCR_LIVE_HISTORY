@@ -22,7 +22,13 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 
 	memset((void * )&priDataOutput, 0, sizeof(DataOutput));
 
+	memset((void *)&lastQINQPLDATA, 0, sizeof(DataOutput));
+
  
+ 
+	tenSencond3DataSend = false ;
+	tenSencondLastQINorQPLDataSend = false ;
+
 
 	dataNewCount = 0 ;
 #ifdef WRITE_IMAGES_BEFORE_DataIdentify
@@ -45,6 +51,10 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 		priDataOutput.mHorseInfo.horseID[i] = 0;
 	//	priDataOutput.mHorseInfo.horseName[i] = QString(" ");
 		priDataOutput.mHorseInfo.isSCR[i] = false;
+
+		lastQINQPLDATA.mHorseInfo.horseID[i] = 0;
+
+		lastQINQPLDATA.mHorseInfo.isSCR[i] = false;
 	}
 
 	isRaceSessionDetected = false;
@@ -168,6 +178,8 @@ BllDataIdentify::BllDataIdentify(QObject *parent)
 			, SystemLog::INFO_TYPE);
 	}
 	horseIDDataDsIn.setDevice(&horseIDDataFile);
+
+
 	HorseIDStruct oneHorseIDData;
 	 
 	while (!horseIDDataFile.atEnd())
@@ -752,6 +764,17 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
  
 
 	}
+	/* 
+	//保留上一组qin 或者qpl 变化前的数据。
+	if (outputStruct.isQPL != priDataOutput.isQPL ) 
+	{
+		lastQINQPLDATA = priDataOutput;
+
+	}
+	*/
+	//如果提交了倒计时，那么此时显示 10s 并发送一组数据，不管是否 数据发生变化
+
+	
 
 	//用于控制等待的计数器，开始自减
 	if (sessionChangedCountDown > 0)
@@ -769,6 +792,22 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 	//赋值顺计时
 	outputStruct.countRaceTime = Global::countRaceTime;
 	
+	if (Global::isSessionChanged)
+		Global::tenSecondNotifyNeeded = false;
+
+
+	if (Global::tenSecondNotifyNeeded == true & Global::tenSecondNotifyDataWriteen1 == false 
+		& Global::tenSecondNotifyDataWriteen2 == false )
+	{
+		outputStruct.countRaceTime = 99 ;
+		
+		outputStruct.changeStatus = QIN_QPL_CHANGED | WIN_CHANGED | PLA_CHANGED  ;
+		Global::tenSecondNotifyDataWriteen1 = true ;
+		Global::tenSecondNotifyDataWriteen2 = true ;
+
+	}
+
+
 
 	 //如果场次号发生了变化，那么要对priDataOutput赋值，如果qinqpl发生了变化，
 	// 同样也要赋值的
