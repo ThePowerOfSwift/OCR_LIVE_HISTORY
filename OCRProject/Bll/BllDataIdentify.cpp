@@ -792,9 +792,16 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 	//赋值顺计时
 	outputStruct.countRaceTime = Global::countRaceTime;
 	
+
 	if (Global::isSessionChanged)
 		Global::tenSecondNotifyNeeded = false;
 
+	//如果倒计时不是小于1 那么 忽略 提交 倒计时10s 请求
+	if ( (Global::totalSessionTime[outputStruct.session] - Global::countRaceTime) >= 1)
+	{
+		Global::tenSecondNotifyNeeded = false;
+	}
+	 
 
 	if (Global::tenSecondNotifyNeeded == true & Global::tenSecondNotifyDataWriteen1 == false 
 		& Global::tenSecondNotifyDataWriteen2 == false )
