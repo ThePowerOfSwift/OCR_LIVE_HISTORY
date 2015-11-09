@@ -788,6 +788,8 @@ void BllRealTimeTrans1::submitRealData(DataOutput outputStruct, QByteArray array
 
 				if (Global::tenSecondNotifyDataWriteen2 == true)
 				{
+					emit statuChanged(QString("客户端：发送倒计时10s提醒数据。服务器 %1").arg(serverNo));
+
 					//两组数据都发送
 					if (submitQINOrQPL(mDataOutput, "QPL") == EXEC_SUCCESS)
 					{

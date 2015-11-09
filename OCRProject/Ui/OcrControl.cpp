@@ -432,6 +432,10 @@ void OcrControl::appendStatus(QString status)
 
 	logContentOut << status <<endl ;
 
+	//写入系统日志
+	Global::systemLog->append(QString(("appendStatus  ")), status,
+		SystemLog::ERROR_TYPE);
+
 }
 /**
 * @brief 开始采集
@@ -1292,7 +1296,36 @@ void OcrControl::on_tenSecondNotifyBtn_clicked()
 	
 
 	Global::tenSecondNotifyNeeded = true ;
-	 
+	
+	//if ( Global::countRaceTime > 5 )
+	//{
+	//	Global::tenSecondNotifyNeeded = false;
+	//}
+
+	QTextStream logContentOut(&logFile);
+
+
+	//如果倒计时不是小于1 那么 忽略 提交 倒计时10s 请求
+	if ((Global::totalSessionTime[Global::session] - Global::countRaceTime) >= 1)
+	{
+		Global::tenSecondNotifyNeeded = false;
+
+		Global::systemLog->append(QString(("Global::totalSessionTime[Global::session] - Global::countRaceTime) >= 1 ")), QString("10s button was clicked !"),
+			SystemLog::ERROR_TYPE);
+
+
+		logContentOut << QString("Global::totalSessionTime[Global::session] - Global::countRaceTime) >= 1 ")+ QString(("on_tenSecondNotifyBtn_clicked  ")) + QString("10s button was clicked !") << endl;
+
+	}
+
+
+
+	Global::systemLog->append(QString(("on_tenSecondNotifyBtn_clicked  ")), QString("10s button was clicked !"),
+		SystemLog::ERROR_TYPE);
+
+	
+
+
 }
 
 /*
@@ -1302,6 +1335,7 @@ void OcrControl::on_submitTotalRaceTimeBtn_clicked()
 {
 
 	emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
+
 
 }
 

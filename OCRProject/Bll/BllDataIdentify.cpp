@@ -1475,6 +1475,9 @@ int BllDataIdentify::algorithmExecLive(int videoType, uchar * imageBuf, Mat &src
 			emit readyRead(dataIdentifyClass.dataOutput, byteArray, imageWidth, imageHeight);
 		}
 
+		//广告删除 标记
+		Global::tenSecondNotifyNeeded = false;
+
 	}
 	else if (dataIdentifyClass.haveDataFlag == true)
 	{

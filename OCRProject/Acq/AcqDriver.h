@@ -25,12 +25,12 @@
 
 
 #ifdef OFFLINE_DEBUG
-#define  VERSION_NUM "版本:1.0 2015/09/01  离线模式 yp " //
+#define  VERSION_NUM "版本:1.0 2015/11/03 离线模式 yp " //
   
 
 
 #else
-#define  VERSION_NUM "版本:1.0 2015/09/01   直播模式 yp " //
+#define  VERSION_NUM "版本:1.0 2015/11/08   直播模式 yp " //
 #define WRITE_IMAGES_BEFORE_DataIdentify
 #endif
 

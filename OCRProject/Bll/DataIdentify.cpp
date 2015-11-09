@@ -3474,6 +3474,7 @@ int  DataIdentify::trimRoiBlankPart(Mat &oriMat, Mat &newRoiMat, CvRect &roiNewS
 
 
 
+
 //对彩色图像 3个RGB颜色通道进行阈值操作 低于 thereshold的值 置 0 
 // 为了更好地进行阈值操作，计算平均值，然后利用平均值进行阈值
 int DataIdentify::colorThreshold(Mat &src, Mat &dst, int thereshold)
