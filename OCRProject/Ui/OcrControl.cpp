@@ -1302,15 +1302,19 @@ void OcrControl::on_tenSecondNotifyBtn_clicked()
 	//	Global::tenSecondNotifyNeeded = false;
 	//}
 
+ 
+
 	QTextStream logContentOut(&logFile);
 
 
 	//如果倒计时不是小于1 那么 忽略 提交 倒计时10s 请求
-	if ((Global::totalSessionTime[Global::session] - Global::countRaceTime) >= 1)
+	
+	if ((Global::totalSessionTime[Global::session] - Global::countRaceTime) >= 2 )
 	{
 		Global::tenSecondNotifyNeeded = false;
 
-		Global::systemLog->append(QString(("Global::totalSessionTime[Global::session] - Global::countRaceTime) >= 1 ")), QString("10s button was clicked !"),
+		Global::systemLog->append(QString(("Global::totalSessionTime[Global::session] - Global::countRaceTime) >= 1 ")), QString("10s button was clicked !")
+			+ QString::number(Global::totalSessionTime[Global::session]) +QString("countRaceTime") +QString::number(Global::countRaceTime),
 			SystemLog::ERROR_TYPE);
 
 
@@ -1333,6 +1337,9 @@ void OcrControl::on_tenSecondNotifyBtn_clicked()
 */
 void OcrControl::on_submitTotalRaceTimeBtn_clicked()
 {
+
+
+	Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
 
 	emit submitRaceTimeSig(Global::raceTime + Global::countRaceTime);
 
@@ -1362,6 +1369,10 @@ void OcrControl::on_caliCountDownBtn_clicked()
 
 	//更新计数器
 	Global::timerCount = Global::countRaceTime * 60;
+
+
+	Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;
+
 
 	Global::isCountTimeCalied = true;
 	/*

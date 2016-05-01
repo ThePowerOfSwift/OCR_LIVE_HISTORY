@@ -39,8 +39,7 @@ public:
     QHBoxLayout *horizontalLayout;
     QVBoxLayout *verticalLayout;
     QFrame *frame;
-    QVBoxLayout *verticalLayout_20;
-    QHBoxLayout *horizontalLayout_8;
+    QHBoxLayout *horizontalLayout_16;
     QVBoxLayout *verticalLayout_8;
     QGroupBox *groupBox_2;
     QVBoxLayout *verticalLayout_18;
@@ -67,9 +66,11 @@ public:
     QLabel *label_6;
     QLabel *imageLbl;
     QVBoxLayout *verticalLayout_19;
+    QVBoxLayout *verticalLayout_17;
     QLabel *versionNumLabel;
-    QPushButton *tenSecondNotifyBtn;
+    QHBoxLayout *horizontalLayout_8;
     QSpacerItem *horizontalSpacer_2;
+    QPushButton *tenSecondNotifyBtn;
     QGroupBox *groupBox;
     QHBoxLayout *horizontalLayout_13;
     QHBoxLayout *horizontalLayout_12;
@@ -172,7 +173,7 @@ public:
     {
         if (OcrControl->objectName().isEmpty())
             OcrControl->setObjectName(QStringLiteral("OcrControl"));
-        OcrControl->resize(1051, 1026);
+        OcrControl->resize(1051, 1061);
         horizontalLayout_15 = new QHBoxLayout(OcrControl);
         horizontalLayout_15->setSpacing(6);
         horizontalLayout_15->setContentsMargins(11, 11, 11, 11);
@@ -190,13 +191,10 @@ public:
         frame->setObjectName(QStringLiteral("frame"));
         frame->setFrameShape(QFrame::StyledPanel);
         frame->setFrameShadow(QFrame::Raised);
-        verticalLayout_20 = new QVBoxLayout(frame);
-        verticalLayout_20->setSpacing(6);
-        verticalLayout_20->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_20->setObjectName(QStringLiteral("verticalLayout_20"));
-        horizontalLayout_8 = new QHBoxLayout();
-        horizontalLayout_8->setSpacing(6);
-        horizontalLayout_8->setObjectName(QStringLiteral("horizontalLayout_8"));
+        horizontalLayout_16 = new QHBoxLayout(frame);
+        horizontalLayout_16->setSpacing(6);
+        horizontalLayout_16->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_16->setObjectName(QStringLiteral("horizontalLayout_16"));
         verticalLayout_8 = new QVBoxLayout();
         verticalLayout_8->setSpacing(6);
         verticalLayout_8->setObjectName(QStringLiteral("verticalLayout_8"));
@@ -352,27 +350,39 @@ public:
         verticalLayout_8->setStretch(0, 1);
         verticalLayout_8->setStretch(1, 8);
 
-        horizontalLayout_8->addLayout(verticalLayout_8);
+        horizontalLayout_16->addLayout(verticalLayout_8);
 
         verticalLayout_19 = new QVBoxLayout();
         verticalLayout_19->setSpacing(6);
         verticalLayout_19->setObjectName(QStringLiteral("verticalLayout_19"));
+        verticalLayout_17 = new QVBoxLayout();
+        verticalLayout_17->setSpacing(6);
+        verticalLayout_17->setObjectName(QStringLiteral("verticalLayout_17"));
         versionNumLabel = new QLabel(frame);
         versionNumLabel->setObjectName(QStringLiteral("versionNumLabel"));
         versionNumLabel->setStyleSheet(QStringLiteral("background-color: rgb(255, 130, 80);"));
         versionNumLabel->setLineWidth(4);
         versionNumLabel->setAlignment(Qt::AlignCenter);
 
-        verticalLayout_19->addWidget(versionNumLabel);
+        verticalLayout_17->addWidget(versionNumLabel);
+
+        horizontalLayout_8 = new QHBoxLayout();
+        horizontalLayout_8->setSpacing(6);
+        horizontalLayout_8->setObjectName(QStringLiteral("horizontalLayout_8"));
+        horizontalSpacer_2 = new QSpacerItem(108, 17, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_8->addItem(horizontalSpacer_2);
 
         tenSecondNotifyBtn = new QPushButton(frame);
         tenSecondNotifyBtn->setObjectName(QStringLiteral("tenSecondNotifyBtn"));
 
-        verticalLayout_19->addWidget(tenSecondNotifyBtn);
+        horizontalLayout_8->addWidget(tenSecondNotifyBtn);
 
-        horizontalSpacer_2 = new QSpacerItem(318, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        verticalLayout_19->addItem(horizontalSpacer_2);
+        verticalLayout_17->addLayout(horizontalLayout_8);
+
+
+        verticalLayout_19->addLayout(verticalLayout_17);
 
         groupBox = new QGroupBox(frame);
         groupBox->setObjectName(QStringLiteral("groupBox"));
@@ -508,15 +518,11 @@ public:
 
         verticalLayout_19->addWidget(groupBox);
 
-        verticalLayout_19->setStretch(3, 10);
 
-        horizontalLayout_8->addLayout(verticalLayout_19);
+        horizontalLayout_16->addLayout(verticalLayout_19);
 
-        horizontalLayout_8->setStretch(0, 7);
-        horizontalLayout_8->setStretch(1, 3);
-
-        verticalLayout_20->addLayout(horizontalLayout_8);
-
+        tenSecondNotifyBtn->raise();
+        tenSecondNotifyBtn->raise();
 
         verticalLayout->addWidget(frame);
 

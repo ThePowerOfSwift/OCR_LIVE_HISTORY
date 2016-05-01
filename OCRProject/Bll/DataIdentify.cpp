@@ -1911,7 +1911,8 @@ int DataIdentify::getQINQPLIdentify()
 
 			if (i == j | j == i + 1)
 				continue;
-
+			//ÅÅ³ıµôÏÂ°ë ¶àÓà
+			/*
 			if (dataOutput.horseNum < 8)
 			{
 				if (j < 6)
@@ -1919,7 +1920,7 @@ int DataIdentify::getQINQPLIdentify()
 					continue;
 				}
 			}
-
+			*/
 			if (j >= QIN_QPL_COL + dataOutput.horseNum - 14)
 			{
 				continue;
