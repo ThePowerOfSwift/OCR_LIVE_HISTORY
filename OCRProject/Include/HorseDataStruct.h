@@ -6,11 +6,11 @@
 #define QIN_QPL_COL_1	15
 //#include <tchar.h>
 #include "./Bll/algorithmParam.h"
-# include "opencv2/opencv.hpp"
-# include "opencv/cv.h"
-# include "opencv/cvaux.h"
-# include "opencv/highgui.h"
-# include "opencv/ml.h"
+#include "opencv2/opencv.hpp"
+#include "opencv/cv.h"
+#include "opencv/cvaux.h"
+#include "opencv/highgui.h"
+#include "opencv/ml.h"
 
 
 

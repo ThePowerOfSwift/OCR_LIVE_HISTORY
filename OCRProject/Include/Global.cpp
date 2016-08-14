@@ -101,6 +101,13 @@ bool Global::isSessioncalibrated = false ;
 
 bool Global::isSessionChanged = false;
 
+
+// 
+bool Global::sessionChangedNum0 = false;
+bool Global::sessionChangedNum1 = false;
+bool Global::sessionChangedNum2 = false;
+
+
 bool Global::isCountTimeCalied = false;
 
 

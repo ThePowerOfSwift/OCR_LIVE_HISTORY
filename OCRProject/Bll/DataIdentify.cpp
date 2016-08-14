@@ -1399,8 +1399,12 @@ int DataIdentify::isHorseNameChanged()
 		dataOutput.mHorseInfo.graySum[h] = graySum[h];
 		dataOutput.mHorseInfo.length[h] = length[h];
 	}
-
+	//Èç¹ûchange
 	if (ChangedNum > 1)
+	{
+		Global::sessionChangedNum0 = true;
+	}
+	if (Global::sessionChangedNum0 & Global::sessionChangedNum1 )
 	{
 #ifdef QDEBUG_OUTPUT
 		qDebug("  horseNameChangedNum = %d \n",
@@ -1448,8 +1452,16 @@ int DataIdentify::isHorseNameChanged()
  
 
 	}
-	delete[] graySum;
 
+	if (graySum != NULL )
+	{
+		delete[] graySum;
+		graySum = NULL;
+	}
+
+	Global::sessionChangedNum2 = Global::sessionChangedNum1;
+
+	Global::sessionChangedNum1 = Global::sessionChangedNum0;
 
 	return EXEC_SUCCESS;
 }

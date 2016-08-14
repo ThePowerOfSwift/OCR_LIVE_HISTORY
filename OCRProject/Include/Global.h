@@ -202,6 +202,13 @@ public:
 
 	static bool isSessionChanged;
 
+	//保存场次号改变次数
+
+	static bool sessionChangedNum0 ;
+	static bool sessionChangedNum1 ;
+	static bool sessionChangedNum2 ;
+
+
 	//是否时间相关数值被矫正，倒计时，顺计时
 
 	static bool isCountTimeCalied;
