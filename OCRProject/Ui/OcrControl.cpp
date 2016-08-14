@@ -1157,6 +1157,8 @@ void OcrControl::reConnect()
 /**
 * @brief 打开历史文件
 */
+
+
 void OcrControl::on_loadFileBtn_clicked()
 {
 	
