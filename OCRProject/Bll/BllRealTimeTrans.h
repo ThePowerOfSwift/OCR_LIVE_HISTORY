@@ -160,6 +160,14 @@ private:
 	DataOutput mDataOutput;
 
 	bool stopReadBuffData;
+
+
+
+protected:
+	//定时器
+	int m_timerId;
+	virtual void timerEvent(QTimerEvent *event);
+
 };
 
  

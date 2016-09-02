@@ -16,6 +16,7 @@
 #ifdef QT_USE_FAST_OPERATOR_PLUS
 #define QT_USE_FAST_OPERATOR_PLUS
 #endif
+
 // 源代码编码必须是: UTF-8(BOM)  
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
@@ -247,6 +248,8 @@ public:
 	static SystemLogThread * systemLogThread;
 	///系统日志接口类
 	static SystemLog *systemLog;
+
+
 	//全局初始化
 	void init();
 	/**

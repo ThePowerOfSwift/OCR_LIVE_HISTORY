@@ -49,6 +49,26 @@ BllRealTimeTrans::BllRealTimeTrans(QObject *parent)
 	priServerState = false;
 
 	memset(&mDataOutput,0,sizeof(DataOutput)) ;
+
+	//10s
+
+	if (serverNo == 1)
+	{
+		m_timerId = startTimer(10000);
+	}
+
+
+
+}
+
+
+
+void BllRealTimeTrans::timerEvent(QTimerEvent *event)
+{
+	int session;
+	requestRaceIDForKeepAlive(Global::session);
+
+
 }
 
 BllRealTimeTrans::~BllRealTimeTrans()
@@ -800,10 +820,12 @@ void BllRealTimeTrans::submitRealData(DataOutput outputStruct, QByteArray array,
 	else  //数据为空了，那么这个时候，要与服务器保持连接 ，请求raceID，但不保存
 	{
 
-		requestRaceIDForKeepAlive(Global::session);
+	//	requestRaceIDForKeepAlive(Global::session);
 	}
 	 
 }
+
+
 
 /**
 * @brief 提交实时数据-WIN或PLA
@@ -1223,6 +1245,8 @@ void BllRealTimeTrans::handleReceiveData(QByteArray result, int descriptor)
 		break;
 	}
 }	
+
+
 /**
 * @brief 识别端处理服务端返回的数据
 */
