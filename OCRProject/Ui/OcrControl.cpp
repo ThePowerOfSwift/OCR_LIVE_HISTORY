@@ -511,6 +511,11 @@ void OcrControl::on_startAcqBtn_clicked()
 		Global::myIAcq->read();
 	}
 	 
+	QString str;
+	str = (ui.videoPosLineEdit->text());
+	Global::offLineImageStartNo = str.toInt();
+
+	qDebug() << QString("pos=") + str;
 
 }
 
@@ -1370,7 +1375,7 @@ void OcrControl::on_caliCountDownBtn_clicked()
 	Global::countRaceTime = countRaceTime.toInt();
 
 	//更新计数器
-	Global::timerCount = Global::countRaceTime * 60;
+	Global::timerCount = Global::countRaceTime * 60 ;
 
 
 	Global::totalSessionTime[Global::session] = Global::raceTime + Global::countRaceTime;

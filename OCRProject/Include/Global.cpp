@@ -54,6 +54,8 @@ qint32  Global::serverPort = 0;
 QString Global::serverIpAddr1 = QString("");
 qint32  Global::serverPort1 = 0;
 
+
+uint Global::offLineImageStartNo = 0;
 // 标记，是否为 实时直播
 
 bool Global::isHistoryVideo = false;

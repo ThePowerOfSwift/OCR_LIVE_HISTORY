@@ -4,36 +4,27 @@
 #endif
 #ifndef ACQDRIVER_H
 #define ACQDRIVER_H
-
 #pragma once
 #include <QtWidgets/QMainWindow>
 #include <qt_windows.h>
 #include "AVSDK/AVerCapAPI.h"
 #include "Include/CCycleBuffer.h"
-
 #include <QTimerEvent>
-
 #include <QFile>
 #include <QTextStream>
 #include "bll/ReadHistoryVideo.h"
 
-
-
 //#define	OFFLINE_DEBUG 
-
 //#define  ONLY_SAVE_IMAGES
 
-
 #ifdef OFFLINE_DEBUG
-#define  VERSION_NUM "版本:1.0 2016/09/02. 离线模式 yp " //
-  
+#define  VERSION_NUM "版本:1.0 2016/11/28. 离线模式 yp " // 
 
 
 #else
-#define  VERSION_NUM "版本:1.0 2016/09/02   直播模式 yp " //
+#define  VERSION_NUM "版本:1.0 2016/11/28   直播模式 yp " //
 #define WRITE_IMAGES_BEFORE_DataIdentify
 #endif
-
 
 //#define CALLBACK_MODE 
 #define TIME_CYCLE 1000  // 2s 

@@ -23,7 +23,11 @@ AcqDriver::AcqDriver(QObject *parent)
 
 #ifdef OFFLINE_DEBUG
 		
-	count = 0 ;
+	count = -1 ;
+
+	
+
+	qDebug() << QString("count=")+QString::number(count);
 #endif
 
 	//打开配置文件
@@ -47,6 +51,11 @@ AcqDriver::AcqDriver(QObject *parent)
 
 void AcqDriver::createFalseData()
 {
+	if (count == -1 )
+	{
+		count = Global::offLineImageStartNo;
+	}
+
 	if (count < 41000 )
 		count += 1 ;
 	else
@@ -414,7 +423,7 @@ void AcqDriver::timerEvent(QTimerEvent *event)
 	}
 	
 	//计时分钟数 
-	Global::countRaceTime = Global::timerCount / 60;
+	Global::countRaceTime = Global::timerCount / (60);
 
 
 	// 每个定时器周期更新一次

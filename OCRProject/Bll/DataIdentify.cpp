@@ -273,10 +273,158 @@ void DataIdentify::haveData()
 }
 
 
+
+
 // get the origin position
 // return the coodinate of the origin
 int DataIdentify::originPosition()
 {
+
+	originX = 0;
+	originY = 0;
+	//
+	// int regionWidth = ORIGINPOSITION_REGIONWIDTH ;
+	// int regionHeight = ORIGINPOSITION_REGIONHEIGHT;
+	
+	
+	//253 60 为 pla 位置的 最右侧，从这开始裁剪图片
+	int x = 253;
+	int y = 60;
+ 
+	// 	imshow("a",image);
+	// 	waitKey();
+	// regionWidth regionHeight 没有用上。
+
+	Mat imageTemp;
+	image.copyTo(imageTemp);
+	Mat region(imageTemp, Rect(0, 60, 253, 100 ));
+
+	Mat regionGray(253, 100, CV_8UC1, Scalar::all(0));
+
+	cvtColor(region, regionGray, CV_BGR2GRAY);
+
+	int regionWidth = 253;
+	int regionHeight = 100 ;
+
+	for (int c = 0; c < regionGray.cols; c++)
+	{
+		for (int r = 0; r < regionGray.rows; r++)
+		{
+			if (regionGray.at<uchar>(r, c) < 190)
+			{
+				regionGray.at<uchar>(r, c) = 0;
+
+			}
+
+		}
+	}
+
+ 
+
+	int* colSum = new int[regionWidth + 1];
+	int* rowSum = new int[regionHeight + 1];
+
+	// calculate the row sum
+	for (int i = 0; i < regionHeight; i++)
+	{
+		rowSum[i] = 0;
+		for (int j = 0; j < regionWidth; j++)
+			rowSum[i] += regionGray.at<uchar>(i, j);
+
+		rowSum[i] = rowSum[i] / regionWidth;
+
+#ifdef QDEBUG_OUTPUT
+		qDebug("rowSum[%d] = %d ", i, rowSum[i]);
+#endif
+	}
+
+
+	// calculate the col sum
+	for (int i = 0; i < regionWidth; i++)
+	{
+		colSum[i] = 0;
+		for (int j = 0; j < regionHeight; j++)
+			colSum[i] += regionGray.at<uchar>(j, i);
+
+		colSum[i] = colSum[i] / regionHeight;
+#ifdef QDEBUG_OUTPUT
+		qDebug("colSum[%d] = %d ", i, colSum[i]);
+#endif
+	}
+
+	// DataIdentify the originX
+	//
+	int threholdValue = 25;
+	for (int i = 0; i < regionWidth; i++)
+	{
+		if (colSum[i]>threholdValue)
+		{
+			originX = i - 1;
+			break;
+		}
+	}
+	// DataIdentify the originY
+	for (int i = 0; i < regionHeight; i++)
+	{
+		if (rowSum[i]> threholdValue)
+		{
+			originY = i - 1;
+			break;
+		}
+	}
+
+	originY += 60;
+
+#ifdef QDEBUG_OUTPUT
+	qDebug("the originPosition Func : x =%d, y=%d", originX, originY);
+#endif
+	
+
+	//如果偏离预设的原点太多，那么直接退出程序
+	if (abs(originX - ORIGIN_X_BASE_LIVE) > 5 | abs((originY - ORIGIN_X_BASE_LIVE) > 5))
+	{
+		 
+		//写入系统日志
+		Global::systemLog->append(QString(("originpostion ")), QString("the originPosition Func : x =%1, y=%2")
+			.arg(originX).arg(originY),
+			SystemLog::ERROR_TYPE);
+
+		//写入系统日志
+		Global::systemLog->append(QString(("Error :DataIdentify  ")), QString("Get OriginX Y Wrong！"),
+			SystemLog::ERROR_TYPE);
+
+		algorithmState = EXIT_THIS_OCR;
+		return EXIT_THIS_OCR;
+	}
+	if (colSum != NULL)
+	{
+		delete[] colSum;
+		colSum = NULL;
+	}
+	if (rowSum != NULL)
+	{
+		delete[] rowSum;
+		rowSum = NULL;
+	}
+
+	CvRect newRect;
+	newRect.x = originX;
+	newRect.y = originY;
+
+	newRect.width = imageTemp.cols - originX;
+	newRect.height = imageTemp.rows - originY;
+
+	Mat newMat;
+	newMat = Mat(imageTemp, newRect);
+
+	cvtColor(newMat, newMat, CV_RGB2GRAY);
+
+
+	imwrite("originTrim.bmp", newMat);
+
+	return EXEC_SUCCESS;
+
+	/*  
 	originX = 0;
 	originY = 0;
 	int regionWidth = ORIGINPOSITION_REGIONWIDTH, regionHeight = ORIGINPOSITION_REGIONHEIGHT;
@@ -287,9 +435,9 @@ int DataIdentify::originPosition()
 	Mat imageTemp;
 	image.copyTo(imageTemp);
 	Mat region(imageTemp, Rect(0, 0, regionWidth, regionHeight));
-	Mat regionGray(regionHeight, regionWidth, CV_8UC1, Scalar::all(0));
+	Mat regionGray(regionWidth,regionHeight,  CV_8UC1, Scalar::all(0));
 
-	cvtColor(imageTemp, regionGray, CV_BGR2GRAY);
+	cvtColor(region, regionGray, CV_BGR2GRAY);
 
 	for (int c = 0; c < regionGray.cols; c++)
 	{
@@ -305,8 +453,8 @@ int DataIdentify::originPosition()
 	}
 
 	 
-	int* colSum = new int[regionHeight + 1];
-	int* rowSum = new int[regionWidth + 1];
+	int* colSum = new int[regionWidth + 1];
+	int* rowSum = new int[regionHeight + 1];
 
 	// calculate the row sum
 	for (int i = 0; i < regionHeight; i++)
@@ -332,14 +480,16 @@ int DataIdentify::originPosition()
 
 		colSum[i] = colSum[i] / regionHeight;
 #ifdef QDEBUG_OUTPUT
-		qDebug("rowSum[%d] = %d ", i, colSum[i]);
+		qDebug("colSum[%d] = %d ", i, colSum[i]);
 #endif
 	}
 
 	// DataIdentify the originX
+	//
+	int threholdValue = 20 ;
 	for (int i = 0; i < regionWidth; i++)
 	{
-		if (colSum[i]>10 )
+		if (colSum[i]>threholdValue)
 		{
 			originX = i - 1;
 			break;
@@ -348,7 +498,7 @@ int DataIdentify::originPosition()
 	// DataIdentify the originY
 	for (int i = 0; i < regionHeight; i++)
 	{
-		if (rowSum[i]> 10 )
+		if (rowSum[i]> threholdValue)
 		{
 			originY = i - 1;
 			break;
@@ -392,9 +542,15 @@ int DataIdentify::originPosition()
 
 	Mat newMat;
 	newMat = Mat(imageTemp, newRect);
+
+	cvtColor(newMat, newMat, CV_RGB2GRAY);
+
+
 	imwrite("originTrim.bmp", newMat);
 
 	return EXEC_SUCCESS ;
+
+	*/
 }
 
 int DataIdentify::identify()
@@ -410,7 +566,6 @@ int DataIdentify::identify()
 		return EXIT_THIS_OCR;
 	}
 	originPosition();
-
 	if (algorithmState == EXIT_THIS_OCR)
 	{
 		dataOutput.haveDataFlag = false;
@@ -421,11 +576,8 @@ int DataIdentify::identify()
 			SystemLog::ERROR_TYPE);
 		return EXIT_THIS_OCR;
 	}
-
 	//设置马名位置
-
 	setHorseNameRectPos();
-
 	if (algorithmState == EXIT_THIS_OCR)
 	{
  
@@ -435,7 +587,6 @@ int DataIdentify::identify()
 		return EXIT_THIS_OCR;
 	}
 	// 设置 WIN PLA 位置
-
 	setWINPLARectPos();
 	if (algorithmState == EXIT_THIS_OCR)
 	{
@@ -627,6 +778,8 @@ int DataIdentify::setWINPLARectPos()
 	Mat edgePla;
 	Mat edgeWin;
 
+	imwrite("WIN_Cut.bmp", winRegion);
+	imwrite("PLA_Cut.bmp", plaRegion);
 
 	//Canny(winRegion, edgeWin, 450, 400, 3, true);
 	//Canny(plaRegion, edgePla, 450, 400, 3, true);
@@ -672,6 +825,12 @@ int DataIdentify::setWINPLARectPos()
 	calculateGraySumXForSetWINPLARect(edgeWin, yWin, dataOutput.horseNum);
 	calculateGraySumXForSetWINPLARect(edgePla, yPla, dataOutput.horseNum);
 
+	for (int i = 0; i < dataOutput.horseNum; i ++ )
+	{
+		qDebug() << QString("yWin %1: value : %2 ").arg(i).arg(yWin[i]);
+
+	}
+
 	if (algorithmState == EXIT_THIS_OCR)
 	{
 		if (yPla != NULL)
@@ -691,8 +850,8 @@ int DataIdentify::setWINPLARectPos()
 
 	// get the relative position of the three vertex in the first row, relative to the origin 
 	//
-//		imwrite("WIN_Region.bmp", edgeWin);
-//		imwrite("PLA_Region.bmp", edgePla);
+	imwrite("WIN_Region.bmp", edgeWin);
+	imwrite("PLA_Region.bmp", edgePla);
 
 
 	//计算 识别区域的两侧X值
@@ -747,7 +906,7 @@ int DataIdentify::setWINPLARectPos()
 		else
 		{
 			//如果高度过高，那么说明出现了 退赛的马匹，那么强制设置高度为固定值。
-			if (yWin[i + 1] - yWin[i] > 23)
+			if (yWin[i + 1] - yWin[i] > 23 )
 			{
 			//	yWin[i + 1] = yWin[i] + NUMBER_HEIGHT_LIVE + 2;
 				winPlaPosStruct.rect[i][0].height = NUMBER_HEIGHT_LIVE + 2;
@@ -756,6 +915,12 @@ int DataIdentify::setWINPLARectPos()
 			else
 			{
 				winPlaPosStruct.rect[i][0].height = yWin[i + 1] - yWin[i];
+
+				if (yWin[i + 1] - yWin[i] < NUMBER_HEIGHT_LIVE)
+				{
+					winPlaPosStruct.rect[i][0].height = NUMBER_HEIGHT_LIVE;
+
+				}
 
 			}
 
@@ -1404,7 +1569,10 @@ int DataIdentify::isHorseNameChanged()
 	{
 		Global::sessionChangedNum0 = true;
 	}
-	if (Global::sessionChangedNum0 & Global::sessionChangedNum1 )
+	else 
+		Global::sessionChangedNum0 = false;
+
+	if (ChangedNum > 1)
 	{
 #ifdef QDEBUG_OUTPUT
 		qDebug("  horseNameChangedNum = %d \n",
@@ -1449,8 +1617,6 @@ int DataIdentify::isHorseNameChanged()
 	{
 		dataOutput.horseNameChangedNum = Global::session;
 		
- 
-
 	}
 
 	if (graySum != NULL )
@@ -1651,8 +1817,8 @@ int DataIdentify::getWINPLAIdentify()
 #endif
 
 			bool dotFlag = false;
-			// 通过判断 宽度来判断数据 是否包含小数点 3
-			if (roiNew.cols >= 32)
+			// 通过判断 宽度来判断数据 是否包含小数点 3 // 32 20160903
+			if (roiNew.cols >= 31 )
 			{
 				dotFlag = true;
 			}

@@ -249,6 +249,10 @@ public:
 	///系统日志接口类
 	static SystemLog *systemLog;
 
+	// 标记离线的图片起始数
+
+	static uint offLineImageStartNo;
+
 
 	//全局初始化
 	void init();
