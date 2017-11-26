@@ -52,11 +52,11 @@
 #include "Bll/SystemLog/SystemLog.h"
 
 
-
-#define  IMAGE_WIDTH 720 
-#define  IMAGE_HEIGHT 576 
+// 720 * 576 
+#define  IMAGE_WIDTH 720  
+#define  IMAGE_HEIGHT 576  
 #define BMP_HEADER 0 
-#define	 IMAGE_BUFF_LENGTH (720*576*3 + BMP_HEADER )
+#define	 IMAGE_BUFF_LENGTH (IMAGE_WIDTH*IMAGE_HEIGHT*3 + BMP_HEADER )
 
 //"Server", "58.67.161.109", 9068);
 /* 

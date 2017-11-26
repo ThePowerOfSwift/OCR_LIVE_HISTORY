@@ -540,66 +540,64 @@ LONG BllDataIdentify::isDataOutputNew(DataOutput &outputStruct)
 
 	}
 
-	if (sessionChangedCountDown == 0 )
-	{
-		for (int i = 0; i < outputStruct.horseNum; i++)
+		if (sessionChangedCountDown == 0 )
 		{
-			if (outputStruct.mHorseInfo.isSCR[i] != priDataOutput.mHorseInfo.isSCR[i])
+			for (int i = 0; i < outputStruct.horseNum; i++)
 			{
-				WINChangedNum++ ;
-			}
-			if (abs(outputStruct.WIN[i].dataValue - priDataOutput.WIN[i].dataValue) > 0.05)
-			{
+				if (outputStruct.mHorseInfo.isSCR[i] != priDataOutput.mHorseInfo.isSCR[i])
+				{
+					WINChangedNum++ ;
+				}
+				if (abs(outputStruct.WIN[i].dataValue - priDataOutput.WIN[i].dataValue) > 0.05)
+				{
 			 
-				WINChangedNum++;
+					WINChangedNum++;
 
-			}
-			if (abs((outputStruct.WIN[i].dataValue - priDataOutput.WIN[i].dataValue)) 
-				/ priDataOutput.WIN[i].dataValue > 0.6 )
-			{
-				dataOutOfRangeWIN = true;
-				dataOutOfRangeCount++;
+				}
+				if (abs((outputStruct.WIN[i].dataValue - priDataOutput.WIN[i].dataValue)) 
+					/ priDataOutput.WIN[i].dataValue > 0.6 )
+				{
+					dataOutOfRangeWIN = true;
+					dataOutOfRangeCount++;
 
-				Global::systemLog->append(QString(tr("WIN 数据 出现超出范围。")), 
-					QString(tr("")), SystemLog::INFO_TYPE);
+					Global::systemLog->append(QString(tr("WIN 数据 出现超出范围。")), 
+						QString(tr("")), SystemLog::INFO_TYPE);
 				 
+				}
+
 			}
 
-		}
 
-
-		for (int i = 0; i < outputStruct.horseNum; i++)
-		{
-			if (outputStruct.mHorseInfo.isSCR[i] != priDataOutput.mHorseInfo.isSCR[i])
+			for (int i = 0; i < outputStruct.horseNum; i++)
 			{
-				PLAChangedNum++;
-			}
-			if (abs(outputStruct.PLA[i].dataValue - priDataOutput.PLA[i].dataValue) >  0.05)
-			{
-				//qDebug("PLA:i=%d ,new is %f pri is %f ", i,  outputStruct.PLA[i], priDataOutput.PLA[i]);
-				//outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
-				PLAChangedNum++;
-			}
-			if (abs((outputStruct.PLA[i].dataValue - priDataOutput.PLA[i].dataValue)) 
-				/ priDataOutput.PLA[i].dataValue > 0.6
+				if (outputStruct.mHorseInfo.isSCR[i] != priDataOutput.mHorseInfo.isSCR[i])
+				{
+					PLAChangedNum++;
+				}
+				if (abs(outputStruct.PLA[i].dataValue - priDataOutput.PLA[i].dataValue) >  0.05)
+				{
+					//qDebug("PLA:i=%d ,new is %f pri is %f ", i,  outputStruct.PLA[i], priDataOutput.PLA[i]);
+					//outputStruct.changeStatus = outputStruct.changeStatus | PLA_CHANGED;
+					PLAChangedNum++;
+				}
+				if (abs((outputStruct.PLA[i].dataValue - priDataOutput.PLA[i].dataValue)) 
+					/ priDataOutput.PLA[i].dataValue > 0.6
 				
-				)
-			{
-				dataOutOfRangePLA = true;
-				dataOutOfRangeCount++;
+					)
+				{
+					dataOutOfRangePLA = true;
+					dataOutOfRangeCount++;
 
-				Global::systemLog->append(QString(tr("PLA 数据 出现超出范围。")),
-					QString(tr("")), SystemLog::INFO_TYPE);
+					Global::systemLog->append(QString(tr("PLA 数据 出现超出范围。")),
+						QString(tr("")), SystemLog::INFO_TYPE);
+
+				}
+
 
 			}
-
-
 		}
-	}
-	
-
-	if (QINQPLTransformedCountDown == 0)
-	{
+		if (QINQPLTransformedCountDown == 0)
+		{
 		for (int i = 0; i < 7; i++)
 		{
 

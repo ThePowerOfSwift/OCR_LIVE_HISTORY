@@ -874,7 +874,7 @@ void OcrControl::updateData(DataOutput output, QByteArray array,int imageWidth, 
 		
 
 		//myImage.scaled(ui.imageLbl->width(), ui.imageLbl->height());
-		myImage = myImage.scaled(518*0.85, 432*0.85);
+		myImage = myImage.scaled(518*1.2, 432*1.2);
 
 		pixmap = pixmap.fromImage(myImage);
 		ui.imageLbl->setPixmap(pixmap);

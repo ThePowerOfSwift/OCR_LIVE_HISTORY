@@ -64,8 +64,9 @@ void AcqDriver::createFalseData()
 
 	}
 
-	//count = 7013 ;
 	 
+	 // count = 4760 ;
+
 	fileName = QString(".bmp");
 
  
@@ -75,11 +76,11 @@ void AcqDriver::createFalseData()
 	//fileName.prepend(QString::number(4));
 	
 	//fileName = (QString("3615.bmp") );
-	//fileName.prepend(QString("G://BaiduYunDownload//liveImageData2//"));
+	//fileName.prepend(QString("e://img1//2//"));
 	
 	fileName.prepend(liveTestConfigStr);
 
-	//fileName = (QString("G://BaiduYunDownload//13702.bmp"));	
+	//fileName = (QString("e://img1//2//15.bmp"));
 	
 	localImage.load(fileName);
  
@@ -179,8 +180,9 @@ LONG AcqDriver::init()
 		qDebug(" get the number of devices.%d ", dwDeviceNum);
 #endif
 	}
-	if (dwDeviceNum != 1)
+	if (dwDeviceNum != 1) 
 		return CAP_EC_ERROR_STATE;
+	
 	for (DWORD dwDeviceIndex = 0; dwDeviceIndex < dwDeviceNum; dwDeviceIndex++)
 	{
 		QString myString;
@@ -208,16 +210,27 @@ LONG AcqDriver::init()
 		}
 
 	}
+
+	Global::systemLog->append(QString(tr("AcqDriver: rtValue1   ")), QString("rtValue = %1").arg(rtValue),
+		SystemLog::ERROR_TYPE);
+
 	//创建 设备
-	rtValue |= AVerCreateCaptureObjectEx(dwDeviceNum-1, DEVICETYPE_SD, NULL, &hSDCaptureDevice);
+	rtValue |= AVerCreateCaptureObjectEx(dwDeviceNum - 1, DEVICETYPE_SD, NULL, &hSDCaptureDevice); //DEVICETYPE_SD
 	// 设置电视制式 PAL or NSTC
+ 
+
 	rtValue |= AVerSetVideoFormat(hSDCaptureDevice, VIDEOFORMAT_PAL);
 	// 设置分辨率
-	rtValue |= AVerSetVideoResolution(hSDCaptureDevice, VIDEORESOLUTION_720X576);
+
+ 
+
+	int rt = 0;
+	rt = AVerSetVideoResolution(hSDCaptureDevice, VIDEORESOLUTION_720X576);
+	 rtValue |= rt;
+	  
 	//设置预览
-	rtValue |= AVerSetVideoPreviewEnabled(hSDCaptureDevice, TRUE);
-
-
+	//rtValue |= AVerSetVideoPreviewEnabled(hSDCaptureDevice, TRUE);
+ 
 
 
 	//AVerSetVideoWindowPosition(hSDCaptureDevice, rectClient);
@@ -239,15 +252,29 @@ LONG AcqDriver::init()
 		rtValue |= AVerSetVideoSource(hSDCaptureDevice, VIDEOSOURCE_COMPONENT);
 
 	}
+	else if (Global::liveCardVideoSource == QString("HDMI"))
+	{
+		LONG rt = AVerSetVideoSource(hSDCaptureDevice, VIDEOSOURCE_HDMI);
+		rtValue |= rt;
+
+
+		Global::systemLog->append(QString(tr("AcqDriver: CAP_EC_ERROR_STATE   ")), QString("rt = %1").arg(rt),
+			SystemLog::ERROR_TYPE);
+
+	}
+
 	else 
 		rtValue |= AVerSetVideoSource(hSDCaptureDevice, VIDEOSOURCE_VGA);
 
-	 
+	
 
 	if (rtValue == CAP_EC_SUCCESS)
 		return CAP_EC_SUCCESS;
 	else
 	{
+		Global::systemLog->append(QString(tr("AcqDriver: CAP_EC_ERROR_STATE   ")), QString("AcqDriver"),
+			SystemLog::ERROR_TYPE);
+
 		return CAP_EC_ERROR_STATE ;
 	}
 

@@ -173,7 +173,7 @@ public:
     {
         if (OcrControl->objectName().isEmpty())
             OcrControl->setObjectName(QStringLiteral("OcrControl"));
-        OcrControl->resize(1051, 1061);
+        OcrControl->resize(1077, 1061);
         horizontalLayout_15 = new QHBoxLayout(OcrControl);
         horizontalLayout_15->setSpacing(6);
         horizontalLayout_15->setContentsMargins(11, 11, 11, 11);
@@ -521,8 +521,6 @@ public:
 
         horizontalLayout_16->addLayout(verticalLayout_19);
 
-        tenSecondNotifyBtn->raise();
-        tenSecondNotifyBtn->raise();
 
         verticalLayout->addWidget(frame);
 
@@ -1109,6 +1107,7 @@ public:
          << QApplication::translate("OcrControl", "AV", 0)
          << QApplication::translate("OcrControl", "YB", 0)
          << QApplication::translate("OcrControl", "COMPONET", 0)
+         << QApplication::translate("OcrControl", "HDMI", 0)
         );
         startAcqBtn->setText(QApplication::translate("OcrControl", "\345\274\200\345\247\213\351\207\207\351\233\206", 0));
         stopAcqBtn->setText(QApplication::translate("OcrControl", "\345\201\234\346\255\242\351\207\207\351\233\206", 0));

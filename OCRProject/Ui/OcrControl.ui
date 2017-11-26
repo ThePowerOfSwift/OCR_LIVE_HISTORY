@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1051</width>
+    <width>1077</width>
     <height>1061</height>
    </rect>
   </property>
@@ -452,8 +452,6 @@
              </layout>
             </item>
            </layout>
-           <zorder>tenSecondNotifyBtn</zorder>
-           <zorder>tenSecondNotifyBtn</zorder>
           </widget>
          </item>
         </layout>
@@ -1265,6 +1263,11 @@
                 <item>
                  <property name="text">
                   <string>COMPONET</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>HDMI</string>
                  </property>
                 </item>
                </widget>

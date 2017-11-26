@@ -15,7 +15,9 @@
 #include <QDebug>
 #include <QMutex>
 #include <QWaitCondition>
-#define  IMAGE_BUFF_LENGTH_1 720*576*3 
+ 
+#define  IMAGE_BUFF_LENGTH 720*576*3 
+
 class CCycleBuffer
 {
 
@@ -31,7 +33,7 @@ public:
 	 *  @author  Liuzhaobang
 	 *  @date    2012-12-7
 	 */
-	CCycleBuffer(int size = IMAGE_BUFF_LENGTH_1 * 10);
+	CCycleBuffer(int size = IMAGE_BUFF_LENGTH * 10);
 	virtual ~CCycleBuffer();
 	int write(char* buf, int count);
 	int read(char* buf, int count);

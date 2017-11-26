@@ -17,9 +17,12 @@ using namespace std;
  
 using namespace cv;
 
-//#define  WRITE_SESSION_CLASSIFY_SAMPELS 
+ //#define  WRITE_SESSION_CLASSIFY_SAMPELS 
+ 
+  // #define	WRITE_FILE_DEBUG 
 
-/*
+#ifdef WRITE_FILE_DEBUG
+
 #define  WRITE_MINUTE_CLASSIFY_SAMPELS
 
 
@@ -28,10 +31,10 @@ using namespace cv;
 #define		WRITE_ROI_SMAPLES_TEMP
 #define		WRITE_ROI_SMAPLES_CLASS_INFO1
 #define		WRITE_ROI_SMAPLES_CLASS_INFO2 
-*/
 
+#endif
 
-
+   
 class DataIdentify
 {
 public:
@@ -167,7 +170,7 @@ private:
 
 //定义原点位置为 
 
-#define ORIGIN_X_BASE_LIVE 73
+#define ORIGIN_X_BASE_LIVE  67
 
 #define ORIGIN_Y_BASE_LIVE  65 
 //场次号位置
@@ -179,9 +182,9 @@ private:
 #define  COUNTDOWNMINUTE_POS_RECT2_LIVE cvRect(569+(originX-ORIGIN_X_BASE_LIVE),41+(originY-ORIGIN_Y_BASE_LIVE),10,16)
 
 // WIN PLA
-#define  WIN_POS_RECT_LIVE cvRect(142+(originX-ORIGIN_X_BASE_LIVE),67+(originY-ORIGIN_Y_BASE_LIVE),38,363-65)
+#define  WIN_POS_RECT_LIVE cvRect(135+(originX-ORIGIN_X_BASE_LIVE),63+(originY-ORIGIN_Y_BASE_LIVE),30,370-63)
 // PLA 
-#define  PLA_POS_RECT_LIVE cvRect(216+(originX-ORIGIN_X_BASE_LIVE),65+(originY-ORIGIN_Y_BASE_LIVE),38,363-65)
+#define  PLA_POS_RECT_LIVE cvRect(196+(originX-ORIGIN_X_BASE_LIVE),63+(originY-ORIGIN_Y_BASE_LIVE),30,370-65)
 
 //QIN QPL标签位置 
 #define  QINQPL_LABEL_POS_RECT_LIVE cvRect(91+(originX-ORIGIN_X_BASE_LIVE),377+(originY-ORIGIN_Y_BASE_LIVE),50,20 )

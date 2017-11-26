@@ -14,15 +14,26 @@
 #include <QTextStream>
 #include "bll/ReadHistoryVideo.h"
 
-//#define	OFFLINE_DEBUG 
+/*
+版本说明。
+2017.10.8 
+1. 将720x456 采集卡分辨率 提高至1280x720 。
+2. 使用sdk的hdmi接口
+
+*/
+  #define	OFFLINE_DEBUG 
 //#define  ONLY_SAVE_IMAGES
 
 #ifdef OFFLINE_DEBUG
-#define  VERSION_NUM "版本:1.0 2016/11/28. 离线模式 yp " // 
+#define  VERSION_NUM "版本:1.0 2017/11//06. 离线模式 yp " // 
 
 
 #else
-#define  VERSION_NUM "版本:1.0 2016/11/28   直播模式 yp " //
+#define  VERSION_NUM "版本:1.0  2017/11//06.  直播模式 yp " //
+// 0906 更改了部分板式，主要是win pla 变窄了
+/*
+修改了 原点 阈值 ，由25 降低到 8 ，为了防止第一行有马匹 退赛。
+*/
 #define WRITE_IMAGES_BEFORE_DataIdentify
 #endif
 

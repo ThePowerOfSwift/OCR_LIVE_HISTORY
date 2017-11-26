@@ -297,13 +297,15 @@ int DataIdentify::originPosition()
 
 	Mat imageTemp;
 	image.copyTo(imageTemp);
-	Mat region(imageTemp, Rect(0, 60, 253, 100 ));
+	Mat region(imageTemp, Rect(0, 60, 220, 100));
 
-	Mat regionGray(253, 100, CV_8UC1, Scalar::all(0));
+	Mat regionGray(220, 100, CV_8UC1, Scalar::all(0));
 
 	cvtColor(region, regionGray, CV_BGR2GRAY);
 
-	int regionWidth = 253;
+
+
+	int regionWidth = 220 ;
 	int regionHeight = 100 ;
 
 	for (int c = 0; c < regionGray.cols; c++)
@@ -354,7 +356,7 @@ int DataIdentify::originPosition()
 
 	// DataIdentify the originX
 	//
-	int threholdValue = 25;
+	int threholdValue = 8;
 	for (int i = 0; i < regionWidth; i++)
 	{
 		if (colSum[i]>threholdValue)
@@ -374,14 +376,14 @@ int DataIdentify::originPosition()
 	}
 
 	originY += 60;
-
+	imwrite("region.bmp", regionGray);
 #ifdef QDEBUG_OUTPUT
 	qDebug("the originPosition Func : x =%d, y=%d", originX, originY);
 #endif
 	
 
 	//如果偏离预设的原点太多，那么直接退出程序
-	if (abs(originX - ORIGIN_X_BASE_LIVE) > 5 | abs((originY - ORIGIN_X_BASE_LIVE) > 5))
+	if (abs(originX - ORIGIN_X_BASE_LIVE) > 5 | abs((originY - ORIGIN_Y_BASE_LIVE) > 5))
 	{
 		 
 		//写入系统日志
@@ -830,7 +832,8 @@ int DataIdentify::setWINPLARectPos()
 		qDebug() << QString("yWin %1: value : %2 ").arg(i).arg(yWin[i]);
 
 	}
-
+	imwrite("WIN_Region.bmp", edgeWin);
+	imwrite("PLA_Region.bmp", edgePla);
 	if (algorithmState == EXIT_THIS_OCR)
 	{
 		if (yPla != NULL)
@@ -850,8 +853,7 @@ int DataIdentify::setWINPLARectPos()
 
 	// get the relative position of the three vertex in the first row, relative to the origin 
 	//
-	imwrite("WIN_Region.bmp", edgeWin);
-	imwrite("PLA_Region.bmp", edgePla);
+
 
 
 	//计算 识别区域的两侧X值
@@ -1593,7 +1595,7 @@ int DataIdentify::isHorseNameChanged()
 
 		}
 		//必须 顺计时大于 15 分钟，才可以改变场次号
-		else if (Global::countRaceTime  > 15 | Global::session == 1)
+		else if (Global::countRaceTime  > 15 ) //| Global::session == 1
 		{
 			Global::session++;
 			//赋值场次号
@@ -1692,8 +1694,6 @@ int DataIdentify::getWINPLAIdentify()
 	CvRect rectDot[3];
 	CvRect rectNoDot[3];
 
-	rectDot[0].x = 0;	rectDot[1].x = 10;		rectDot[2].x = 25;
-	rectNoDot[0].x = 0; rectNoDot[1].x = 10;	rectNoDot[2].x = 19;
 
 	float factor[2][3] = { { 10, 1, 0.1 }, { 100, 10, 1 } };							// the first line for dot, the second line for no dat
 
@@ -1718,18 +1718,60 @@ int DataIdentify::getWINPLAIdentify()
 
 			roi.copyTo(roiThreshold);
 
+
+			rectDot[0].x = 0;	rectDot[1].x = 8;		rectDot[2].x = 20;
+			rectNoDot[0].x = 0; rectNoDot[1].x = 8;	rectNoDot[2].x = 16;
+
+
+			int sumAll = 0;
+			for (int r = 0; r < roiThreshold.rows; r++)
+			{
+				for (int c = 0; c < roiThreshold.cols; c++)
+				{ 
+					sumAll += roiThreshold.at<uchar>(r, c)  ;
+					 
+				}
+			}
+
+		//	qDebug() << QString(" win pla sum is i = %1 : %2").arg(i).arg(sumAll);
+
 			//使用灰度阈值
+			int threshold = 0;
+			if (sumAll > 58000)
+			{
+				threshold = 225;
+			}
+			else
+			{
+				threshold = 200;
+
+			}
 
 			for (int r = 0; r < roiThreshold.rows; r++)
 			{
 				for (int c = 0; c < roiThreshold.cols; c++)
 				{
-					if (roiThreshold.at<uchar>(r, c) < 200)
+					if (roiThreshold.at<uchar>(r, c) < threshold) // 200  
 					{
 						roiThreshold.at<uchar>(r, c) = 0;
 					}
 				}
 			}
+
+
+			////使用灰度阈值
+
+			//for (int r = 0; r < roi.rows; r++)
+			//{
+			//	for (int c = 0; c < roi.cols; c++)
+			//	{
+			//		if (roi.at<uchar>(r, c) < 50) // 200  
+			//		{
+			//			roi.at<uchar>(r, c) = 0 ;
+			//		}
+			//	}
+			//}
+
 
 			if (i == 0 & j == 0 )
 			{
@@ -1774,8 +1816,8 @@ int DataIdentify::getWINPLAIdentify()
 					rectDot[t].width = roi.cols - rectDot[t].x;
 				}
 
-				rectNoDot[t].width = 9;
-				rectDot[t].width = 9;
+				rectNoDot[t].width = 8;
+				rectDot[t].width = 8;
 
 				rectDot[t].y = 0;
 
@@ -1789,8 +1831,7 @@ int DataIdentify::getWINPLAIdentify()
 
 
 			roiNew = Mat(roi, roiNewSize);
-
-
+			 
 			if (i == 2 && j == 0)
 			{
 
@@ -1818,7 +1859,7 @@ int DataIdentify::getWINPLAIdentify()
 
 			bool dotFlag = false;
 			// 通过判断 宽度来判断数据 是否包含小数点 3 // 32 20160903
-			if (roiNew.cols >= 31 )
+			if (roiNew.cols >  24 )
 			{
 				dotFlag = true;
 			}
@@ -1849,6 +1890,13 @@ int DataIdentify::getWINPLAIdentify()
 					if (k == 2 && rectDot[k].x + rectDot[k].width >= roiNew.cols)	// cross the boarder
 						rectDot[k].width = roiNew.cols - rectDot[k].x;
 
+					if (roiNew.cols <  26)
+					{
+						 
+						rectDot[0].width = 6 ;
+						rectDot[1].x = 6  ;
+						 
+					}
 
 					//检测是否越界
 					if (roiNew.cols < rectDot[k].x + rectDot[k].width |
@@ -2037,6 +2085,7 @@ bool DataIdentify::haveGroundColor(Mat srcMat, int flag)
 
 /**
 * @brief
+
 
 
 //识别 QIN QPL   同时识别ＱＩＮ　ＱＰＬ
@@ -2469,6 +2518,10 @@ int DataIdentify::getQINQPLIdentify()
 						rect[0][k].x = 0;
 						rect[0][k].width = x[k] + 1;
 					}
+
+					if (rect[0][k].width < 4)
+						rect[0][k].width = 9;
+
 					rect[0][k].height = roiNew.rows;
 
 					//检测是否越界
@@ -2484,6 +2537,9 @@ int DataIdentify::getQINQPLIdentify()
 						return EXIT_THIS_OCR;
 					}
 					Mat singleNum(roiNew, rect[0][k]);								// the single number image
+
+					if (i == 5 && j == 9)
+						int iiii = 0;
 #ifdef WRITE_ROI_SMAPLES_CLASS_INFO2
 					QString fileNameTemp;
 					fileNameTemp.prepend(QString(".bmp"));
@@ -2521,6 +2577,9 @@ int DataIdentify::getQINQPLIdentify()
 						rect[1][k].width = roiNew.cols - rect[1][k].x;
 
 					rect[1][k].height = roiNew.rows;
+
+					if (rect[0][k].width < 4)
+						rect[0][k].width = 9;
 
 					//检测是否越界
 					if (roiNew.cols < rect[1][k].x + rect[1][k].width |
@@ -2588,6 +2647,10 @@ int DataIdentify::getQINQPLIdentify()
 					}
 
 					rect[2][k].height = roiNew.rows;
+
+					if (rect[0][k].width < 4)
+						rect[0][k].width = 9;
+
 					//检测是否越界
 					if (roiNew.cols < rect[2][k].x + rect[2][k].width |
 						roiNew.rows < rect[2][k].y + rect[2][k].height)
@@ -3397,7 +3460,7 @@ int DataIdentify::judgeQINQPL()
 	{
 		for (int r = 0; r < qinQPL.rows; r++)
 		{
-			if (qinQPL.at<uchar>(r,c) < 150 )
+			if (qinQPL.at<uchar>(r,c) < 130 )
 			{
 				qinQPL.at<uchar>(r, c) = 0;
 			}
@@ -3408,11 +3471,11 @@ int DataIdentify::judgeQINQPL()
 		
 	}
 
-	imwrite("qinQPL.bmp", qinQPL);
+
 	
 	for (int i = 0; i < qinQPL.cols; i ++ )
 	{
-		if (graySum[i] > 300 )
+		if (graySum[i] > 100 )
 		{
 			frontIndex = i; 
 			break;
@@ -3421,7 +3484,7 @@ int DataIdentify::judgeQINQPL()
 
 	for (int i = qinQPL.cols ; i> 0 ; i -- )
 	{
-		if (graySum[i] > 300)
+		if (graySum[i] > 100)
 		{
 			backIndex = i;
 			break;
@@ -3446,11 +3509,13 @@ int DataIdentify::judgeQINQPL()
 	newSize.height = qinQPL.rows;
 
 
-	Mat roiWhole(qinQPLOri, newSize);
+	Mat roiWhole(qinQPL, newSize);
  
+	imwrite("qinQPL.bmp", roiWhole);
+
 	CvRect newSize1;
-	newSize1.x = roiWhole.cols - 10;
-	newSize1.width = 10;
+	newSize1.x = roiWhole.cols - 9 ;
+	newSize1.width = 9  ;
 	newSize1.y = 0;
 	newSize1.height = roiWhole.rows;
 
@@ -3463,7 +3528,16 @@ int DataIdentify::judgeQINQPL()
 		hogMat.at<float>(0, m) = descriptorVector[m];
 
 	float result = LNSVM.predict(hogMat);
-	if (int(result) == 0)
+
+	//通过检测中间的 像素的 灰度和。
+
+	int sum = 0;
+	for (int i = 0; i < roi.cols; i++)
+	{
+		sum += roi.at<uchar>(roi.rows / 2, i);
+	}
+	
+	if (sum <= 800 )
 		dataOutput.isQPL = true;
 	else
 		dataOutput.isQPL = false;
@@ -3787,6 +3861,7 @@ int  DataIdentify::calculateXBewttenNumber(Mat &mat, int  *x)
 	}
 	return EXEC_SUCCESS;
 }
+
 
 /**
 * @brief 横向投影calculateGraySumX(Mat &mat, int *y, int roiNum);
